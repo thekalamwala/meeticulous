@@ -33,6 +33,17 @@ export function installDashPreview(api) {
   api.defaults.adapter = async (config) => {
     const method = (config.method || 'get').toUpperCase();
     const path = String(config.url || '').split('?')[0];
+    // State checks (dev only): set window.__DASH_PREVIEW_STATE = { '/crm/customers':
+    // { status: 403, data: {...} } | { delay: 4000 } } to see loading / error / locked
+    // states. Keys match a path prefix.
+    const hook = Object.entries(window.__DASH_PREVIEW_STATE || {}).find(([k]) => path.startsWith(k))?.[1];
+    if (hook?.delay) await new Promise((r) => { setTimeout(r, hook.delay); });
+    if (hook?.status) {
+      const err = new Error(`[dash-preview] ${hook.status} ${path}`);
+      err.response = { status: hook.status, data: hook.data || {}, config };
+      throw err;
+    }
+    if (hook && 'data' in hook) return { data: hook.data, status: 200, statusText: 'OK', headers: {}, config, request: {} };
     let data;
     if (method === 'GET') {
       data = fixtures[path];
@@ -44,6 +55,8 @@ export function installDashPreview(api) {
     } else {
       data = { success: true, preview: true }; // never reaches a server
     }
+    // A fixture that is an Error simulates a failed read (error-state screenshots).
+    if (data instanceof Error) throw Object.assign(data, { config, response: { status: 500, data: {} } });
     return { data, status: 200, statusText: 'OK', headers: {}, config, request: {} };
   };
   // eslint-disable-next-line no-console

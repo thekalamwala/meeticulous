@@ -1,0 +1,480 @@
+.earnings-slider {
+  position: relative;
+  height: 64px;
+  margin-bottom: 6px;
+}
+
+.earnings-slider input[type="range"] {
+  position: absolute;
+  inset: 0 3px;
+  width: calc(100% - 6px);
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.earnings-slider input::-webkit-slider-thumb {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+}
+
+.earnings-slider input::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  border: 0;
+}
+
+.earnings-slider__visual {
+  position: absolute;
+  inset: 0 18px;
+  pointer-events: none;
+}
+
+.earnings-slider__ticks {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.earnings-slider__ticks span {
+  width: 1px;
+  height: 4px;
+  background: #858585;
+}
+
+.earnings-slider__track {
+  position: absolute;
+  inset: 30px 0 auto;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--mt-maroon) var(--slider-progress), #dedde0 var(--slider-progress));
+}
+
+.earnings-slider__thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--slider-progress);
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  border: 2px solid white;
+  border-radius: 10px;
+  background: #ededed;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 35%);
+}
+
+.earnings-slider input:focus-visible + .earnings-slider__visual .earnings-slider__thumb {
+  outline: 2px solid var(--mt-maroon);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .earnings-slider input[type="range"] {
+    appearance: auto;
+    opacity: 1;
+  }
+
+  .earnings-slider__visual {
+    display: none;
+  }
+}
+/* Billing cycle — segmented pill. Light on cream, inverse on the maroon result card. */
+.earnings-cycle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--pink-100);
+}
+
+.earnings-cycle button {
+  min-height: 32px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--fg-2);
+  font: var(--weight-semibold) 12px/1 var(--font-body);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.earnings-cycle button:hover { color: var(--mt-maroon); }
+.earnings-cycle button[aria-pressed="true"] { background: var(--mt-maroon); color: var(--mt-white); }
+.earnings-cycle button:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.earnings-cycle--onbrand { background: var(--maroon-800); }
+.earnings-cycle--onbrand button { color: var(--pink-200); }
+.earnings-cycle--onbrand button:hover { color: var(--mt-white); }
+.earnings-cycle--onbrand button[aria-pressed="true"] { background: var(--mt-pink); color: var(--mt-maroon-dark); }
+
+/* Estimated earnings — the one maroon field on the page. */
+.earnings-result {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-8);
+  border-radius: var(--radius-card);
+  background: var(--bg-brand);
+  color: var(--fg-on-brand);
+}
+
+.earnings-result__thread {
+  position: absolute;
+  z-index: -1;
+  top: 38%;
+  right: -34%;
+  width: 86%;
+  max-width: none;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.earnings-result__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.earnings-result__head .mt-overline { color: var(--mt-pink); }
+
+.earnings-result__lead {
+  margin: var(--space-8) 0 var(--space-2);
+  font: var(--weight-semibold) 1.0625rem/1.4 var(--font-body);
+  color: var(--mt-white);
+}
+
+.earnings-result__amount {
+  margin: 0;
+  font: var(--weight-black) clamp(2.75rem, 5vw, 3.6rem)/1 var(--font-display);
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mt-white);
+}
+
+.earnings-result__per {
+  margin: var(--space-2) 0 0;
+  font-size: 0.875rem;
+  color: var(--pink-200);
+}
+
+.earnings-result__delta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  margin-top: var(--space-5);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--mt-pink);
+  color: var(--mt-maroon-dark);
+  font: var(--weight-semibold) 13px/1.2 var(--font-body);
+}
+
+.earnings-result__delta--quiet { background: var(--maroon-800); color: var(--pink-200); }
+
+/* Take-home bars. Heights are true 0-based take-home; winner in pink, the other in maroon-800. */
+.earnings-bars { margin-top: auto; padding-top: var(--space-8); }
+
+.earnings-bars__plot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: var(--space-4);
+  border-bottom: 2px solid var(--maroon-800);
+}
+
+.earnings-bars__col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.earnings-bars__crown { margin-bottom: 4px; color: var(--mt-pink); }
+
+.earnings-bars__value {
+  margin-bottom: 6px;
+  font: var(--weight-bold) 12px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--mt-white);
+}
+
+.earnings-bars__bar {
+  width: 100%;
+  max-width: 72px;
+  border-radius: 20px 20px 0 0;
+  background: var(--maroon-800);
+  transition: height var(--dur-base) var(--ease-out);
+}
+
+.earnings-bars__bar--win { background: var(--mt-pink); }
+.earnings-bars__bar--muted { opacity: 0.5; }
+
+.earnings-bars__labels {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  text-align: center;
+}
+
+.earnings-bars__labels > div { flex: 1; }
+.earnings-bars__name { margin: 0; font: var(--weight-semibold) 13px/1.3 var(--font-body); color: var(--mt-white); }
+.earnings-bars__fee { margin: 2px 0 0; font-size: 11px; color: var(--pink-200); }
+
+/* Plan cards — flat fills, 24 radius, 2px border; Pro is the selected (3px maroon) card on blush. */
+.earnings-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-8);
+  border: var(--stroke-ui) solid var(--border-1);
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+  color: var(--fg-1);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+
+.earnings-plan:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.earnings-plan--pro {
+  border: var(--stroke-ui-strong) solid var(--mt-maroon);
+  background: var(--bg-blush);
+}
+
+.earnings-plan__flag {
+  position: absolute;
+  top: 0;
+  left: var(--space-8);
+  transform: translateY(-50%);
+}
+
+.earnings-plan__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 30%;
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.earnings-plan__id { display: flex; align-items: center; gap: var(--space-3); }
+
+.earnings-plan__icon {
+  display: inline-grid;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: var(--radius-input);
+  background: var(--bg-page);
+  color: var(--mt-maroon);
+}
+
+.earnings-plan--pro .earnings-plan__icon { background: var(--mt-white); }
+
+.earnings-plan__name {
+  margin: 0;
+  font: var(--weight-black) 1.5rem/1.1 var(--font-display);
+  letter-spacing: -0.03em;
+  color: var(--mt-maroon);
+}
+
+.earnings-plan__note { margin: 4px 0 0; font-size: 12px; line-height: 1.35; color: var(--fg-2); }
+
+.earnings-plan__position {
+  margin: var(--space-5) 0 0;
+  font: var(--weight-semibold) 0.9375rem/1.4 var(--font-body);
+  color: var(--fg-1);
+}
+
+.earnings-plan__amount {
+  margin: 0;
+  font: var(--weight-black) clamp(2rem, 3.4vw, 2.5rem)/1 var(--font-display);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-1);
+}
+
+.earnings-plan--pro .earnings-plan__amount { color: var(--mt-maroon); }
+
+.earnings-plan__amount-label { margin: 6px 0 0; font-size: 13px; color: var(--fg-2); }
+
+.earnings-plan .earnings-plan__advantage { margin-top: var(--space-4); height: auto; min-height: 28px; padding-block: 4px; white-space: normal; background: var(--mt-white); }
+
+.earnings-plan__features {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-5) 0 0;
+  border-top: var(--stroke-ui) solid var(--border-1);
+  list-style: none;
+}
+
+.earnings-plan--pro .earnings-plan__features { border-top-color: var(--pink-200); }
+
+.earnings-plan__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--fg-1);
+}
+
+.earnings-plan__features svg { flex: none; margin-top: 2px; color: var(--mt-maroon); }
+
+.earnings-plan__warn {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-input);
+  background: var(--warning-bg);
+  color: var(--marigold-800);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Platform fee comparison — one flat white card, hairline rows; the cheapest row is
+   marked from the data, not hard-wired to Meeticulous. */
+.earnings-compare {
+  margin-top: var(--space-8);
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+}
+
+.earnings-compare table { width: 100%; border-collapse: collapse; text-align: left; }
+
+.earnings-compare thead th {
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  font-size: var(--text-overline);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--ls-overline);
+  text-transform: uppercase;
+  color: var(--fg-2);
+  border-bottom: var(--stroke-ui) solid var(--border-1);
+}
+
+.earnings-compare tbody th,
+.earnings-compare tbody td {
+  padding: var(--space-5) var(--space-6);
+  vertical-align: middle;
+  font-size: 14px;
+  color: var(--fg-1);
+}
+
+.earnings-compare tbody tr + tr > * { border-top: var(--stroke-ui) solid var(--border-1); }
+
+.earnings-compare tbody th { font-weight: var(--weight-regular); }
+
+.earnings-compare__name { font-weight: var(--weight-semibold); margin-right: var(--space-3); }
+
+.earnings-compare__note { display: none; margin-top: 2px; font-size: 12px; color: var(--fg-2); }
+
+.earnings-compare__how { color: var(--fg-2); }
+
+.earnings-compare .earnings-compare__fee { text-align: right; white-space: nowrap; }
+
+.earnings-compare tbody .earnings-compare__fee {
+  font: var(--weight-black) 1.25rem/1 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.earnings-compare tr.is-lowest > * { background: var(--bg-blush); }
+.earnings-compare tr.is-lowest .earnings-compare__name,
+.earnings-compare tr.is-lowest .earnings-compare__fee { color: var(--mt-maroon); }
+
+/* Reassurance — four slot-shaped tiles. */
+.earnings-reassure {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-16, 64px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.earnings-reassure li {
+  padding: var(--space-6);
+  border-radius: 20px;
+  background: var(--bg-surface);
+}
+
+.earnings-reassure__icon {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--bg-blush);
+  color: var(--mt-maroon);
+}
+
+.earnings-reassure__title {
+  margin: var(--space-4) 0 0;
+  font: var(--weight-black) 1.125rem/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--mt-maroon);
+}
+
+.earnings-reassure__body { margin: var(--space-2) 0 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+
+.earnings-fineprint { font-size: 12px; line-height: 1.6; color: var(--fg-2); }
+.earnings-fineprint a { color: var(--mt-maroon); font-weight: var(--weight-semibold); text-decoration: underline; text-underline-offset: 2px; }
+.earnings-fineprint a:hover { color: var(--mt-maroon-dark); }
+
+@media (max-width: 1023px) {
+  .earnings-reassure { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 639px) {
+  .earnings-result, .earnings-plan { padding: var(--space-6); }
+  .earnings-plan__flag { left: var(--space-6); }
+  .earnings-compare .earnings-compare__how { display: none; }
+  .earnings-compare__note { display: block; }
+  .earnings-compare thead th, .earnings-compare tbody th, .earnings-compare tbody td { padding-inline: var(--space-5); }
+  .earnings-reassure li { padding: var(--space-5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .earnings-plan, .earnings-bars__bar, .earnings-cycle button { transition: none; }
+  .earnings-plan:hover { transform: none; }
+}
+
+.earnings-plan__art {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  min-width: 0;
+  height: clamp(72px, 12vw, 126px);
+}
+
+.earnings-plan__art img {
+  width: 64%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.earnings-plan__art img:only-child {
+  width: 100%;
+}
+
+.earnings-plan__art img + img {
+  margin-left: -28%;
+}
+
+
