@@ -40,7 +40,6 @@ import { GROUPS } from './dashboardV2Groups';
 import KeptTabBar from './KeptTabBar';
 import NotificationsDrawer from './NotificationsDrawer';
 import useDashboardChrome from '../../hooks/useDashboardChrome';
-import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
 import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
@@ -267,7 +266,8 @@ const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
       </h1>
     )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
-      <Link to="/help" title="Support" aria-label="Support"
+      {/* Kept: the lifebuoy opens the dashboard's Help hub (founder, 2026-11-26). */}
+      <Link to="/dashboard/chat" title="Help" aria-label="Help"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
@@ -351,9 +351,9 @@ const DashboardLayoutV2 = ({ children }) => {
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
             <PullToRefresh>
               <div className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
-                {/* Today shows KYC inside its own "Needs you" card, so the shell notice
-                    would say the same thing twice there. */}
-                {pathname !== '/dashboard' && <KycNudgeStrip />}
+                {/* No shell KYC strip (founder call, 2026-11-26): the verify ask lives in
+                    Today's setup checklist + the bell, and inside Money's balance. A strip
+                    on every page said it twice. */}
                 <PageTransition>{children}</PageTransition>
               </div>
             </PullToRefresh>

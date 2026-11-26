@@ -94,7 +94,7 @@ export const NAV = [
     // a home (the old "Chat" section, now AI support).
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/referrals', label: 'Refer & Earn', icon: 'nav-refer' },
@@ -193,12 +193,12 @@ export const NAV_V2 = [
     visible: (c) => !!c.flags?.dashboard_sections_v2,
   },
   {
+    // Kept (founder-approved 2026-11-25): Payouts, Transactions and Invoices are ONE
+    // Money page with tabs, so the section is a single item that opens on Payouts and
+    // stays lit on every tab's URL. Earnings moved to Intelligence › Revenue.
     id: 'money', label: 'Money', icon: 'rail-earnings',
     items: [
-      { to: '/dashboard/earnings', label: 'Earnings', icon: 'nav-earnings' },
-      { to: '/dashboard/payments/payouts', label: 'Payouts', icon: 'nav-payouts', matchPrefix: '/dashboard/payments/payouts', badgeKey: 'verification', badgeNoun: 'verify to get paid' },
-      { to: '/dashboard/payments/transactions', label: 'Transactions', icon: 'nav-transactions', matchPrefix: '/dashboard/payments/transactions' },
-      { to: '/dashboard/invoices', label: 'Invoices', icon: 'nav-invoices', matchPrefix: '/dashboard/invoices' },
+      { to: '/dashboard/payments/payouts', label: 'Money', icon: 'nav-payouts', matchPrefix: ['/dashboard/payments', '/dashboard/invoices', '/dashboard/kyc'], badgeKey: 'verification', badgeNoun: 'verify to get paid' },
     ],
   },
   {
@@ -231,7 +231,7 @@ export const NAV_V2 = [
   {
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/chat', label: 'Help & support', icon: 'nav-chat', matchPrefix: '/dashboard/chat', badgeKey: 'chatUnread', badgeNoun: 'new reply' },
