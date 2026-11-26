@@ -94,7 +94,7 @@ export const NAV = [
     // a home (the old "Chat" section, now AI support).
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/referrals', label: 'Refer & Earn', icon: 'nav-refer' },
@@ -194,7 +194,7 @@ export const NAV_V2 = [
   {
     // dashboard_sections_v2 (ships OFF): graduated Host Lab Intelligence onto real
     // bookings. Hidden entirely until the flag is on; its routes redirect home off-flag.
-    id: 'intelligence', label: 'Intelligence', icon: 'nav-earnings',
+    id: 'intelligence', label: 'Insights', icon: 'nav-earnings',
     items: [
       { to: '/dashboard/intelligence/overview', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/intelligence/overview' },
       { to: '/dashboard/intelligence/revenue', label: 'Revenue', icon: 'nav-earnings', matchPrefix: '/dashboard/intelligence/revenue' },
@@ -242,7 +242,7 @@ export const NAV_V2 = [
   {
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/chat', label: 'Help & support', icon: 'nav-chat', matchPrefix: '/dashboard/chat', badgeKey: 'chatUnread', badgeNoun: 'new reply' },
