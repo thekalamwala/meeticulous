@@ -43,12 +43,12 @@ const CommunityMentions = () => {
     </>
   );
 
-  if (err) return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your mentions." onRetry={load} /></div>;
-  if (items === null) return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-64 rounded-xl" /></div>;
+  if (err) return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your mentions." onRetry={load} /></div>;
+  if (items === null) return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-64 rounded-xl" /></div>;
 
   if (!items.length) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         {header}
         <EmptyState icon={AtSign} title="No mentions yet"
           description="When someone names you in a post, it shows up here."
@@ -58,7 +58,7 @@ const CommunityMentions = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
       <Panel flush>
         <div className="overflow-hidden rounded-[8px]">

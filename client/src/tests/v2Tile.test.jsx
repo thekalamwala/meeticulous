@@ -9,15 +9,25 @@ import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Tile } from '../components/dashboard/ui/v2';
 
+// Figure sets ₹ and the digits in their own spans (optical alignment), so find the
+// digits and assert on the value span that wraps both.
+const valueSpan = (digits) => screen.getByText(digits).closest('.tabular-nums');
+
 describe('Tile', () => {
   it('renders its value with tabular-nums', () => {
     render(<Tile label="Net earnings" value="₹82,400" />);
-    expect(screen.getByText('₹82,400').className).toContain('tabular-nums');
+    expect(valueSpan('82,400')?.textContent).toBe('₹82,400');
   });
 
   it('keeps tabular-nums on an accent tile', () => {
     render(<Tile label="Ready to withdraw" value="₹9" accent />);
-    expect(screen.getByText('₹9').className).toContain('tabular-nums');
+    expect(valueSpan('9')?.textContent).toBe('₹9');
+  });
+
+  it('says so in a sentence when there is no figure, never a dash', () => {
+    render(<Tile label="Page views" value={null} note="Not tracked yet" />);
+    expect(screen.getByText('Not tracked yet')).toBeInTheDocument();
+    expect(screen.queryByText('—')).toBeNull();
   });
 
   it('still renders label and hint', () => {

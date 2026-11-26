@@ -242,7 +242,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, inline =
       <button type="button" onClick={() => setEditing(true)}
         className={cn('group gap-1 text-left', inline ? 'inline-flex max-w-full items-center' : 'flex w-full items-start gap-1.5', textClass)}>
         <span className={cn('truncate', !value && 'font-normal text-neutral-400')}>{value || placeholder}</span>
-        <Pencil className={cn('h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100', !inline && 'mt-0.5')} strokeWidth={2.25} />
+        <Pencil className={cn('h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100 [@media(hover:none)]:opacity-100', !inline && 'mt-0.5')} strokeWidth={2.25} />
       </button>
     );
   }
@@ -469,7 +469,7 @@ const ProfileSetup = ({ embedded = false } = {}) => {
                     alt=""
                     className="h-full w-full object-cover object-center"
                   />
-                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100 [@media(hover:none)]:opacity-100">
                     <Camera className="h-3.5 w-3.5" strokeWidth={2.25} /> {form.cover_image ? "Change" : "Add cover"}
                   </span>
                 </button>

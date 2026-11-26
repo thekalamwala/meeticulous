@@ -43,10 +43,10 @@ const IntelOverview = () => {
   );
 
   if (err) {
-    return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your intelligence." onRetry={load} /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your intelligence." onRetry={load} /></div>;
   }
   if (data === null) {
-    return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
   }
 
   const { headline, commissionLeak: leak, forecast, winBack, benchmarks, moves, cohorts } = data;
@@ -55,11 +55,11 @@ const IntelOverview = () => {
     .filter(([, b]) => b?.unavailable);
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
       {headline && (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
           <Tile label="Net revenue" value={inr(headline.netRevenue, { compact: true })} accent hint="After fees and refunds" />
           <Tile label="Paid bookings" value={headline.paidBookings ?? 0} hint="All time" />
           <Tile label="Profile views"
@@ -73,7 +73,7 @@ const IntelOverview = () => {
 
       {leak && (
         <Panel title="Commission paid" subtitle="Trailing 12 months, including GST on commission">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
             <Tile label="Commission paid" value={inr(leak.commissionPaid)} hint="Last 12 months" />
             <Tile label="Pro costs" value={inr(leak.proCost)} hint="Per year" />
             {leak.aheadBy > 0

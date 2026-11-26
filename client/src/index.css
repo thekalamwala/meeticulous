@@ -85,6 +85,72 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Mobile-native baseline ─────────────────────────────────────────────────
+   The platform layer that makes a web app feel installed on a phone instead of
+   "a website in a browser" (checklist: emilkowalski/skills · mobile-native).
+   Presentation only. Hover gating lives in tailwind.config.js
+   (hoverOnlyWhenSupported); viewport-fit=cover in index.html. */
+html {
+  -webkit-tap-highlight-color: transparent; /* no grey flash on every tap */
+  -webkit-text-size-adjust: 100%;           /* no font inflation in landscape */
+}
+
+/* viewport-fit=cover lets the page run under the notch in landscape; pad the
+   body back out so text never sits under it. 0 in portrait. */
+body {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Fire taps immediately (no double-tap-zoom wait). */
+a, button, [role="button"], label, summary {
+  touch-action: manipulation;
+}
+
+/* A long-press on a control must not select its label or pop the callout.
+   Controls only: content text stays selectable. */
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* iOS zooms the page into any field under 16px and never zooms back. Touch
+   screens only, so desktop keeps the compact field sizes. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Without the tap highlight, every tappable thing needs its own press state. */
+@media (hover: none) {
+  button:not(:disabled):active,
+  [role="button"]:active,
+  a[href]:active {
+    opacity: 0.72;
+  }
+}
+
+/* Host dashboard only (useDashboardChrome): no browser pull-to-refresh or page
+   rubber-band, so the dashboard's own PullToRefresh is the only one. */
+html.dash-app,
+html.dash-app body {
+  overscroll-behavior-y: none;
+}
+
+/* The dashboard hides the window scrollbar (founder call, 2026-11-25). When a page
+   loads short (skeletons) and then grows, the bar appearing used to push the whole
+   layout sideways by its width. Wheel, trackpad, touch and keys still scroll. */
+html.dash-app {
+  scrollbar-width: none;
+}
+html.dash-app::-webkit-scrollbar {
+  display: none;
+}
+
 #root {
   min-height: 100vh;
   isolation: isolate;
@@ -393,6 +459,12 @@ select:focus {
 .mt-input select:focus {
   box-shadow: none;
 }
+
+/* MeetDropdown's search box is a bare line inside the open list: the row's one
+   underline is its frame, so focus turns that line brand-coloured instead of
+   drawing a ring box around the input (founder, 2026-11-25). */
+.mt-dd__search input:focus { box-shadow: none; }
+.mt-dd__search:focus-within { border-bottom-color: var(--border-brand); }
 
 /* .fb-input is the shared user-facing input class, but it lives in @layer legacy
    which loses to the unlayered base `input` rule above. Pin the minimalist look

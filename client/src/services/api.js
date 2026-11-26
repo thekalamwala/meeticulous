@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getAttribution } from '../utils/attribution';
 import { batchedImport } from '../utils/batchImport';
+import { installDashPreview } from '../dev/dashPreview';
 
 // Resolve the API base. VITE_API_URL stays ABSOLUTE (…onrender.com/api) so the
 // build-time prerender script and its request-interceptor proxy keep working. But
@@ -23,6 +24,8 @@ const API = axios.create({
   baseURL: resolveApiBase(),
   timeout: 30000, // give up on a stalled request instead of hanging forever
 });
+// Dev-only: answer every call from sample data when VITE_DASH_PREVIEW=1 (see dev/dashPreview.js).
+installDashPreview(API);
 
 // Principle #4 — control the data exchange: retry transient failures.
 // SECURITY/MONEY: only idempotent reads (GET/HEAD) are ever retried. A retried

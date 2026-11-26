@@ -99,7 +99,7 @@ export default function GoLiveChecklist({ kyc, hasPaidService, username }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={`Setup ${doneCount} of ${total} complete`}
-        className="flex items-center gap-2.5 rounded-full border border-maroon/15 bg-white px-3.5 py-2 shadow-sm transition-colors hover:border-maroon/30"
+        className="flex h-11 items-center gap-2.5 rounded-[14px] bg-white px-3.5 transition-colors hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
       >
         <span className="text-xs font-bold text-maroon">Setup</span>
         <span className="h-1.5 w-16 overflow-hidden rounded-full bg-maroon/10">

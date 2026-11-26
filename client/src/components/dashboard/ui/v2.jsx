@@ -32,6 +32,19 @@ export const inr = (n, opts = {}) => {
 };
 export const pct = (n) => `${Math.round((Number(n) || 0) * 100)}%`;
 
+/* Big money figures: the ₹ glyph sits low against Bricolage digits, so set it
+ * apart by 3px and lift the digits 2px to share its optical line (founder spec,
+ * 2026-11-25). Non-rupee values pass through untouched. */
+export const Figure = ({ value }) => {
+  if (typeof value !== 'string' || !value.startsWith('₹')) return value;
+  return (
+    <>
+      <span className="mr-[3px]">₹</span>
+      <span className="relative -top-[2px]">{value.slice(1)}</span>
+    </>
+  );
+};
+
 /* ── Dates ─────────────────────────────────────────────────────────────── */
 const d = (iso) => new Date(iso);
 export const fmtDay = (iso) => (iso ? d(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—');
@@ -52,8 +65,8 @@ export const initialsOf = (name) =>
   (name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() || '').join('') || '?';
 
 /* ── Avatar ────────────────────────────────────────────────────────────── */
-export const Avatar = ({ name, size = 'h-8 w-8 text-[10.5px]' }) => (
-  <span className={cn('grid shrink-0 place-items-center rounded-full bg-blush font-bold text-maroon', size)} aria-hidden="true">
+export const Avatar = ({ name, size = 'h-9 w-9 text-[12px]' }) => (
+  <span className={cn('grid shrink-0 place-items-center rounded-full bg-blush font-semibold text-maroon', size)} aria-hidden="true">
     {initialsOf(name)}
   </span>
 );
@@ -66,7 +79,7 @@ export const useLast = (value) => {
 };
 
 /* ── Drawer — right-side peek, animated, no scroll lock (Linear-style). ─── */
-export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w-[480px]' }) => {
+export const Drawer = ({ open, onClose, title, subtitle, children, footer, bodyClassName = '', width = 'sm:w-[480px]' }) => {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -83,18 +96,19 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
           <motion.aside key="drawer-panel" role="dialog" aria-modal="true" aria-label={title}
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-            className={cn('fixed inset-y-0 right-0 z-[101] flex w-full flex-col border-l-2 border-neutral-200 bg-white dash-elev-3', width)}>
-            <header className="flex shrink-0 items-start gap-2 border-b-2 border-neutral-200 px-3 py-2.5">
+            className={cn('fixed inset-y-0 right-0 z-[101] flex w-full flex-col bg-white dash-elev-3', width)}>
+            <header className="flex shrink-0 items-start gap-3 border-b border-neutral-200 px-5 py-4">
               <div className="min-w-0 flex-1">
-                <h2 className="mb-0 truncate font-display text-[13.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>
-                {subtitle && <p className="mt-0.5 truncate text-[11px] font-medium text-ink/50">{subtitle}</p>}
+                <h2 className="mb-0 truncate font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{title}</h2>
+                {subtitle && <p className="mt-0.5 truncate text-[13px] text-faint">{subtitle}</p>}
               </div>
               <button type="button" onClick={onClose} aria-label="Close"
-                className="grid h-7 w-7 shrink-0 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon">
-                <X className="h-4 w-4" strokeWidth={2.4} />
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] text-muted transition hover:bg-blush hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+                <X className="h-5 w-5" strokeWidth={2.2} />
               </button>
             </header>
-            <div className="min-h-0 flex-1 overflow-y-auto p-3">{children}</div>
+            <div className={cn('min-h-0 flex-1 overflow-y-auto overscroll-contain p-5', bodyClassName)}>{children}</div>
+            {footer && <footer className="shrink-0 border-t border-neutral-200 bg-white px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">{footer}</footer>}
           </motion.aside>
         </>
       )}
@@ -104,29 +118,36 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
 };
 
 /* ── Panel — the one card shape. ───────────────────────────────────────── */
-export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => (
-  // Outer table/list container capped at 8px — the big Loop & Slot radius read
-  // as off on these full-width data panels (founder call, 2026-11-18).
-  <section className={cn('overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white', className)}>
-    {(title || action) && (
-      <header className="flex flex-wrap items-center justify-between gap-1.5 border-b-2 border-neutral-200 px-3 py-2">
-        <div className="min-w-0">
-          {title && <h2 className="mb-0 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>}
-          {subtitle && <p className="mt-0.5 text-[10.5px] font-medium text-ink/50">{subtitle}</p>}
-        </div>
-        {action}
-      </header>
-    )}
-    <div className={flush ? '' : 'p-3'}>{children}</div>
-  </section>
-);
+// Kept (founder-approved 2026-11-25): a card is a white surface on the cream page,
+// with no border and the kit's 24px card radius. The earlier 8px cap (2026-11-18)
+// was a reaction to big corners on 2px-BORDERED panels; with the border gone the
+// big radius reads right. `flush` panels (lists, tables) keep one hairline under
+// the header so rows don't touch the title.
+export const Panel = ({ title, subtitle, action, children, className = '', bodyClassName = '', flush = false }) => {
+  const head = title || action;
+  return (
+    <section className={cn('overflow-hidden rounded-[24px] bg-white', className)}>
+      {head && (
+        <header className={cn('flex flex-wrap items-start justify-between gap-2 px-5 pt-5 sm:px-6',
+          flush ? 'border-b border-neutral-200 pb-4' : 'pb-0')}>
+          <div className="min-w-0">
+            {title && <h2 className="mb-0 font-display text-[18px] font-bold leading-tight tracking-[-0.02em] text-ink sm:text-[20px]">{title}</h2>}
+            {subtitle && <p className="mt-1 text-[13px] text-faint">{subtitle}</p>}
+          </div>
+          {action}
+        </header>
+      )}
+      <div className={cn(!flush && 'px-5 pb-5 sm:px-6 sm:pb-6', !flush && (head ? 'pt-4' : 'pt-5 sm:pt-6'), bodyClassName)}>{children}</div>
+    </section>
+  );
+};
 
 /* ── PageHeading — a section's top heading. ────────────────────────────── */
 export const PageHeading = ({ title, sub, action }) => (
-  <header className="flex flex-wrap items-end justify-between gap-2">
+  <header className="flex flex-wrap items-end justify-between gap-3 pb-1">
     <div className="min-w-0">
-      <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">{title}</h1>
-      {sub && <p className="mt-0.5 text-[12px] font-medium text-ink/55">{sub}</p>}
+      <h1 className="mb-0 font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[34px]">{title}</h1>
+      {sub && <p className="mt-1.5 text-[14px] text-muted sm:text-[15px]">{sub}</p>}
     </div>
     {action}
   </header>
@@ -136,12 +157,12 @@ export const PageHeading = ({ title, sub, action }) => (
  * Money/Schedule/Bookings graduate to one page + this nav; each tab is a real
  * URL (the old routes), so bookmarks and deep links keep working. */
 export const SubNav = ({ items }) => (
-  <nav aria-label="Sub-pages" className="flex gap-1 overflow-x-auto rounded-full border-2 border-neutral-200 bg-white p-1 dash-noscrollbar">
+  <nav aria-label="Sub-pages" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-[14px] bg-white p-1 dash-noscrollbar">
     {items.map((it) => (
       <NavLink key={it.to} to={it.to} end={it.end}
         className={({ isActive }) => cn(
-          'shrink-0 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
-          isActive ? 'bg-maroon text-white' : 'text-ink/55 hover:bg-blush hover:text-maroon')}>
+          'shrink-0 rounded-[10px] px-4 py-2 text-[13.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+          isActive ? 'bg-maroon text-white' : 'text-muted hover:bg-blush hover:text-maroon')}>
         {it.label}
       </NavLink>
     ))}
@@ -149,37 +170,48 @@ export const SubNav = ({ items }) => (
 );
 
 /* ── Tile — the one stat shape. ────────────────────────────────────────── */
-export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = false, spark, more, children }) => {
+export const Tile = ({ label, value, note, delta, deltaLabel, hint, onClick, accent = false, spark, art, more, children }) => {
   const Tag = onClick ? 'button' : 'div';
   const up = delta != null && delta >= 0;
   const footer = delta != null || hint || more;
   return (
     <Tag type={onClick ? 'button' : undefined} onClick={onClick}
-      className={cn('flex min-w-0 flex-col rounded-md border-2 p-2.5 text-left transition',
-        accent ? 'border-maroon bg-maroon text-white' : 'border-neutral-200 bg-white',
-        onClick && 'hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose')}>
-      <div className="flex items-start justify-between gap-1.5">
-        <span className={cn('truncate text-[10px] font-bold uppercase tracking-[0.07em]', accent ? 'text-white/70' : 'text-ink/45')}>{label}</span>
-        {spark && <span className="mt-px shrink-0 opacity-90">{spark}</span>}
+      className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-4 text-left transition sm:p-5', art && 'pr-[96px] lg:pr-[112px]',
+        // Featured = a maroon ring, never a filled maroon tile: the filled tile was
+        // the loudest thing on the page even when its value was ₹0 (Kept audit).
+        accent && 'ring-2 ring-inset ring-maroon',
+        // Kept: hover tints, it never lifts, scales or shadows (founder call, 2026-11-25).
+        onClick && 'hover:bg-pink-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose')}>
+      <div className="flex items-start justify-between gap-2">
+        <span className="truncate text-[13px] font-medium text-muted">{label}</span>
+        {spark && <span className="mt-px shrink-0">{spark}</span>}
       </div>
       {/* tabular-nums: a tile's value is a figure — money, a count, a percentage —
           and tiles sit in a row, so proportional digits make neighbouring values
           jitter against each other and shift width as they refresh. Harmless on
           the few tiles whose value is a word: it only affects digits. */}
-      <span className={cn('mt-1 font-display text-[17px] font-extrabold leading-none tracking-[-0.035em] tabular-nums', accent ? 'text-white' : 'text-ink')}>{value}</span>
+      {/* No figure yet: say so in a sentence, never a dash or a fake ₹0 (Kept: honest states). */}
+      {value == null && note
+        ? <span className="mt-2 text-[15px] font-medium leading-snug text-muted">{note}</span>
+        : <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]"><Figure value={value} /></span>}
       {footer && (
-        <div className={cn('mt-2 flex items-center gap-1.5 border-t pt-1.5 text-[10.5px] font-semibold', accent ? 'border-white/20' : 'border-neutral-200')}>
+        // With art, the footer drops to the tile's foot and runs the full width,
+        // in front of the mascot (founder call, 2026-11-25) — the value keeps clear of it.
+        <div className={cn('relative z-10 flex items-center gap-1.5 text-[12.5px]', art ? 'mt-auto -mr-[80px] pt-2.5 lg:-mr-[96px]' : 'mt-2.5')}>
           {delta != null && (
-            <span className={cn('inline-flex shrink-0 items-center gap-0.5', accent ? 'text-white/85' : up ? 'text-success-fg' : 'text-error-fg')}>
-              {up ? <TrendingUp className="h-3 w-3" strokeWidth={2.6} /> : <TrendingDown className="h-3 w-3" strokeWidth={2.6} />}
+            <span className={cn('inline-flex shrink-0 items-center gap-0.5 font-semibold', up ? 'text-success-fg' : 'text-error-fg')}>
+              {up ? <TrendingUp className="h-3.5 w-3.5" strokeWidth={2.4} /> : <TrendingDown className="h-3.5 w-3.5" strokeWidth={2.4} />}
               {up ? '+' : ''}{delta}%
             </span>
           )}
-          <span className={cn('truncate font-medium', accent ? 'text-white/65' : 'text-ink/45')}>{delta != null ? deltaLabel || 'vs last period' : hint}</span>
-          {more && <span className={cn('ml-auto shrink-0 font-bold', accent ? 'text-white' : 'text-maroon')}>{more} →</span>}
+          <span className="truncate text-faint">{delta != null ? deltaLabel || 'vs last period' : hint}</span>
+          {more && <span className="ml-auto shrink-0 font-semibold text-maroon">{more} →</span>}
         </div>
       )}
       {children}
+      {/* art: a large monoline icon in the card's empty right side — no chip, no
+          background, out of the flow so it never adds height (Kept, 2026-11-25). */}
+      {art && <span aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-maroon sm:right-4">{art}</span>}
     </Tag>
   );
 };
@@ -203,7 +235,7 @@ const STATUS_WORD = {
 };
 export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[8px] px-2.5 py-0.5 text-[12px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */
@@ -225,7 +257,7 @@ export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', forma
   return (
     <div className="relative">
       <div className="flex gap-2">
-        <div className="flex shrink-0 flex-col justify-between py-0.5 text-right text-[9.5px] font-semibold tabular-nums text-ink/35" style={{ height }}>
+        <div className="flex shrink-0 flex-col justify-between py-0.5 text-right text-[11px] tabular-nums text-faint" style={{ height }}>
           {ticks.map((t) => <span key={t}>{format(t)}</span>)}
         </div>
         <div className="relative min-w-0 flex-1">
@@ -245,17 +277,17 @@ export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', forma
                   <span className={cn('w-full max-w-[26px] rounded-t transition-colors', on ? 'bg-maroon-dark' : 'bg-maroon')}
                     style={{ height: `${h}%`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }} />
                   {i === maxIdx && !on && (
-                    <span className="pointer-events-none absolute -top-4 whitespace-nowrap text-[9.5px] font-bold text-ink/55">{format(x[valueKey])}</span>
+                    <span className="pointer-events-none absolute -top-5 whitespace-nowrap text-[11px] font-semibold text-ink">{format(x[valueKey])}</span>
                   )}
                 </button>
               );
             })}
           </div>
           <div className="mt-1.5 flex gap-[2px]">
-            {data.map((x) => <span key={x[labelKey]} className="flex-1 text-center text-[9.5px] font-semibold text-ink/40">{x[labelKey]}</span>)}
+            {data.map((x) => <span key={x[labelKey]} className="flex-1 text-center text-[11.5px] text-faint">{x[labelKey]}</span>)}
           </div>
           {hover != null && (
-            <div className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[10.5px] font-semibold text-white"
+            <div className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-[12px] bg-ink px-3 py-2 text-[12px] font-semibold text-white"
               style={{ left: `${((hover + 0.5) / data.length) * 100}%` }}>
               {data[hover][labelKey]} · {format(data[hover][valueKey])}
               {data[hover].bookings != null && <span className="text-white/60"> · {data[hover].bookings} bookings</span>}
@@ -284,16 +316,16 @@ export const Sparkline = ({ values, width = 62, height = 20 }) => {
 export const RankedBars = ({ rows, valueKey = 'views', labelKey = 'label', format = (v) => v.toLocaleString('en-IN'), secondary }) => {
   const max = Math.max(...rows.map((r) => r[valueKey]), 1);
   return (
-    <ul className="flex flex-col gap-1.5">
+    <ul className="flex flex-col gap-3">
       {rows.map((r) => (
         <li key={r[labelKey]}>
           <div className="mb-1 flex items-baseline justify-between gap-2">
-            <span className="truncate text-[11.5px] font-semibold text-ink/80">{r[labelKey]}</span>
-            <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">
-              {format(r[valueKey])}{secondary && <span className="ml-1.5 font-medium text-ink/45">{secondary(r)}</span>}
+            <span className="truncate text-[14px] font-medium text-ink">{r[labelKey]}</span>
+            <span className="shrink-0 text-[13.5px] font-semibold tabular-nums text-ink">
+              {format(r[valueKey])}{secondary && <span className="ml-1.5 font-normal text-faint">{secondary(r)}</span>}
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
             <div className="h-full rounded-full bg-maroon" style={{ width: `${(r[valueKey] / max) * 100}%` }} />
           </div>
         </li>
@@ -394,7 +426,7 @@ export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', s
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
                 <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-ink/80">{s.row[labelKey]}</span>
                 <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">{(s.row[valueKey]).toLocaleString('en-IN')}</span>
-                <span className="w-9 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
+                <span className="w-9 shrink-0 text-right text-[11px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
               </button>
             </li>
           );
@@ -423,4 +455,43 @@ export const MeetIcon = ({ className }) => (
     <path fill="#00ac47" d="M82.6 8.68L69.5 19.44v34.4l13.16 10.8c1.97 1.54 4.85.135 4.85-2.37V11c0-2.535-2.945-3.925-4.91-2.32zM49.5 36v15.5h-29V72h43c3.315 0 6-2.685 6-6V53.84z" />
     <path fill="#ffba00" d="M63.5 0h-43v20.5h29V36l20-16.56V6c0-3.315-2.685-6-6-6z" />
   </svg>
+);
+
+/* ── InsightBand — the one focal surface per page (Kept). ─────────────────
+ * Maroon-700 band with the loop pattern, ONE ee thread and at most one mascot.
+ * States the page's single most important finding as a sentence built from real
+ * figures, with at most two actions. Once per page, at the top. Mascot by domain:
+ * purple = Intelligence/Pro, orange = Money/KYC, blue = Bookings/Today,
+ * green = Grow/first steps. Decorative art is aria-hidden. */
+const MASCOT = {
+  purple: '/about/mascot-purple.png', orange: '/about/mascot-orange.png',
+  blue: '/about/mascot-blue.png', green: '/about/mascot-green.png',
+};
+export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, compact = false, className = '' }) => (
+  <section className={cn('relative isolate flex flex-col justify-center overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
+    <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-50"
+      style={{ backgroundImage: 'url(/brand/ds/03-patterns/mt-pattern-loop-on-maroon.svg)', backgroundSize: '180px' }} />
+    {/* The ee thread runs from the bottom-middle of the card to its top-right corner,
+        both ends running off the edges, with the ee at the midpoint and the mascot on
+        the ee (founder call, 2026-11-25). The span is a size container so the angle and
+        length follow the card at any size; 32px of overshoot hides the rounded caps. */}
+    <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 [--m:96px] sm:[--m:128px]" style={{ containerType: 'size' }}>
+      <img src="/brand/ds/02-ee/mt-ee-thread-pink.svg" alt=""
+        className="absolute left-1/2 top-full max-w-none opacity-90"
+        style={{ width: 'calc(hypot(50cqw, 100cqh) + 32px)', transformOrigin: '0 50%', transform: 'translateY(-50%) rotate(atan2(-100cqh, 50cqw)) translateX(-16px)' }} />
+      {mascot && MASCOT[mascot] && (
+        <img src={MASCOT[mascot]} alt="" className="absolute w-[var(--m)]"
+          style={{ left: 'calc(75cqw - var(--m) / 2)', top: 'calc(50cqh - var(--m) / 2)' }} />
+      )}
+    </span>
+    <div className={cn('grid gap-5', aside && 'lg:grid-cols-[1.25fr_1fr] lg:items-center', mascot && (compact ? 'pr-[96px] sm:pr-[150px]' : 'pr-[96px] sm:pr-[190px]'))}>
+      <div className="min-w-0">
+        {eyebrow && <p className="mb-0 text-[12px] font-semibold uppercase tracking-[0.08em] text-pink">{eyebrow}</p>}
+        <h2 className="mb-0 mt-2 max-w-[22ch] font-display text-[24px] font-extrabold leading-[1.08] tracking-[-0.03em] text-white sm:text-[32px]">{title}</h2>
+        {sub && <p className="mt-2.5 max-w-[48ch] text-[14px] text-white/80 sm:text-[15px]">{sub}</p>}
+        {actions && <div className={cn('flex flex-wrap gap-2.5', compact ? 'mt-4' : 'mt-5')}>{actions}</div>}
+      </div>
+      {aside && <div className="min-w-0">{aside}</div>}
+    </div>
+  </section>
 );

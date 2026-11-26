@@ -30,7 +30,7 @@ describe('KycNudgeStrip', () => {
     api.getMyKyc.mockResolvedValueOnce({ data: { status: 'none', pending_earnings: 2500, payouts_ready: false } });
     api.getMyServices.mockResolvedValueOnce({ data: [] });
     render1();
-    expect(await screen.findByText(/₹2,500 waiting — finish KYC to withdraw/i)).toBeInTheDocument();
+    expect(await screen.findByText(/₹2,500 is waiting for you/i)).toBeInTheDocument();
   });
 
   it('stays silent on a fetch error', async () => {

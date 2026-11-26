@@ -47,17 +47,17 @@ export default function InvoicesV2() {
   );
 
   if (error) {
-    return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your invoices." onRetry={load} /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your invoices." onRetry={load} /></div>;
   }
   if (invoices === null) {
-    return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-48 rounded-xl" /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-48 rounded-xl" /></div>;
   }
 
   const plan = invoices.filter((i) => i.source_type === 'subscription');
   const booking = invoices.filter((i) => i.source_type !== 'subscription');
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
       {invoices.length === 0 ? (
         <Panel>

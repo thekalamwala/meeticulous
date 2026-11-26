@@ -21,10 +21,21 @@ set -e
 ROOT=$(git rev-parse --show-toplevel)
 cd "$ROOT"
 
-# What is this push adding vs the branch it tracks? Fall back to origin/main, then
-# to HEAD~1, so a detached or first push still diffs something sane.
-BASE=$(git merge-base HEAD '@{upstream}' 2>/dev/null) \
-  || BASE=$(git merge-base HEAD origin/main 2>/dev/null) \
+# What is this push adding? Diff against the NEAREST base: the tracked branch, any
+# release train, or main, whichever leaves the fewest commits between it and HEAD.
+# A first push has no upstream, and a worktree cut from origin/main tracks main;
+# diffing those against main counted every commit already on the open release train
+# as "changed" and ran the whole client suite (~2.4h on a loaded box, 2026-11-26),
+# even though the PR (based on release/*) only adds a handful of files.
+# Fall back to HEAD~1, then the empty tree, so a detached push still diffs something sane.
+BASE=
+BEST=
+for REF in '@{upstream}' $(git for-each-ref --format='%(refname)' refs/remotes/origin/release/ refs/remotes/origin/main); do
+  MB=$(git merge-base HEAD "$REF" 2>/dev/null) || continue
+  N=$(git rev-list --count "$MB..HEAD")
+  if [ -z "$BEST" ] || [ "$N" -lt "$BEST" ]; then BASE=$MB; BEST=$N; fi
+done
+[ -n "$BASE" ] \
   || BASE=$(git rev-parse HEAD~1 2>/dev/null) \
   || BASE=$(git hash-object -t tree /dev/null)
 

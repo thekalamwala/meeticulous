@@ -13,15 +13,17 @@ const VARIANTS = {
 };
 
 const SIZES = {
-  sm: 'h-8 px-3 text-xs gap-1.5',
-  md: 'h-10 px-4 text-sm gap-2',
-  lg: 'h-11 px-5 text-sm gap-2',
+  // Kept: rounded rectangles, not pills — hover fills and focus rings sit cleanly
+  // on a 10-12px corner (founder call, 2026-11-25).
+  sm: 'h-8 px-3 text-xs gap-1.5 rounded-[10px]',
+  md: 'h-10 px-4 text-sm gap-2 rounded-[12px]',
+  lg: 'h-11 px-5 text-sm gap-2 rounded-[12px]',
   icon: 'h-10 w-10 p-0',
 };
 
 export function buttonClasses({ variant = 'primary', size = 'md', full = false, className = '' } = {}) {
   return cn(
-    'inline-flex items-center justify-center rounded-full font-semibold whitespace-nowrap transition select-none',
+    'inline-flex items-center justify-center font-semibold whitespace-nowrap transition select-none',
     'active:translate-y-px',
     'focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose focus-visible:ring-offset-2',
     'disabled:opacity-50 disabled:pointer-events-none',

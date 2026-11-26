@@ -88,7 +88,7 @@ export default function UsernameField({ user, onChanged, variant = "default" }) 
             title={verified ? "Change your handle" : undefined}
             className="group inline-flex items-center gap-1 text-left disabled:cursor-default">
             <span className="truncate text-neutral-500">{current || "your-handle"}</span>
-            {verified && <Pencil className="h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100" strokeWidth={2.25} />}
+            {verified && <Pencil className="h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100 [@media(hover:none)]:opacity-100" strokeWidth={2.25} />}
           </button>
         )}
 
