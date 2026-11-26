@@ -27,32 +27,31 @@ function Guard({ children }) {
   return children;
 }
 
+// Kept stepper: numbered 12px-radius chips on one white strip, the step name under
+// each (visible on a phone too — it's the only place the host sees where they are).
 function Stepper() {
   const { pathname } = useLocation();
   const cur = pathname.split('/').pop();
   const curIdx = ORDER.indexOf(cur);
   return (
-    <ol className="mb-6 flex items-center justify-center gap-2 sm:gap-3">
+    <ol aria-label="Steps" className="mb-5 grid grid-cols-4 gap-1 rounded-[20px] bg-white p-3 sm:mb-6">
       {STEPS.map((s, i) => {
         const state = i < curIdx ? 'done' : i === curIdx ? 'active' : 'todo';
         return (
-          <li key={s.path} className="flex items-center gap-2 sm:gap-3">
-            <div className="flex flex-col items-center">
-              <span
-                className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
-                  state === 'done' && 'bg-primary text-white',
-                  state === 'active' && 'bg-primary/10 text-primary ring-2 ring-primary',
-                  state === 'todo' && 'bg-gray-100 text-gray-400'
-                )}
-              >
-                {state === 'done' ? <Check className="h-4 w-4" /> : i + 1}
-              </span>
-              <span className={cn('mt-1 hidden text-xs sm:block', state === 'active' ? 'text-primary' : 'text-gray-400')}>
-                {s.label}
-              </span>
-            </div>
-            {i < STEPS.length - 1 && <span className={cn('h-px w-4 sm:w-8', i < curIdx ? 'bg-primary' : 'bg-gray-200')} />}
+          <li key={s.path} aria-current={state === 'active' ? 'step' : undefined} className="flex flex-col items-center gap-1.5">
+            <span
+              className={cn(
+                'grid h-9 w-9 place-items-center rounded-[12px] text-[14px] font-semibold transition-colors duration-200',
+                state === 'done' && 'bg-maroon text-white',
+                state === 'active' && 'bg-blush text-maroon ring-2 ring-inset ring-maroon',
+                state === 'todo' && 'bg-cream text-faint'
+              )}
+            >
+              {state === 'done' ? <Check className="h-4 w-4" strokeWidth={2.6} /> : i + 1}
+            </span>
+            <span className={cn('text-[12px] sm:text-[13px]', state === 'active' ? 'font-semibold text-maroon' : 'text-muted')}>
+              {s.label}
+            </span>
           </li>
         );
       })}
@@ -67,10 +66,10 @@ function Stepper() {
 // Continue and <Guard> bounced the host back to step one.
 export default function KycFlow() {
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-5rem)] max-w-2xl flex-col py-4">
-      <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-gray-900">Identity Verification</h1>
-        <Link to="/dashboard/kyc" className="text-sm text-gray-400 hover:text-gray-600">Cancel</Link>
+    <div className="mx-auto flex min-h-[calc(100dvh-5rem)] max-w-2xl flex-col py-2 sm:py-4">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h1 className="mb-0 font-display text-[24px] font-extrabold leading-[1.1] tracking-[-0.035em] text-maroon sm:text-[30px]">Verification</h1>
+        <Link to="/dashboard/kyc" className="inline-flex h-11 items-center rounded-[12px] px-3 text-[14px] font-semibold text-muted transition-colors hover:bg-blush hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">Cancel</Link>
       </div>
       <Stepper />
       <Guard>

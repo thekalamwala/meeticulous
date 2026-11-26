@@ -2,6 +2,7 @@
 // Shapes mirror the real API responses (captured 2026-11-25); every person and
 // figure here is made up. No real guest data belongs in this file.
 import { buildCrmFixtures } from './dashPreviewCrm';
+import { buildMoneyFixtures } from './dashPreviewMoney';
 
 const day = 86_400_000;
 const at = (days, h = 10, m = 30) => {
@@ -232,4 +233,5 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/vendor/intelligence/demand': DEMAND(pro),
   ...buildCrmFixtures(),
   ...GROW(growCase()),
+  ...buildMoneyFixtures(),
 });

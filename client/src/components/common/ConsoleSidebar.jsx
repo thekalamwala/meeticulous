@@ -193,12 +193,12 @@ export const NAV_V2 = [
     visible: (c) => !!c.flags?.dashboard_sections_v2,
   },
   {
+    // Kept (founder-approved 2026-11-25): Payouts, Transactions and Invoices are ONE
+    // Money page with tabs, so the section is a single item that opens on Payouts and
+    // stays lit on every tab's URL. Earnings moved to Intelligence › Revenue.
     id: 'money', label: 'Money', icon: 'rail-earnings',
     items: [
-      { to: '/dashboard/earnings', label: 'Earnings', icon: 'nav-earnings' },
-      { to: '/dashboard/payments/payouts', label: 'Payouts', icon: 'nav-payouts', matchPrefix: '/dashboard/payments/payouts', badgeKey: 'verification', badgeNoun: 'verify to get paid' },
-      { to: '/dashboard/payments/transactions', label: 'Transactions', icon: 'nav-transactions', matchPrefix: '/dashboard/payments/transactions' },
-      { to: '/dashboard/invoices', label: 'Invoices', icon: 'nav-invoices', matchPrefix: '/dashboard/invoices' },
+      { to: '/dashboard/payments/payouts', label: 'Money', icon: 'nav-payouts', matchPrefix: ['/dashboard/payments', '/dashboard/invoices', '/dashboard/kyc'], badgeKey: 'verification', badgeNoun: 'verify to get paid' },
     ],
   },
   {
