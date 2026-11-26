@@ -23,7 +23,7 @@ describe('activeGrowTab', () => {
     expect(activeGrowTab('/dashboard/grow/', tabs)).toBe('overview');
     expect(activeGrowTab('/dashboard/grow/page', tabs)).toBe('page');
   });
-  it('lights each of Community's four tabs on its own route', () => {
+  it('lights each of the four Community tabs on its own route', () => {
     for (const k of ['activity', 'mentions', 'answer', 'spaces']) {
       expect(activeGrowTab(`/dashboard/community/${k}`, COMMUNITY_TABS)).toBe(k);
     }

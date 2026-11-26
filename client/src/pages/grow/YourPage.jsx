@@ -459,7 +459,7 @@ export default function YourPage() {
           <Link to="/dashboard/profile" className={cn(card, rowBase, 'rounded-[24px]')}>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[14.5px] font-semibold text-ink">Account details</span>
-              <span className="block truncate text-[12.5px] text-muted">Birthday, search keywords, booking rules, integrations</span>
+              <span className="block truncate text-[12.5px] text-muted">Birthday, search keywords, booking rules</span>
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={2} />
           </Link>
