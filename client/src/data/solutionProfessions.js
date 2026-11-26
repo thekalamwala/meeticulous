@@ -76,7 +76,7 @@ export const CATEGORIES = [
     "label": "Business Consultants",
     "sub": "Advisors & Growth Experts",
     "to": "/for/business-consultant",
-    "group": "design",
+    "group": "finance",
     "tags": [
       "Strategy",
       "Growth",
