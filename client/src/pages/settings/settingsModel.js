@@ -4,7 +4,7 @@
 // Each group is a REAL route. Account / Plan / Verification keep the URLs they
 // always had (/dashboard/profile, /dashboard/upgrade, /dashboard/kyc);
 // Notifications and Integrations are new, additive routes under /dashboard/settings.
-import { Bell, CreditCard, Plug, ShieldCheck, UserRound } from 'lucide-react';
+import { Bell, CreditCard, Globe, Plug, ShieldCheck, UserRound } from 'lucide-react';
 import { normalizePlan, planLabel } from '../../utils/themeUtils';
 
 export const SETTINGS_ROOT = '/dashboard/profile';
@@ -38,6 +38,15 @@ export const SETTINGS_GROUPS = [
         value: (u) => planLabel(normalizePlan(u?.plan), 'Starter') },
       { id: 'verification', to: '/dashboard/kyc', label: 'Verification', icon: ShieldCheck,
         value: (u) => kycWord(u).word, tone: (u) => kycWord(u).tone },
+    ],
+  },
+  {
+    // Not a setting: how the page LOOKS moved to Grow (founder call, 2026-11-26).
+    // Listed here so a host who looks for "change my photo" in Settings finds it.
+    id: 'elsewhere',
+    rows: [
+      { id: 'page', to: '/dashboard/grow/page', label: 'Your page', icon: Globe, external: true,
+        value: () => 'Photo, bio, colours. Now in Grow' },
     ],
   },
 ];

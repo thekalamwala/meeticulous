@@ -8,7 +8,8 @@
 //    (?view=chat, so Back closes it); feedback and articles open as sheets.
 //
 // Tithi is the support lead and is never described as an AI or a bot here.
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { BookOpen, ChevronLeft, ChevronRight, ExternalLink, MessageSquarePlus, Search } from 'lucide-react';
@@ -122,6 +123,14 @@ export default function HelpHub() {
   const docSlug = params.get('doc');
   const doc = docSlug ? getHelpDoc(docSlug) : null;
 
+  // The pushed chat covers the page: keep the page behind it from scrolling.
+  useEffect(() => {
+    if (desktop || view !== 'chat') return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [desktop, view]);
+
   // URL state, so the phone's Back button closes what it opened.
   const set = (key, value) => setParams((p) => { const n = new URLSearchParams(p); if (value) n.set(key, value); else n.delete(key); return n; }, { replace: !value });
 
@@ -160,17 +169,20 @@ export default function HelpHub() {
   }
 
   if (view === 'chat') {
-    // Pushed full-screen conversation: back chevron to Help, chat fills the space
-    // between the top bar and the tab bar (56 + 77 + safe areas + this header).
-    return (
+    // Pushed full-screen conversation, pinned between the top bar and the tab bar
+    // so the composer is always above the tab bar, whatever sits above the page.
+    // The bottom padding clears KeptTabBar's raised Grow button (28px above the bar).
+    // Portaled: PullToRefresh's transform would otherwise trap position:fixed.
+    return createPortal(
       <motion.div initial={reduce ? false : { x: 28, opacity: 0.6 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.22, ease: EASE }}
-        className="-mb-24 flex flex-col gap-2">
+        className="dash fixed inset-x-0 bottom-[calc(77px+env(safe-area-inset-bottom,0px))] top-[calc(56px+env(safe-area-inset-top,0px))] z-30 flex flex-col gap-1 bg-cream px-4 pb-8">
         <button type="button" onClick={() => set('view')}
-          className={cn('-ml-2 inline-flex min-h-[44px] w-fit items-center gap-0.5 rounded-[12px] pl-1 pr-3 text-[15px] font-semibold text-maroon active:bg-blush', focus)}>
+          className={cn('-ml-2 inline-flex min-h-[44px] w-fit shrink-0 items-center gap-0.5 rounded-[12px] pl-1 pr-3 text-[15px] font-semibold text-maroon active:bg-blush', focus)}>
           <ChevronLeft className="h-5 w-5" strokeWidth={2.2} aria-hidden="true" /> Help
         </button>
-        <SupportChat frame="flex h-[calc(100dvh-56px-77px-60px-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] min-h-[360px] flex-col overflow-hidden rounded-[24px] bg-white" />
-      </motion.div>
+        <SupportChat frame="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] bg-white" />
+      </motion.div>,
+      document.body,
     );
   }
 
