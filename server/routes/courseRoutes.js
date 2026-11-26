@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   createCourse, getMyCourses, updateCourse, deleteCourse,
-  getCoursePublic, getCourseContent, getPurchasedCourses,
+  getCoursePublic, getHostCoursesPublic, getCourseContent, getPurchasedCourses,
   createCourseOrder, verifyCoursePayment,
 } = require('../controllers/courseController');
 const { protect, requireHost } = require('../middleware/authMiddleware');
@@ -11,6 +11,8 @@ const { makeReorderHandler } = require('../services/catalogOrder');
 
 // Public course page (lesson titles only — no video_url).
 router.get('/p/:username/:slug', getCoursePublic);
+// Public list for the profile's Courses tab (lesson count only).
+router.get('/host/:username', getHostCoursesPublic);
 
 // Buyer (logged in): purchase + watch.
 router.get('/purchased', protect, getPurchasedCourses);

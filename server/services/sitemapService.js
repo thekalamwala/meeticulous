@@ -246,7 +246,7 @@ const schemaMissing = (err) => err && /Could not find the|column.*does not exist
 const fetchHosts = async () => {
   let r = await supabaseAdmin
     .from('profiles')
-    .select('username, updated_at')
+    .select('id, username, updated_at')
     .eq('role', 'host')
     .eq('is_verified', true)
     .eq('is_banned', false)
@@ -258,7 +258,7 @@ const fetchHosts = async () => {
     // Pre-migration: no is_indexable column — every verified host is indexable.
     r = await supabaseAdmin
       .from('profiles')
-      .select('username, updated_at')
+      .select('id, username, updated_at')
       .eq('role', 'host')
       .eq('is_verified', true)
       .eq('is_banned', false)
@@ -267,6 +267,49 @@ const fetchHosts = async () => {
   }
   if (r.error) throw r.error;
   return r.data || [];
+};
+
+// Profile tab pages (/:username/products|courses|membership) — one row per host
+// per tab that has >=1 published item, mirroring when the tab shows on the page.
+// Membership only while `community_memberships` is on (the space 404s otherwise).
+// Never throws: a tab read failure must not 500 the host/service sitemaps.
+const PROFILE_TABS = ['products', 'courses', 'membership'];
+const fetchHostTabs = async () => {
+  const ids = async (q) => {
+    const { data, error } = await q;
+    return error ? [] : [...new Set((data || []).map((r) => r.host_id))];
+  };
+  try {
+    const membershipOn = await isFeatureEnabled('community_memberships').catch(() => false);
+    const [products, courses, membership] = await Promise.all([
+      ids(supabaseAdmin.from('products').select('host_id').eq('is_active', true)),
+      ids(supabaseAdmin.from('courses').select('host_id').eq('is_active', true)),
+      membershipOn
+        ? ids(supabaseAdmin.from('community_membership_programs')
+          .select('host_id, tiers:community_membership_tiers!inner(id)')
+          .eq('status', 'live').eq('tiers.status', 'live'))
+        : [],
+    ]);
+    return [
+      ...products.map((host_id) => ({ host_id, tab: 'products' })),
+      ...courses.map((host_id) => ({ host_id, tab: 'courses' })),
+      ...membership.map((host_id) => ({ host_id, tab: 'membership' })),
+    ];
+  } catch (e) {
+    logger.error({ event: 'sitemap.host_tabs_error', message: e.message });
+    return [];
+  }
+};
+
+// Tab rows -> entries under each LISTED host (rows: hosts already filtered).
+const hostTabEntries = (hosts, tabs, siteUrl) => {
+  const byId = new Map((hosts || []).map((h) => [h.id, h]));
+  return (tabs || [])
+    .filter((t) => byId.has(t.host_id) && PROFILE_TABS.includes(t.tab))
+    .map((t) => {
+      const h = byId.get(t.host_id);
+      return { loc: `${hostUrl(siteUrl, h.username)}/${t.tab}`, lastmod: toLastmod(h.updated_at), changefreq: 'weekly', priority: '0.6' };
+    });
 };
 
 // All listable service rows joined to their host (for the username path segment),
@@ -364,7 +407,7 @@ const fetchCommunity = async () => {
 
 module.exports = {
   // pure
-  trimSlash, hostUrl, serviceUrl, toLastmod, STATIC_ROUTES, staticEntries, hostEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
+  trimSlash, hostUrl, serviceUrl, toLastmod, STATIC_ROUTES, staticEntries, hostEntries, hostTabEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
   // db
-  fetchHosts, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
+  fetchHosts, fetchHostTabs, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
 };

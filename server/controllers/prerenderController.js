@@ -451,6 +451,70 @@ const renderProfileMeta = async (req, res) => {
   }
 };
 
+// ── Profile tabs (/:username/products|courses|membership) ───────────────────
+// Title/description per tab. MIRRORS client profileTabSeo (utils/seo.js).
+const PROFILE_TAB_COPY = {
+  products:   { label: 'Digital products', desc: (n) => `Browse digital products by ${n} on Meeticulous.` },
+  courses:    { label: 'Courses',          desc: (n) => `Browse video courses by ${n} on Meeticulous.` },
+  membership: { label: 'Membership',       desc: (n) => `Join ${n}'s membership on Meeticulous.` },
+};
+const profileTabTitle = (tab, name) => {
+  const full = `${PROFILE_TAB_COPY[tab].label} by ${name} | Meeticulous`;
+  return full.length <= 60 ? full : `${PROFILE_TAB_COPY[tab].label} by ${name}`;
+};
+
+// Does the host have >=1 published item for this tab? (Same rule that shows the tab.)
+async function hostHasTab(hostId, tab) {
+  const { supabaseAdmin } = require('../config/supabase');
+  if (tab === 'membership') {
+    const { isFeatureEnabled } = require('../services/featureFlags');
+    if (!(await isFeatureEnabled('community_memberships').catch(() => false))) return false;
+    const { data } = await supabaseAdmin.from('community_membership_programs')
+      .select('id, tiers:community_membership_tiers!inner(id)')
+      .eq('host_id', hostId).eq('status', 'live').eq('tiers.status', 'live').limit(1);
+    return !!(data && data.length);
+  }
+  const { count } = await supabaseAdmin.from(tab).select('id', { count: 'exact', head: true })
+    .eq('host_id', hostId).eq('is_active', true);
+  return (count || 0) > 0;
+}
+
+// The profile shell with the tab's own title/description/canonical. A tab the host
+// does not have answers a 301 to the profile (the SPA redirects there too).
+async function resolveProfileTabMeta(username, tab) {
+  const m = await resolveProfileMeta(username);
+  if (m.status !== 200) return m;
+  const { host } = m.payload;
+  const site = trimSlash(SITE_URL);
+  if (!(await hostHasTab(host.id, tab))) return { status: 301, redirectTo: `${site}/${host.username}` };
+  const name = host.name || 'Host';
+  const title = profileTabTitle(tab, name);
+  const description = PROFILE_TAB_COPY[tab].desc(name);
+  return {
+    ...m,
+    buildHtmlArgs: {
+      ...m.buildHtmlArgs,
+      title, description, ogTitle: title, ogDescription: description,
+      canonical: `${site}/${host.username}/${tab}`,
+    },
+  };
+}
+
+const renderProfileTabMeta = async (req, res) => {
+  try {
+    const m = await resolveProfileTabMeta(req.params.username, req.params.tab);
+    if (m.status === 404) return res.status(404).send('Not found');
+    if (m.status === 301) return res.redirect(301, m.redirectTo);
+    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload) });
+    res.set('Content-Type', 'text/html');
+    res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
+    res.send(html);
+  } catch (err) {
+    console.error('[prerender] profile tab error:', err.message);
+    res.status(500).send('Error');
+  }
+};
+
 // ── Service ─────────────────────────────────────────────────────────────────
 
 // Pure resolver mirroring resolveProfileMeta, for the service page. Returns
@@ -561,6 +625,7 @@ const renderServiceMeta = async (req, res) => {
 
 module.exports = {
   renderProfileMeta, renderServiceMeta, resolveProfileMeta, resolveServiceMeta,
+  renderProfileTabMeta, resolveProfileTabMeta, profileTabTitle,
   // shared with prerenderCommunity.js
   buildHtml, esc, SITE_URL,
   // pure graph builders — mirror client seo.js; exercised by the parity test

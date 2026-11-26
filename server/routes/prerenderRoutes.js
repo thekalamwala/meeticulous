@@ -11,7 +11,7 @@
  */
 const express = require('express');
 const router = express.Router();
-const { renderProfileMeta, renderServiceMeta } = require('../controllers/prerenderController');
+const { renderProfileMeta, renderServiceMeta, renderProfileTabMeta } = require('../controllers/prerenderController');
 
 // /prerender/community/... — MUST stay above /:username, or /community would resolve as a
 // host profile. Anything else under /community (search, saved, unknown) is a bot 404.
@@ -25,6 +25,10 @@ router.use('/community', community.renderNotFound);
 
 // GET /prerender/:username — host profile meta shell
 router.get('/:username', renderProfileMeta);
+
+// GET /prerender/:username/products|courses|membership — profile tab meta shell.
+// MUST stay above /:username/:serviceSlug (those words are reserved service slugs).
+router.get('/:username/:tab(products|courses|membership)', renderProfileTabMeta);
 
 // GET /prerender/:username/:serviceSlug — service page meta shell
 router.get('/:username/:serviceSlug', renderServiceMeta);

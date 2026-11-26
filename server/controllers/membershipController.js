@@ -18,6 +18,9 @@ const MAX_TIERS = 3;
 const publicTier = (t) => ({
   id: t.id, name: t.name, type: t.type, price_inr: t.price_inr,
   billing_period: t.billing_period, perks: Array.isArray(t.perks) ? t.perks : [],
+  // Tier cover image — read when the column exists (dashboard tier editor), else null.
+  cover_url: t.cover_url || null,
+  description: t.description || null,
 });
 
 // ponytail: schema-fallback — if v3.218 isn't applied yet, Supabase returns a
@@ -213,8 +216,16 @@ const getPublicSpace = async (req, res) => {
       viewerMembership = sub || null;
     }
 
+    // Actual member count for the profile card (active + past_due = still a member,
+    // the same statuses as viewerMembership). Best-effort: a count error shows 0.
+    const { count: memberCount } = await supabaseAdmin
+      .from('community_membership_subscriptions')
+      .select('id', { count: 'exact', head: true })
+      .eq('host_id', host.id).in('status', ['active', 'past_due']);
+
     res.json({
       host: { username: host.username, name: host.name, avatar_url: host.profile_image || null },
+      member_count: memberCount || 0,
       program: { name: program.name, blurb: program.blurb, cover_url: program.cover_url },
       tiers, posts, viewer_membership: viewerMembership,
     });
