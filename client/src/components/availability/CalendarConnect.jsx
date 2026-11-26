@@ -13,7 +13,7 @@ import { getGoogleAuthUrl } from '../../services/api';
 import { cn } from '../dashboard/ui';
 
 /* ── Provider marks (third-party integration logos) ───────────────────────── */
-const GoogleMark = ({ className }) => (
+export const GoogleMark = ({ className }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
     <path fill="#4285F4" d="M23.52 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.54 5.54 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.87z" />
     <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.76-2.11-6.7-4.94H1.3v3.1A11.99 11.99 0 0 0 12 24z" />
@@ -118,17 +118,18 @@ const BLURB = {
   outlook: 'Microsoft Outlook sync is on the way — connect your work calendar here soon.',
 };
 
+// Starts the Google OAuth redirect; returns to the Schedule page after consent.
+export const connectGoogleCalendar = () => getGoogleAuthUrl('/dashboard/availability')
+  .then(({ data }) => { window.location.href = data.url; })
+  .catch(() => toast.error('Could not start Google sign-in. Please try again.'));
+// No disconnect endpoint yet — point the host at Google/support (same as ProfileSetup).
+export const googleDisconnectHint = () => toast('To disconnect, revoke access in your Google account settings or contact support.', { icon: 'ℹ️' });
+
 export default function CalendarConnect() {
   const { user } = useAuth() || {};
   const googleConnected = !!user?.google_calendar_connected;
 
-  const connectGoogle = () => {
-    getGoogleAuthUrl('/dashboard/availability')
-      .then(({ data }) => { window.location.href = data.url; })
-      .catch(() => toast.error('Could not start Google sign-in. Please try again.'));
-  };
-  // No disconnect endpoint yet — point the host at Google/support (same as ProfileSetup).
-  const googleDisconnectHint = () => toast('To disconnect, revoke access in your Google account settings or contact support.', { icon: 'ℹ️' });
+  const connectGoogle = connectGoogleCalendar;
 
   const providers = [
     { key: 'google', name: 'Google Calendar', real: true, connected: googleConnected, status: googleConnected ? (user?.email || 'Connected') : 'Not connected' },

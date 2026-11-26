@@ -21,6 +21,7 @@ const PAGES = [
   'pages/Bookings.jsx',
   'pages/ClientsList.jsx',
   'pages/ClientDetail.jsx',
+  'pages/ClientsV2.jsx',
   'pages/Earnings.jsx',
   'pages/Availability.jsx',
   'pages/Products.jsx',

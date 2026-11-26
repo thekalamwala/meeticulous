@@ -460,6 +460,12 @@ select:focus {
   box-shadow: none;
 }
 
+/* MeetDropdown's search box is a bare line inside the open list: the row's one
+   underline is its frame, so focus turns that line brand-coloured instead of
+   drawing a ring box around the input (founder, 2026-11-25). */
+.mt-dd__search input:focus { box-shadow: none; }
+.mt-dd__search:focus-within { border-bottom-color: var(--border-brand); }
+
 /* .fb-input is the shared user-facing input class, but it lives in @layer legacy
    which loses to the unlayered base `input` rule above. Pin the minimalist look
    here — unlayered + higher specificity — so every .fb-input form (login, reviews,

@@ -198,6 +198,10 @@ const CommunitySpaces   = lazy(() => import('./pages/community/CommunitySpaces')
 const TestimonialsV2 = lazy(() => import('./pages/TestimonialsV2'));
 const ReferEarnV2    = lazy(() => import('./pages/ReferEarnV2'));
 const ProfileSetupV2 = lazy(() => import('./pages/ProfileSetupV2'));
+// Grow (Kept): one section with tabs — Overview · Your page · Reviews · Refer & earn · Community.
+const GrowOverview = lazy(() => import('./pages/grow/GrowOverview'));
+const GrowYourPage = lazy(() => import('./pages/grow/YourPage'));
+const GrowCommunity = lazy(() => import('./pages/grow/GrowCommunity'));
 const UpgradePlanV2  = lazy(() => import('./pages/UpgradePlanV2'));
 const KycHomeV2      = lazy(() => import('./pages/kyc/KycHomeV2'));
 const ChatPageV2     = lazy(() => import('./pages/ChatPageV2'));
@@ -470,6 +474,22 @@ function SectionsRoute({ children }) {
 function TestimonialsRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <TestimonialsV2 /> : <Testimonials />;
+}
+// Grow's own two pages exist only on the dashboard_v2 path; off-flag they fall back
+// to the pages Grow had before (Social proof, Account), so no link leads nowhere.
+function GrowHomeRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <GrowOverview /> : <Navigate to="/dashboard/testimonials" replace />;
+}
+function GrowPageRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <GrowYourPage /> : <Navigate to="/dashboard/profile" replace />;
+}
+// Community's four routes: a Grow tab on the dashboard_v2 path (Mentions opens
+// Activity on its Mentions filter), the four old pages otherwise.
+function CommunityRoute({ view, Old }) {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <GrowCommunity view={view} /> : <Old />;
 }
 function ReferralsRoute() {
   const { flags } = useFeatureFlags();
@@ -772,10 +792,10 @@ function App() {
           <Route path="/dashboard/intelligence/revenue" element={<DashboardWrapper><SectionsRoute><IntelRevenue /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/intelligence/audience" element={<DashboardWrapper><SectionsRoute><IntelAudience /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/intelligence/demand" element={<DashboardWrapper><SectionsRoute><IntelDemand /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityActivity /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityMentions /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityAnswer /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunitySpaces /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="activity" Old={CommunityActivity} /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="mentions" Old={CommunityMentions} /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="answer" Old={CommunityAnswer} /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="spaces" Old={CommunitySpaces} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileRoute /></DashboardWrapper>} />
           <Route path="/dashboard/kyc" element={<DashboardWrapper><KycRoute /></DashboardWrapper>} />
           {/* KycProvider sits OUTSIDE DashboardWrapper on purpose: DashboardLayout
@@ -799,6 +819,8 @@ function App() {
           <Route path="/dashboard/coupon/add-new" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/grow" element={<DashboardWrapper><GrowHomeRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/grow/page" element={<DashboardWrapper><GrowPageRoute /></DashboardWrapper>} />
           <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradeRoute /></DashboardWrapper>} />
           <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><PayoutsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferralsRoute /></DashboardWrapper>} />
