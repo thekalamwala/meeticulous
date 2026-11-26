@@ -19,7 +19,7 @@ import { getPricingRegion } from "../../lib/pricingRegion";
    components/pricing/PricingCards and the old NotebookPricing it replaced:
    - Starter hides in interim fee-only mode (useFeeOnly; free signup still works)
    - outside India → USD list price + "Get early access" (no USD checkout yet)
-   - yearly leads with the monthly-equivalent; the real yearly charge sits in the note */
+   - Pro shows the charge for the selected billing period */
 
 const ROUTE_START = "/become-a-host"; // must match Home.jsx
 
@@ -46,7 +46,7 @@ function BillToggle({ yearly, onChange }) {
           className={`absolute h-4 w-4 rounded-full bg-white shadow-sm ${yearly ? "right-1" : "left-1"}`}
         />
       </span>
-      Billed yearly
+      {yearly ? "Billed yearly" : "Billed monthly"}
     </button>
   );
 }
@@ -97,9 +97,9 @@ function PlanCard({
         {/* RIGHT — price + CTA */}
         <div className="flex flex-col justify-center border-t border-black/5 bg-cream p-7 text-center sm:p-10 lg:border-l lg:border-t-0">
           <div className="flex items-center justify-between gap-3">
-            <BillToggle yearly={yearly} onChange={onToggle} />
+            {onToggle && <BillToggle yearly={yearly} onChange={onToggle} />}
             {chip && (
-              <span className="rounded-full bg-maroon/10 px-2.5 py-1 text-xs font-bold text-maroon">
+              <span className="ml-auto rounded-full bg-maroon/10 px-2.5 py-1 text-xs font-bold text-maroon">
                 {chip}
               </span>
             )}
@@ -122,7 +122,7 @@ function PlanCard({
             </span>
             <span className="text-left text-sm font-semibold leading-tight text-neutral-400">{suffix}</span>
           </p>
-          <p className="mt-2 text-sm text-muted">{note}</p>
+          <p className="mt-2 text-sm text-muted" aria-live={onToggle ? "polite" : undefined}>{note}</p>
 
           <Link
             to={ctaTo}
@@ -142,16 +142,16 @@ export default function BlogSeoPricing({ startLabel = "Get Started - Free" }) {
   const feeOnly = useFeeOnly();
   const [intl] = useState(() => getPricingRegion() === "INTL");
 
-  const proPrice = intl
-    ? `$${yearly ? PREMIUM_USD_YEARLY_PER_MONTH.toFixed(2) : PREMIUM_PLAN_USD.monthly}`
-    : `₹${(yearly ? PREMIUM_YEARLY_PER_MONTH : PREMIUM_PLAN.monthly).toLocaleString("en-IN")}`;
-  const proNote = intl
-    ? yearly
-      ? `billed $${PREMIUM_PLAN_USD.yearly}/year · USD`
-      : `or $${PREMIUM_PLAN_USD.yearly}/year · USD`
-    : yearly
-      ? `billed ₹${PREMIUM_PLAN.yearly.toLocaleString("en-IN")}/year · incl. GST`
-      : `or ₹${PREMIUM_PLAN.yearly.toLocaleString("en-IN")}/year · incl. GST`;
+  const prices = intl ? PREMIUM_PLAN_USD : PREMIUM_PLAN;
+  const currency = intl ? "$" : "₹";
+  const period = yearly ? "year" : "month";
+  const amount = yearly ? prices.yearly : prices.monthly;
+  const proPrice = `${currency}${amount.toLocaleString(intl ? "en-US" : "en-IN")}`;
+  const monthlyEquivalent = intl ? PREMIUM_USD_YEARLY_PER_MONTH.toFixed(2) : PREMIUM_YEARLY_PER_MONTH;
+  const taxNote = intl ? "USD" : "incl. GST";
+  const proNote = yearly
+    ? `Equivalent to ${currency}${monthlyEquivalent}/month · ${taxNote}`
+    : `Billed monthly · ${taxNote}`;
   const proSave = intl
     ? `$${PREMIUM_PLAN_USD.monthly * 12 - PREMIUM_PLAN_USD.yearly} / year`
     : `₹${PREMIUM_ANNUAL_SAVING.toLocaleString("en-IN")} / year`;
@@ -167,8 +167,6 @@ export default function BlogSeoPricing({ startLabel = "Get Started - Free" }) {
           note="We take 5% only when you get paid. Nothing when you don't."
           cta={startLabel}
           ctaTo={ROUTE_START}
-          yearly={yearly}
-          onToggle={setYearly}
           chip="Always free"
         />
       )}
@@ -176,13 +174,13 @@ export default function BlogSeoPricing({ startLabel = "Get Started - Free" }) {
         plan={PREMIUM_PLAN}
         intro={{ lead: "Everything in Starter,", accent: "plus" }}
         price={proPrice}
-        suffix="/ month"
+        suffix={`/ ${period}`}
         note={proNote}
         cta={intl ? "Get early access" : "Go Pro — keep every rupee"}
         ctaTo={intl ? "/contact" : ROUTE_START}
         yearly={yearly}
         onToggle={setYearly}
-        chip={`Save ${proSave}`}
+        chip={yearly ? `Save ${proSave}` : undefined}
       />
     </div>
   );
