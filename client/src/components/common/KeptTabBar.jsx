@@ -150,7 +150,11 @@ const MoreSheet = ({ open, onClose, items, activeId, attention, onPick }) => {
                       </span>
                       <span className="min-w-0">
                         <span className="block truncate text-[14.5px] font-semibold text-ink">{it.label}</span>
-                        <span className="block truncate text-[12px] text-muted">{SUB[it.id]}</span>
+                        {/* isNew: the badge sits on the second line so a half-width tile keeps the whole name. */}
+                        <span className="flex min-w-0 items-center gap-1.5">
+                          {it.isNew && <span className="shrink-0 rounded-[8px] bg-maroon px-1.5 text-[12px] font-semibold leading-[18px] text-white">New</span>}
+                          <span className="truncate text-[12px] text-muted">{SUB[it.id]}</span>
+                        </span>
                       </span>
                     </button>
                   </li>

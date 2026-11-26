@@ -142,6 +142,8 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
         >
           <Icon id={section.id} className={cn('h-[18px] w-[18px] shrink-0', sectionActive ? 'text-maroon' : 'text-muted')} />
           <span className="flex-1 truncate">{section.label}</span>
+          {/* isNew: a section being promoted (Community, 2026-11-26). Kept badge: 8px, a word. */}
+          {section.isNew && <span className="shrink-0 rounded-[8px] bg-maroon px-1.5 py-px text-[12px] font-semibold leading-4 text-white">New</span>}
           {attention && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-rose" />}
         </NavLink>
         {multi && (

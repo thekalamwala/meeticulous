@@ -42,6 +42,8 @@ const V2_OWN_ROUTES = [
   '/dashboard/intelligence/audience', '/dashboard/intelligence/demand',
   '/dashboard/community/activity', '/dashboard/community/mentions',
   '/dashboard/community/answer', '/dashboard/community/spaces',
+  // Grow (Kept): its overview landing and the booking-page editor.
+  '/dashboard/grow', '/dashboard/grow/page',
 ];
 
 describe('nothing becomes unreachable under v2', () => {
@@ -122,6 +124,12 @@ describe('the regrouping itself', () => {
     expect(sectionOf('/dashboard/referrals')).toBe('grow');
   });
 
+  it('lands Grow on its overview, with Your page beside it', () => {
+    const grow = NAV_V2.find((s) => s.id === 'grow');
+    expect(firstItemTo(grow, 'starter')).toBe('/dashboard/grow');
+    expect(sectionOf('/dashboard/grow/page')).toBe('grow');
+  });
+
   it('makes Money one item whose tabs reach payouts, transactions and invoices', () => {
     const items = NAV_V2.find((s) => s.id === 'money').items;
     expect(items.map((i) => i.to)).toEqual(['/dashboard/payments/payouts']);
@@ -163,5 +171,12 @@ describe('the helpers still work against v2', () => {
     const on = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } }).map((s) => s.id);
     expect(on).toContain('intelligence');
     expect(on).toContain('community');
+  });
+
+  it('keeps Community its own section, marked new, with all four pages', () => {
+    const c = NAV_V2.find((s) => s.id === 'community');
+    expect(c.isNew).toBe(true);
+    expect(c.items.map((i) => i.to)).toEqual(['activity', 'mentions', 'answer', 'spaces'].map((k) => `/dashboard/community/${k}`));
+    expect(NAV_V2.find((s) => s.id === 'grow').items.some((i) => i.to.startsWith('/dashboard/community'))).toBe(false);
   });
 });
