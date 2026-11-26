@@ -490,39 +490,45 @@ scheduleCron(async () => {
 }, 24 * 60 * 60 * 1000);
 
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
+// Every CRM background job (these workers + the crm-* / cold-call jobs in
+// SCHEDULED_JOBS) is wrapped in crmOnly: it no-ops unless the `crm_automation` flag
+// is ON (ships OFF, fail-closed). Founder decision 2026-11-26: CRM automation stays
+// off until 2027-01-01 — turn it back on from Admin → Feature flags.
+const { isFeatureEnabled: crmFlagOn } = require('./services/featureFlags');
+const crmOnly = (fn) => async () => { if (await crmFlagOn('crm_automation')) return fn(); };
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
 const crmFollowUpService = require('./services/crm/followUpService');
 scheduleCron(async () => {
   try {
-    await runLocked('crm-send-worker', async () => {
+    await runLocked('crm-send-worker', crmOnly(async () => {
       const r = await crmMessageService.processQueue();
       if (r.sent || r.failed) console.log(`CRM send worker: ${r.sent} sent, ${r.failed} failed, ${r.skipped} skipped`);
-    }, { leaseMs: CRM_SEND_INTERVAL_SEC * 2 * 1000 });
+    }), { leaseMs: CRM_SEND_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('CRM send worker error:', err.message); }
 }, CRM_SEND_INTERVAL_SEC * 1000);
 scheduleCron(async () => {
   try {
-    await runLocked('crm-sequence-worker', async () => {
+    await runLocked('crm-sequence-worker', crmOnly(async () => {
       const r = await crmSequenceService.processDue();
       if (r.sent || r.stopped || r.completed) console.log(`CRM sequences: ${r.sent} stepped, ${r.stopped} stopped, ${r.completed} completed`);
-    }, { leaseMs: CRM_SEQUENCE_INTERVAL_SEC * 2 * 1000 });
+    }), { leaseMs: CRM_SEQUENCE_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('CRM sequence worker error:', err.message); }
 }, CRM_SEQUENCE_INTERVAL_SEC * 1000);
 const CRM_FOLLOWUP_INTERVAL_MIN = Number(process.env.CRM_FOLLOWUP_INTERVAL_MIN) || 5;
 scheduleCron(async () => {
   try {
-    await runLocked('crm-followup-reminder', async () => {
+    await runLocked('crm-followup-reminder', crmOnly(async () => {
       const r = await crmFollowUpService.processReminders();
       if (r.reminded) console.log(`CRM follow-up reminders: ${r.reminded} sent`);
-    }, { leaseMs: CRM_FOLLOWUP_INTERVAL_MIN * 2 * 60 * 1000 });
+    }), { leaseMs: CRM_FOLLOWUP_INTERVAL_MIN * 2 * 60 * 1000 });
   } catch (err) { console.error('CRM follow-up reminder error:', err.message); }
 }, CRM_FOLLOWUP_INTERVAL_MIN * 60 * 1000);
 
 // Cold calling: WhatsApp the lead ~15 min before a promised callback (no-op until
 // the AiSensy template is approved).
 scheduleCron(async () => {
-  try { await runLocked('cold-call-reminders', () => require('./services/crm/coldCallService').callbackReminders(), { leaseMs: 10 * 60 * 1000 }); }
+  try { await runLocked('cold-call-reminders', crmOnly(() => require('./services/crm/coldCallService').callbackReminders()), { leaseMs: 10 * 60 * 1000 }); }
   catch (err) { console.error('Cold-call reminder cron error:', err.message); }
 }, 5 * 60 * 1000);
 
@@ -620,17 +626,17 @@ const SCHEDULED_JOBS = [
   { name: 'support-sla-nudge', min: 15, when: () => require('./utils/supportHours').isOpen(), run: async () => { const r = await require('./services/supportSlaNudge').run(); if (r.alerted) console.log(`Support SLA nudge: ${r.alerted} breach alert(s)`); } },
   // Off-hours support queue: emails still-waiting threads when a support window opens (`when` gates to open hours; 12h interval = once per window).
   { name: 'support-waiting-digest', min: 12 * 60, when: () => require('./utils/supportHours').isOpen(), run: async () => { const r = await require('./services/supportChatService').sendWaitingDigest(); if (r.sent) console.log(`Support waiting digest: ${r.count} thread(s)`); } },
-  { name: 'crm-attribution', min: Number(process.env.CRM_ATTRIBUTION_INTERVAL_MIN) || 60, run: async () => { const r = await crmAttribution.run(); if (r.linked || r.updated) console.log(`CRM attribution: ${r.linked} linked, ${r.updated} refreshed`); } },
-  { name: 'crm-lifecycle-engine', min: Number(process.env.CRM_LIFECYCLE_INTERVAL_MIN) || 15, run: async () => { const r = await crmLifecycleEngine.run(); if (r.moved || r.enrolled || r.tasks || r.churned) console.log(`CRM lifecycle: ${r.moved} moved, ${r.enrolled} enrolled, ${r.tasks} tasks, ${r.churned || 0} churned (scanned ${r.scanned}${r.dryRun ? ', dryrun' : ''})`); } },
-  { name: 'crm-guest-engine', min: Number(process.env.CRM_GUEST_ENGINE_INTERVAL_MIN) || 60, run: async () => { const r = await crmGuestEngine.run(); if (r.recs) console.log(`CRM guest engine: ${r.recs} recs from ${r.customers} customers (scanned ${r.scanned})`); } },
+  { name: 'crm-attribution', min: Number(process.env.CRM_ATTRIBUTION_INTERVAL_MIN) || 60, run: crmOnly(async () => { const r = await crmAttribution.run(); if (r.linked || r.updated) console.log(`CRM attribution: ${r.linked} linked, ${r.updated} refreshed`); }) },
+  { name: 'crm-lifecycle-engine', min: Number(process.env.CRM_LIFECYCLE_INTERVAL_MIN) || 15, run: crmOnly(async () => { const r = await crmLifecycleEngine.run(); if (r.moved || r.enrolled || r.tasks || r.churned) console.log(`CRM lifecycle: ${r.moved} moved, ${r.enrolled} enrolled, ${r.tasks} tasks, ${r.churned || 0} churned (scanned ${r.scanned}${r.dryRun ? ', dryrun' : ''})`); }) },
+  { name: 'crm-guest-engine', min: Number(process.env.CRM_GUEST_ENGINE_INTERVAL_MIN) || 60, run: crmOnly(async () => { const r = await crmGuestEngine.run(); if (r.recs) console.log(`CRM guest engine: ${r.recs} recs from ${r.customers} customers (scanned ${r.scanned})`); }) },
   // B2: cold-pool engagement. DRY-RUN by default; go-live = CRM_LIST_ENGAGEMENT_DRY_RUN=false
   // + enable crm_list_engagement flag + seed openers/clickers/new-marketing sequences.
-  { name: 'crm-list-engagement', min: Number(process.env.CRM_LIST_ENGAGEMENT_INTERVAL_MIN) || 30, run: async () => { const r = await require('./services/crm/listEngagementService').run({ dryRun: process.env.CRM_LIST_ENGAGEMENT_DRY_RUN !== 'false' }); if (r.promoted || r.enrolled) console.log(`CRM list engagement: ${r.promoted} promoted, ${r.enrolled} enrolled (scanned ${r.scanned}${r.dryRun ? ', dryrun' : ''})`); } },
+  { name: 'crm-list-engagement', min: Number(process.env.CRM_LIST_ENGAGEMENT_INTERVAL_MIN) || 30, run: crmOnly(async () => { const r = await require('./services/crm/listEngagementService').run({ dryRun: process.env.CRM_LIST_ENGAGEMENT_DRY_RUN !== 'false' }); if (r.promoted || r.enrolled) console.log(`CRM list engagement: ${r.promoted} promoted, ${r.enrolled} enrolled (scanned ${r.scanned}${r.dryRun ? ', dryrun' : ''})`); }) },
   // Phase 3: warm second-touch to campaign clickers. DRY-RUN by default (only
   // logs would-sends); go-live = CRM_SECOND_TOUCH_DRY_RUN=false + enable the
   // crm_second_touch flag (+ crm_admin_sends already on). Enqueues only — sendGate
   // still governs the actual send (quiet-hours, 1/48h, suppression).
-  { name: 'crm-second-touch', min: Number(process.env.CRM_SECOND_TOUCH_INTERVAL_MIN) || 30, run: async () => { const r = await require('./services/crm/secondTouchService').run({ dryRun: process.env.CRM_SECOND_TOUCH_DRY_RUN !== 'false' }); if (r.enqueued) console.log(`CRM second-touch: ${r.enqueued} ${r.dryRun ? 'would-send (dryrun)' : 'enqueued'}, ${r.skipped} skipped (scanned ${r.scanned})`); } },
+  { name: 'crm-second-touch', min: Number(process.env.CRM_SECOND_TOUCH_INTERVAL_MIN) || 30, run: crmOnly(async () => { const r = await require('./services/crm/secondTouchService').run({ dryRun: process.env.CRM_SECOND_TOUCH_DRY_RUN !== 'false' }); if (r.enqueued) console.log(`CRM second-touch: ${r.enqueued} ${r.dryRun ? 'would-send (dryrun)' : 'enqueued'}, ${r.skipped} skipped (scanned ${r.scanned})`); }) },
   { name: 'badge-eval', min: parseInt(process.env.BADGE_EVAL_INTERVAL_MIN) || 60, run: async () => { const r = await badgeEngine.evaluate(); if (r.awarded || r.revoked) console.log(`Badge engine: +${r.awarded} awarded, -${r.revoked} revoked`); } },
   { name: 'ledger-reconcile', min: Number(process.env.LEDGER_RECONCILE_INTERVAL_MIN || 60), retryOnError: true, run: async () => { const r = await ledgerReconciler.reconcile(); if (r.reposted > 0) console.log(`Ledger reconciler: reposted ${r.reposted} missed entries`); } },
   { name: 'subscription-reconcile', min: Number(process.env.SUBSCRIPTION_RECONCILE_INTERVAL_MIN || 15), run: async () => { const r = await subscriptionReconciler.reconcile(); if (r.healed > 0) console.log(`Subscription reconciler: activated ${r.healed} pending subscriptions`); if (r.released > 0) console.log(`Subscription reconciler: released ${r.released} orphaned pending mandates`); if (r.recorded > 0) console.log(`Subscription reconciler: booked ${r.recorded} missing subscription charges`); } },
@@ -643,7 +649,7 @@ const SCHEDULED_JOBS = [
   { name: 'ip-block-prune', min: 60, retryOnError: true, run: async () => { const n = await ipBlocklist.pruneExpired(); if (n > 0) console.log(`IP blocklist: pruned ${n} expired bans`); } },
   { name: 'seo-crawl', min: Number(process.env.SEO_CRAWL_INTERVAL_MIN) || 24 * 60, run: () => require('./services/seo/seoCrawler').run({ trigger: 'nightly' }) },
   // 6 pm IST cold-calling recap to the founder (`when` gates the hour; 20h interval = once a day).
-  { name: 'cold-call-recap', min: 20 * 60, when: () => require('./services/crm/coldCallRules').istHour() === 18, run: () => require('./services/crm/coldCallService').dailyRecap() },
+  { name: 'cold-call-recap', min: 20 * 60, when: () => require('./services/crm/coldCallRules').istHour() === 18, run: crmOnly(() => require('./services/crm/coldCallService').dailyRecap()) },
   { name: 'gsc-sync', min: Number(process.env.GSC_SYNC_INTERVAL_MIN) || 24 * 60, run: () => require('./services/seo/gscSync').run() },
 ];
 const SCHEDULER_TICK_MIN = Number(process.env.SCHEDULER_TICK_MIN) || 5;

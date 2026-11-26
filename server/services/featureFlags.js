@@ -30,7 +30,9 @@ async function loadFlags() {
 // `bot_tool_loop` gates Tithi's agentic account tool-loop on the authenticated support
 // thread. It ships OFF and reads/acts on a signed-in user's own account, so a missing
 // row or read error must NOT turn it on — fail closed.
-const FAIL_CLOSED_KEYS = new Set(['unified_login', 'crm_admin_sends', 'crm_second_touch', 'crm_list_engagement', 'community', 'community_writes', 'community_tithi', 'community_ads', 'community_v2', 'community_memberships', 'host_linkedin_login', 'bot_tool_loop', 'tithi_proactive', 'bot_institutional_memory', 'bot_person_memory', 'bot_gap_digest']);
+// `crm_automation` is the master switch for every CRM background job (server.js
+// crmOnly). It ships OFF and must stay off if its row is missing or the read fails.
+const FAIL_CLOSED_KEYS = new Set(['unified_login', 'crm_admin_sends', 'crm_automation','crm_second_touch', 'crm_list_engagement', 'community', 'community_writes', 'community_tithi', 'community_ads', 'community_v2', 'community_memberships', 'host_linkedin_login', 'bot_tool_loop', 'tithi_proactive', 'bot_institutional_memory', 'bot_person_memory', 'bot_gap_digest']);
 
 // Fail-open (default): unknown / errored feature flags default to enabled so a
 // missing migration never bricks a normal feature. Security keys override this
