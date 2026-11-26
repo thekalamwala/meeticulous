@@ -94,7 +94,7 @@ export const NAV = [
     // a home (the old "Chat" section, now AI support).
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/referrals', label: 'Refer & Earn', icon: 'nav-refer' },
@@ -224,7 +224,7 @@ export const NAV_V2 = [
   {
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/chat', label: 'Help & support', icon: 'nav-chat', matchPrefix: '/dashboard/chat', badgeKey: 'chatUnread', badgeNoun: 'new reply' },
