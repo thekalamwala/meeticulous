@@ -71,7 +71,9 @@ export const overviewBand = (data) => {
 const BandAside = ({ leak }) => {
   const share = leak.projectedYear ? Math.min(1, leak.proCost / leak.projectedYear) : 0;
   return (
-    <div className="flex items-center gap-4">
+    // Desktop only: on a phone the card stacks under the headline and the band's
+    // thread runs through it; "Commission so far" below carries the same figures.
+    <div className="hidden items-center gap-4 lg:flex">
     <div className="min-w-0 flex-1 rounded-[20px] bg-white/[0.1] p-4 text-white ring-1 ring-inset ring-white/15 sm:p-5">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-[13px] text-white/80">Commission, projected year</span>
@@ -86,7 +88,7 @@ const BandAside = ({ leak }) => {
       </div>
       <p className="mb-0 mt-2.5 text-[12.5px] text-white/75">Last 12 months: {inr(leak.commissionPaid)} on commission</p>
     </div>
-    <img src="/about/mascot-purple.png" alt="" aria-hidden="true" className="hidden w-[112px] shrink-0 object-contain sm:block xl:w-[136px]" />
+    <img src="/about/mascot-purple.png" alt="" aria-hidden="true" className="w-[112px] shrink-0 object-contain xl:w-[136px]" />
     </div>
   );
 };
@@ -94,13 +96,19 @@ const BandAside = ({ leak }) => {
 /* Icon chip for a tile's label (mock): blush square, maroon glyph. */
 const chip = (Icon, label) => (
   <span className="flex items-center gap-2">
-    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[10px] bg-blush text-maroon"><Icon className="h-4 w-4" strokeWidth={2.2} /></span>
+    <span className="hidden h-7 w-7 shrink-0 place-items-center rounded-[10px] bg-blush text-maroon sm:grid"><Icon className="h-4 w-4" strokeWidth={2.2} /></span>
     <span className="truncate">{label}</span>
   </span>
 );
 
 const CommissionPanel = ({ leak, go, panelRef }) => {
   const share = leak.proCost ? Math.min(1, leak.commissionPaid / leak.proCost) : 0;
+  const notYet = <span className="text-[14px] font-medium tracking-normal text-muted">Not enough history yet</span>;
+  const facts = [
+    leak.aheadBy > 0 ? ['Past break-even by', inr(leak.aheadBy)] : ['Still to break even', inr(leak.stillToBreakEven)],
+    ['Pro costs', inr(leak.proCost), 'A year'],
+    ['Projected year', leak.projectedYear == null ? notYet : inr(leak.projectedYear, { compact: true }), leak.projectedYear == null ? null : 'At this pace'],
+  ];
   return (
     <section ref={panelRef} id="commission" className="scroll-mt-24">
       <Panel title="Commission so far" subtitle="How close you are to Pro paying for itself"
@@ -114,14 +122,17 @@ const CommissionPanel = ({ leak, go, panelRef }) => {
             <span className="shrink-0 text-muted">Pro breaks even <b className="tabular-nums text-ink">{inr(leak.proCost)}</b></span>
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-1 gap-2 min-[420px]:grid-cols-3">
-          {leak.aheadBy > 0
-            ? <Fact label="Past break-even by" value={inr(leak.aheadBy)} />
-            : <Fact label="Still to break even" value={inr(leak.stillToBreakEven)} />}
-          <Fact label="Pro costs" value={inr(leak.proCost)} hint="A year" />
-          {leak.projectedYear == null
-            ? <Fact label="Projected year" value={<span className="text-[15px] font-medium tracking-normal text-muted">Not enough history yet</span>} />
-            : <Fact label="Projected year" value={inr(leak.projectedYear, { compact: true })} hint="At this pace" />}
+        {/* Phone: grouped list rows. sm and up: three figures side by side (mock). */}
+        <ul className="mt-3 flex flex-col divide-y divide-neutral-200 sm:hidden">
+          {facts.map(([label, v]) => (
+            <li key={label} className="flex min-h-[48px] items-center justify-between gap-3 py-2">
+              <span className="min-w-0 truncate text-[14px] text-ink">{label}</span>
+              <span className="shrink-0 text-right font-display text-[18px] font-extrabold tabular-nums tracking-[-0.02em] text-ink">{v}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 hidden grid-cols-3 gap-2 sm:grid">
+          {facts.map(([label, v, hint]) => <Fact key={label} label={label} value={v} hint={hint} />)}
         </div>
         {leak.basis && (
           <p className="mb-0 mt-3 flex items-start gap-1.5 text-[12.5px] text-faint">
@@ -201,7 +212,7 @@ const GhostCard = ({ title, line, soon, shape }) => (
       <p className="mb-0 text-[14px] font-semibold text-ink">{title}</p>
       {soon && <span className="shrink-0 rounded-[6px] bg-white px-1.5 py-0.5 text-[12px] font-medium text-muted">Soon</span>}
     </div>
-    <p className="mb-0 mt-0.5 text-[12.5px] text-faint">{line}</p>
+    <p className="mb-0 mt-0.5 hidden text-[12.5px] text-faint sm:block">{line}</p>
     {shape === 'bars' && (
       <div className="mt-3 flex h-10 items-end gap-1.5">
         {[40, 55, 45, 60, 50, 100].map((h, i) => <span key={i} className={cn('flex-1 rounded-t-[4px]', i === 5 ? 'bg-pink/60' : 'bg-neutral-200/80')} style={{ height: `${h}%` }} />)}
@@ -226,7 +237,7 @@ const ProPreview = ({ go }) => (
         See Pro <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
       </button>
     </div>
-    <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2">
+    <div className="grid grid-cols-2 gap-2 sm:gap-3">
       <GhostCard title="Revenue forecast" line="Confirmed money, then the next 30 days" shape="bars" />
       <GhostCard title="Win-back list" line="Guests who haven't booked lately" shape="rows" />
       <GhostCard title="Peer benchmarks" line="How you compare with similar hosts" soon />
@@ -287,7 +298,8 @@ const IntelOverview = () => {
 
       {h && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <Tile label={chip(IndianRupee, 'Net revenue')} value={inr(h.netRevenue, { compact: true })} hint="After fees and refunds"
+          <Tile label={chip(IndianRupee, 'Net revenue')} value={h.paidBookings ? inr(h.netRevenue, { compact: true }) : null}
+            note="Nothing paid yet" hint="After fees and refunds"
             onClick={() => go('/dashboard/intelligence/revenue')} />
           <Tile label={chip(CalendarCheck, 'Paid bookings')} value={(h.paidBookings ?? 0).toLocaleString('en-IN')} hint="All time"
             onClick={() => go('/dashboard/intelligence/demand')} />

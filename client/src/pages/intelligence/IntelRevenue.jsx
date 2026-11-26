@@ -225,7 +225,8 @@ const IntelRevenue = () => {
   return (
     <div className="flex flex-col gap-4 sm:gap-5">
       {data === null ? <Skeleton className="h-[200px] rounded-[28px] sm:rounded-[32px]" /> : band}
-      <PeriodChips value={period} onChange={setPeriod} />
+      {/* Periods only help once something has been paid. */}
+      {all.summary?.bookings > 0 && <PeriodChips value={period} onChange={setPeriod} />}
       {data === null && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-busy="true">
           {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[112px] rounded-[20px]" />)}
@@ -243,7 +244,7 @@ const IntelRevenue = () => {
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <Tile label="You kept" value={inr(s.net, { compact: true })} accent hint="After fees" />
             <Tile label="Guests paid" value={inr(s.gross, { compact: true })} hint="Before fees" />
-            <Tile label="Paid bookings" value={s.bookings.toLocaleString('en-IN')} hint={`${inr(s.aov)} each on average`} />
+            <Tile label="Paid bookings" value={s.bookings.toLocaleString('en-IN')} hint={`${inr(s.aov)} average`} />
             <Tile label="Kept per booking" value={inr(s.netAov)} hint="On average" />
           </div>
 

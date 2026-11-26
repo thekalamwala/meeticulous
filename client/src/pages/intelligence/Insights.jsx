@@ -7,7 +7,6 @@
 // Tabs: underlined on desktop, a full-width segmented control below 1024px.
 // Earnings folded into Revenue: /dashboard/earnings redirects there (App.jsx).
 import { NavLink, Navigate, useParams } from 'react-router-dom';
-import { Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { isFreePlan } from '../../utils/themeUtils';
 import { cn } from '../../components/dashboard/ui/v2';
@@ -43,8 +42,8 @@ const Tabs = ({ starter }) => (
             <span className="truncate">{t.label}</span>
             {starter && t.pro && (
               <>
-                {/* Phone segments are narrow: a lock glyph; desktop: a "Pro" tag (mock). */}
-                <Lock aria-label="Pro" className="h-3 w-3 shrink-0 lg:hidden" strokeWidth={2.6} />
+                {/* Desktop only: four phone segments have no room for it, and the
+                    tab's own band says "Pro" the moment it opens. */}
                 <span className="hidden shrink-0 rounded-[6px] bg-blush px-1.5 py-px text-[12px] font-semibold leading-tight text-maroon lg:inline">Pro</span>
               </>
             )}
