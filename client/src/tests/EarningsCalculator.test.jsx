@@ -33,6 +33,24 @@ describe('EarningsCalculator', () => {
     expect(monthly.getAttribute('aria-pressed')).toBe('true');
   });
 
+  it('keeps both sliders, quick-set buttons, and numeric inputs in sync', () => {
+    setup();
+    const price = screen.getByRole('slider', { name: 'Set your price per session slider' });
+    const sessions = screen.getByRole('slider', { name: 'Set your sessions per month slider' });
+    const pricePreset = screen.getByRole('button', { name: '₹15,000' });
+    const sessionsPreset = screen.getByRole('button', { name: '25' });
+
+    fireEvent.click(pricePreset);
+    fireEvent.click(sessionsPreset);
+    expect(price).toHaveAttribute('aria-valuetext', '₹15,000');
+    expect(sessions).toHaveAttribute('aria-valuetext', '25');
+    expect(screen.getByRole('spinbutton', { name: 'Set your price per session' }).value).toBe('15000');
+
+    fireEvent.change(sessions, { target: { value: '26' } });
+    expect(screen.getByRole('spinbutton', { name: 'Set your sessions per month' }).value).toBe('26');
+    expect(sessionsPreset).toHaveAttribute('aria-pressed', 'false');
+  });
+
   // The honest answer at low volume is "stay free" — a calculator that always
   // recommends paying is a brochure, not a calculator.
   it('recommends the free plan at very low volume', () => {
