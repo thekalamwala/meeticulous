@@ -1,7 +1,7 @@
 .solutions-directory {
   background: radial-gradient(ellipse at 85% 80%, #f8e8ee 0, transparent 60%), linear-gradient(120deg, #fafbfc, #fcf7f8);
 }
-.profession-browser { --directory-accent: #960d32; color: #202027; }
+.profession-browser { --directory-accent: var(--mt-maroon); color: #202027; }
 .profession-browser__heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
 .profession-browser__eyebrow { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8c2849; }
 .profession-browser__heading h2 { margin: 0; color: #202027; font-size: clamp(1.9rem, 3.8vw, 2.75rem); font-weight: 750; line-height: 1.08; letter-spacing: -.035em; }
@@ -27,7 +27,7 @@
 .profession-browser__arrow--previous { left: -21px; }
 .profession-browser__arrow--next { right: -21px; }
 .profession-browser button:disabled { opacity: .35; cursor: default; }
-.profession-browser :is(button, a, input, [tabindex]):focus-visible { outline: 3px solid #960d32; outline-offset: 3px; }
+.profession-browser :is(button, a, input, [tabindex]):focus-visible { outline: 3px solid var(--mt-maroon); outline-offset: 3px; }
 @media (min-width: 1024px) {
   .profession-browser__card { flex-basis: calc((100% - 48px) / 4); }
 }

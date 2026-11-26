@@ -29,8 +29,9 @@ describe('Solutions profession browser', () => {
     renderPage();
     fireEvent.click(screen.getByRole('tab', { name: 'Finance & Law' }));
     const browser = screen.getByRole('region', { name: 'Profession categories' });
-    expect(within(browser).getAllByRole('link')).toHaveLength(2);
+    expect(within(browser).getAllByRole('link')).toHaveLength(3);
     expect(within(browser).getByRole('link', { name: /Lawyers & Advocates/ }).getAttribute('href')).toBe('/for/lawyers');
+    expect(within(browser).getByRole('link', { name: /Business Consultants/ }).getAttribute('href')).toBe('/for/business-consultant');
     expect(within(browser).queryByRole('link', { name: /Architects & Designers/ })).toBeNull();
     expect(screen.getByRole('tab', { name: 'Finance & Law' }).getAttribute('aria-selected')).toBe('true');
     fireEvent.click(screen.getByRole('tab', { name: 'All' }));
