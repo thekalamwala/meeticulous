@@ -266,7 +266,8 @@ const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
       </h1>
     )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
-      <Link to="/help" title="Support" aria-label="Support"
+      {/* Kept: the lifebuoy opens the dashboard's Help hub (founder, 2026-11-26). */}
+      <Link to="/dashboard/chat" title="Help" aria-label="Help"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>

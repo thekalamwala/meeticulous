@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Headset, ShieldQuestion, Plus, ChevronDown, Paperclip, X } from 'lucide-react';
+import { Send, Headset, ShieldQuestion, Plus, ChevronDown, Paperclip, X, MessagesSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getSupabase } from '../../services/supabaseClient';
 import {
@@ -88,7 +88,9 @@ const Bubble = ({ m }) => {
   );
 };
 
-export default function SupportChat() {
+// `frame` (optional) replaces the outer box classes, so a host page can size and
+// style the chat for its own layout (Kept Help hub). Guests' /user/chat passes none.
+export default function SupportChat({ frame } = {}) {
   const [thread, setThread] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -312,13 +314,15 @@ export default function SupportChat() {
   const canEscalate = isBotPhase && botHasReplied && !intake;
 
   return (
-    <div className="flex h-[calc(100vh-9rem)] min-h-[440px] flex-col overflow-hidden rounded-2xl border border-maroon/10 bg-white shadow-sm">
+    <div className={frame || 'flex h-[calc(100vh-9rem)] min-h-[440px] flex-col overflow-hidden rounded-2xl border border-maroon/10 bg-white shadow-sm'}>
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-maroon/5 bg-blush/40 px-4 py-3">
+      {/* Narrow phones: both controls go icon-only (labels from sm up), so the
+          title and status each keep one full line and truncate on their own. */}
+      <div className="flex items-center gap-2.5 border-b border-maroon/5 bg-blush/40 px-3 py-3 sm:gap-3 sm:px-4">
         <img src={TITHI_PHOTO} alt="Tithi" className="h-9 w-9 shrink-0 rounded-full object-cover" />
         <div className="min-w-0 flex-1">
-          <p className="font-heading text-sm font-bold text-ink">Meeticulous support</p>
-          <p className="truncate text-[11.5px] text-ink/40">
+          <p className="truncate font-heading text-sm font-bold text-ink">Meeticulous support</p>
+          <p className="truncate text-[12px] text-ink/50">
             {isBotPhase ? 'Tithi assistant · replies instantly' : 'Our team is on it'}
             {thread?.reference && <span className="text-ink/30"> · {thread.reference}</span>}
           </p>
@@ -329,9 +333,10 @@ export default function SupportChat() {
         {threads.length >= 1 && (
           <div className="relative">
             <button type="button" onClick={() => setShowTopics((v) => !v)}
-              aria-haspopup="listbox" aria-expanded={showTopics}
-              className="inline-flex items-center gap-1 rounded-full border border-maroon/10 bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-muted hover:bg-blush/40">
-              Chats <ChevronDown className="h-3.5 w-3.5" />
+              aria-haspopup="listbox" aria-expanded={showTopics} aria-label="Chats" title="Your chats"
+              className="inline-flex h-9 min-w-[36px] shrink-0 items-center justify-center gap-1 rounded-full border border-maroon/10 bg-white px-2 text-[12px] font-medium text-muted hover:bg-blush/40 sm:h-auto sm:px-2.5 sm:py-1.5">
+              <MessagesSquare className="h-4 w-4 sm:hidden" strokeWidth={1.9} />
+              <span className="hidden sm:inline">Chats</span> <ChevronDown className="hidden h-3.5 w-3.5 sm:inline" />
             </button>
             {showTopics && (
               <div role="listbox" className="absolute right-0 z-10 mt-1 max-h-64 w-64 overflow-y-auto rounded-xl border border-maroon/10 bg-white p-1 shadow-lg">
@@ -355,9 +360,9 @@ export default function SupportChat() {
             )}
           </div>
         )}
-        <button type="button" onClick={newTopic} disabled={switching} title="Start a new topic"
-          className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-white px-2.5 py-1.5 text-[11.5px] font-semibold text-primary hover:bg-primary/5 disabled:opacity-40">
-          <Plus className="h-3.5 w-3.5" /> New topic
+        <button type="button" onClick={newTopic} disabled={switching} title="Start a new topic" aria-label="New topic"
+          className="inline-flex h-9 min-w-[36px] shrink-0 items-center justify-center gap-1 rounded-full border border-primary/30 bg-white px-2 text-[12px] font-semibold text-primary hover:bg-primary/5 disabled:opacity-40 sm:h-auto sm:px-2.5 sm:py-1.5">
+          <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" /> <span className="hidden sm:inline">New topic</span>
         </button>
       </div>
 

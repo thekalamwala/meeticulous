@@ -406,7 +406,9 @@ export const ProfileMenu = ({
 
         {/* Account */}
         <div className="border-t border-neutral-200/50 py-1.5">
-          <Link to="/dashboard/profile" onClick={close} className={MENU_ROW}>
+          {/* Kept: straight to the Account pane (on phones /dashboard/profile is the
+              Settings list). Off-flag this route redirects back to /dashboard/profile. */}
+          <Link to="/dashboard/settings/account" onClick={close} className={MENU_ROW}>
             <span className={ROW_TILE}><User className="h-4 w-4" strokeWidth={1.8} /></span>
             <span className="flex-1">Account information</span>
           </Link>
@@ -445,10 +447,15 @@ export const ProfileMenu = ({
           )}
         </div>
 
-        {/* Support — Help lives in the topbar; this is the human line.
+        {/* Support — Help (also the topbar lifebuoy), then the human line.
             Show the assigned account manager's contact when one exists; otherwise
             fall back to the generic support line. */}
         <div className="border-t border-neutral-200/50 py-1.5">
+          {/* Help (Kept, 2026-11-26): Tithi, help articles and Send feedback on one screen. */}
+          <Link to="/dashboard/chat" onClick={close} className={MENU_ROW}>
+            <span className={ROW_TILE}><LifeBuoy className="h-4 w-4" strokeWidth={1.8} /></span>
+            <span className="flex-1">Help</span>
+          </Link>
           {acctMgr ? (
             <a
               href={acctMgr.email ? `mailto:${acctMgr.email}` : (acctMgr.phone ? `tel:${acctMgr.phone}` : '/bolt958')}

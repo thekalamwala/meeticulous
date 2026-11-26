@@ -188,8 +188,11 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     community_v2: true, community_memberships: true, availability_editor: true, google_calendar: true,
   },
   '/notifications': { notifications: [
-    { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(-1), read_at: null, data: {} },
-  ], unreadCount: 1 },
+    { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(0, 9, 12), read_at: null, data: {} },
+    { id: 'n2', type: 'payment', title: 'Payment received', body: '₹1,499 from Meera Iyer for Funnel Teardown', link: '/dashboard/earnings', created_at: at(-1, 18, 40), read_at: null, data: {} },
+    { id: 'n3', type: 'booking_rescheduled', title: 'Booking moved', body: 'Kabir Rao moved Growth Sprint Workshop to Friday, 4:00pm', link: '/dashboard/bookings', created_at: at(-1, 10, 5), read_at: at(-1, 12), data: {} },
+    { id: 'n4', type: 'payout', title: 'Payout sent', body: '₹2,840 is on its way to your bank', link: '/dashboard/payments/payouts', created_at: at(-4, 9, 0), read_at: at(-4, 10), data: {} },
+  ], unreadCount: 2 },
   '/notifications/channel': {},
   '/kyc/me': { status: 'not_started', pending_earnings: 1424.05, payouts_ready: false },
   '/host/services': SERVICES,
@@ -197,8 +200,10 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/bookings/host': BOOKINGS,
   '/host/profile-views': { views: 465 },
   '/plans': [
-    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1 },
-    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2 },
+    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1, commission_percentage: 5,
+      limits: { services: -1, bookings_per_year: -1, digital_products: 3 }, support_type: 'email' },
+    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2, commission_percentage: 0,
+      limits: { services: -1, bookings_per_year: -1, digital_products: -1 }, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'priority' },
   ],
   '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] },
     // The real row's shape (Schedule page reads these): Mon–Fri, a split Friday, Saturday mornings.
@@ -211,6 +216,16 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     buffer_minutes: 15, blocked_dates: ['2026-12-25', '2027-01-01'],
     cap_per_day: pro ? 6 : null, cap_per_week: null, cap_per_guest: null },
   '/support/unread': { unread: 0 },
+  // Kept Settings/Help preview (dev-only, made-up): support chat, hours and feedback.
+  '/support/thread': { thread: { id: 'th-1', status: 'bot', reference: 'MT-1042' }, messages: [
+    { id: 'm1', sender: 'user', body: 'How long does a payout take after a booking?', created_at: at(-2, 11, 2) },
+    { id: 'm2', sender: 'bot', sender_name: 'Tithi', body: 'Payouts reach your bank 3 working days after the session, once your PAN and bank are verified. Yours are not verified yet, so the money waits until then.', created_at: at(-2, 11, 3) },
+  ] },
+  '/support/threads': { threads: [{ id: 'th-1', status: 'bot', reference: 'MT-1042', last_message_at: at(-2, 11, 3) }] },
+  '/support/hours': { open: true },
+  '/feedback/mine': { feedback: [
+    { id: 'fb-1', type: 'idea', subject: 'Let guests pick a time zone', body: 'Some of my clients are in Dubai and get confused by IST slots.', status: 'planned', admin_response: 'Good call. It is on the list for December.', created_at: at(-9) },
+  ] },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },
   '/vendor/intelligence/overview': OVERVIEW(pro),
   '/vendor/intelligence/money': MONEY,
