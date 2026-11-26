@@ -19,7 +19,7 @@ export default function CookieButton() {
       onClick={openConsentSettings}
       aria-label="Cookie settings"
       title="Cookie settings"
-      className="fixed bottom-5 right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full border border-primary bg-white text-primary shadow-[0_12px_30px_-12px_rgba(26,26,26,0.35)] transition-transform hover:scale-105"
+      className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full border border-primary bg-white text-primary shadow-[0_12px_30px_-12px_rgba(26,26,26,0.35)] transition-transform hover:scale-105"
     >
       <Cookie size={24} aria-hidden="true" />
     </button>

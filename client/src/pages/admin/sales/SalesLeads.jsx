@@ -330,7 +330,7 @@ export default function SalesLeads() {
             {savedViews.map((v) => (
               <span key={v.id} className="group inline-flex items-center gap-1 text-[12px] px-2 py-1 rounded-full border border-gray-200 adm-t2 hover:border-[#960D32] whitespace-nowrap shrink-0">
                 <button type="button" onClick={() => applyView(v)}>{v.name}</button>
-                <button type="button" onClick={() => deleteView(v.id)} className="opacity-0 group-hover:opacity-100 adm-t3 hover:text-red-500">×</button>
+                <button type="button" onClick={() => deleteView(v.id)} className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 adm-t3 hover:text-red-500">×</button>
               </span>
             ))}
           </div>

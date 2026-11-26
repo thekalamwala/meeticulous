@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // Touch screens fire a fake :hover on tap that sticks until the next tap. This
+  // compiles every `hover:` variant inside @media (hover: hover), so hover styles
+  // only apply to devices that can really hover. Desktop is unchanged.
+  future: { hoverOnlyWhenSupported: true },
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {

@@ -279,7 +279,7 @@ export default function BotWidget() {
   if (!isAllowedPath(pathname)) return null;
 
   return (
-    <div className="fixed bottom-5 right-5 z-[60] font-sans">
+    <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] right-5 z-[60] font-sans">
       {/* ponytail: approximated genie (scale+translate from launcher corner), not a real mesh warp */}
       {/* ponytail: clean emerge from launcher corner — mild scale + slight stretch, no extreme pinch (pixel-faithful genie smears live DOM). */}
       <style>{`@keyframes boltGenie{0%{opacity:0;transform:translateY(28px) scale(.82) scaleY(.9)}60%{opacity:1}100%{opacity:1;transform:translateY(0) scale(1)}}@keyframes boltIconIn{0%{opacity:0;transform:scale(.5) rotate(-12deg)}100%{opacity:1;transform:scale(1) rotate(0)}}`}</style>
