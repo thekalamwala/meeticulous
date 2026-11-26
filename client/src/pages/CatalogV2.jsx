@@ -466,7 +466,8 @@ const CatalogV2 = () => {
 
   const pageUrl = user?.username ? `/${user.username}` : null;
   const sub = loading ? 'Loading what you sell…'
-    : none ? 'Nothing here yet'
+    : allFailed ? 'Not loaded right now'
+      : none ? 'Nothing here yet'
       : `${sellable} ${sellable === 1 ? 'thing' : 'things'} you sell · ${live} on your page`;
 
   let band = null;

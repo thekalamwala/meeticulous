@@ -154,7 +154,7 @@ export default function Memberships() {
                   </FormField>
                 </div>
               </FieldStyle.Provider>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <button type="button" onClick={saveProgram} disabled={saving} className={primaryBtn}>{program ? "Save program" : "Create program"}</button>
                 {program && (
                   <button type="button" onClick={togglePublish} className={quietBtn}>{isLive ? "Move to draft" : "Go live"}</button>
