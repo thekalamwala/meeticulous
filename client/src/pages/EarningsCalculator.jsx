@@ -4,6 +4,7 @@ import { Sprout, Sparkles, Rocket, Crown, Minus, Plus, ArrowRight, Info, Check, 
 import Seo from "../components/common/Seo";
 import { ogCard } from "../config/ogImages";
 import { SITE_URL } from "../utils/seo";
+import "./earningsCalculator.css";
 import {
   resultsFor, pickWinner, annualSaving, deltaVsFree, ANNUAL_FEE, platformFeesPerYear, TOPMATE_FEES,
 } from "../lib/earningsCalc";
@@ -30,6 +31,8 @@ const FEATURES = {
   free: ["5% commission per booking", "Unlimited services & bookings", "Booking page + payments", "24-hour reminders", "Email support"],
   premium: ["0% commission", "Client CRM + history", "Follow-up & rebook automation", "Unlimited digital products", "Priority WhatsApp support"],
 };
+
+const PLAN_MASCOTS = { free: ["green"], premium: ["orange", "purple"] };
 
 const inr0 = (n) =>
   "₹" + new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Number(n) || 0);
@@ -64,9 +67,13 @@ function useCountUp(value, ms = 500) {
 }
 
 // Numbered input: value + −/+ steppers + a slider, with min/max rails.
-function StepperInput({ n, title, sublabel, value, min, max, step, prefix, onChange }) {
+function StepperInput({ n, title, sublabel, value, min, max, step, prefix, presets, onChange }) {
   const num = Number(value) || 0;
   const clamp = (v) => Math.min(max, Math.max(min, v));
+  const sliderValue = min + Math.round((clamp(num) - min) / step) * step;
+  const progress = ((sliderValue - min) / (max - min)) * 100;
+  const midpoint = Math.floor((min + max) / (2 * step)) * step;
+  const format = (amount) => prefix ? inr0(amount) : amount.toLocaleString("en-IN");
   return (
     <div>
       <div className="flex items-start gap-3">
@@ -94,15 +101,37 @@ function StepperInput({ n, title, sublabel, value, min, max, step, prefix, onCha
           <Plus size={14} />
         </button>
       </div>
-      <input
-        type="range" min={min} max={max} step={step}
-        value={Math.min(Math.max(num, min), max)}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-3 w-full accent-primary" aria-label={`${title} slider`}
-      />
-      <div className="mt-1 flex justify-between text-[11px] text-neutral-400">
-        <span>{prefix}{min.toLocaleString("en-IN")}</span>
-        <span>{prefix}{max.toLocaleString("en-IN")}</span>
+      <div className="earnings-slider mt-3" style={{ "--slider-progress": `${progress}%` }}>
+        <input
+          type="range" min={min} max={max} step={step}
+          value={sliderValue}
+          onChange={(e) => onChange(Number(e.target.value))}
+          aria-label={`${title} slider`}
+          aria-valuetext={format(sliderValue)}
+        />
+        <div className="earnings-slider__visual" aria-hidden="true">
+          <div className="earnings-slider__ticks">
+            {Array.from({ length: 5 }, (_, index) => (
+              <span key={index} />
+            ))}
+          </div>
+          <div className="earnings-slider__track" />
+          <span className="earnings-slider__thumb" />
+        </div>
+      </div>
+      <div className="grid grid-cols-3 text-[11px] text-neutral-500" aria-hidden="true">
+        <span>{format(min)}</span>
+        <span className="text-center">{format(midpoint)}</span>
+        <span className="text-right">{format(max)}</span>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label={`${title} presets`}>
+        <span className="mr-1 text-[11px] text-neutral-500">Quick set</span>
+        {presets.map((preset) => (
+          <button key={preset} type="button" aria-pressed={num === preset} onClick={() => onChange(preset)}
+            className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-medium text-ink hover:border-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary aria-pressed:border-primary/30 aria-pressed:bg-primary/5 aria-pressed:text-primary">
+            {format(preset)}
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -144,7 +173,7 @@ function EarningsBars({ results, winnerKey }) {
   );
 }
 
-function PlanCard({ result, winnerKey, cycle }) {
+function PlanCard({ result, cycle, proAdvantage }) {
   const { plan } = result;
   const Icon = ICON[plan.key] ?? Sparkles;
   const accent = ACCENT[plan.key];
@@ -156,30 +185,44 @@ function PlanCard({ result, winnerKey, cycle }) {
       ? "Free to start · 5% per booking"
       : `0% commission · ${cycle === "annual" ? `${inr0(yearly)}/yr` : `${inr0(monthly)}/mo`}`;
   return (
-    <div className={`relative flex flex-col rounded-[14px] border bg-white p-5 sm:p-6 ${isRec ? "border-2 shadow-[0_12px_40px_rgba(254,81,0,0.12)]" : "border-black/10"}`}
-      style={isRec ? { borderColor: accent, background: "#EFF6FB" } : undefined}>
+    <div className={`earnings-plan relative flex flex-col rounded-[14px] border p-5 sm:p-6 ${isRec ? "earnings-plan--pro" : ""}`}>
       {isRec && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold text-white" style={{ background: accent }}>
-          <Crown size={12} fill="#fff" /> Recommended
+        <span className="earnings-plan__ribbon absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 px-2.5 py-0.5 text-xs font-bold">
+          <span aria-hidden="true">★</span> Recommended
         </span>
       )}
-      <div className="flex items-center gap-2.5">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ color: accent, background: `${accent}14` }}>
-          <Icon size={20} strokeWidth={1.75} />
-        </span>
+      <div className="grid grid-cols-[minmax(0,1fr)_28%] items-start gap-2">
         <div>
-          <p className="text-base font-bold text-ink">{plan.name}</p>
-          <p className="text-[11px] text-neutral-500">{priceNote}</p>
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]" style={{ color: accent, background: `${accent}14` }}>
+              <Icon size={20} strokeWidth={1.75} />
+            </span>
+            <div>
+              <h3 className="m-0 text-base font-bold leading-tight text-ink">{plan.name}</h3>
+              <p className="m-0 mt-0.5 text-[11px] leading-tight text-neutral-500">{priceNote}</p>
+            </div>
+          </div>
+
+          <p className="mt-4 text-sm font-bold text-ink">{POSITION[plan.key]}</p>
+          <div className="mt-2">
+            <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2B0A14" }}>{inr0(result.netAnnual)}</p>
+            <p className="text-xs text-neutral-500">you keep per year</p>
+          </div>
+        </div>
+        <div className="earnings-plan__art" aria-hidden="true">
+          {PLAN_MASCOTS[plan.key].map((color) => (
+            <img key={color} src={`/about/mascot-${color}.png`} alt="" loading="lazy" />
+          ))}
         </div>
       </div>
 
-      <p className="mt-4 text-sm font-bold text-ink">{POSITION[plan.key]}</p>
-      <div className="mt-2">
-        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2B0A14" }}>{inr0(result.netAnnual)}</p>
-        <p className="text-xs text-neutral-500">you keep per year</p>
-      </div>
+      {isRec && proAdvantage > 0 && (
+        <p className="mt-3 self-start rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+          <span className="mr-1" aria-hidden="true">✦</span>{inr0(proAdvantage)} more in your pocket vs. Starter
+        </p>
+      )}
 
-      <ul className="mt-4 flex-1 space-y-2">
+      <ul className="mt-3 flex-1 space-y-1.5">
         {FEATURES[plan.key].map((f) => (
           <li key={f} className="flex items-start gap-2 text-[13px] text-neutral-700">
             <Check size={15} className="mt-0.5 flex-shrink-0" style={{ color: accent }} /> {f}
@@ -268,11 +311,11 @@ export default function EarningsCalculator() {
             {/* Inputs */}
             <div className="rounded-[16px] border border-black/5 bg-white p-6 sm:p-7">
               <StepperInput n={1} title="Set your price per session" sublabel="How much do you charge for each session?"
-                prefix="₹" value={earning} min={500} max={50000} step={500}
+                prefix="₹" value={earning} min={500} max={50000} step={500} presets={[1500, 5000, 15000, 30000]}
                 onChange={(v) => setEarning(v)} />
               <div className="mt-7">
                 <StepperInput n={2} title="Set your sessions per month" sublabel="How many sessions do you conduct?"
-                  value={bookings} min={1} max={50} step={1}
+                  value={bookings} min={1} max={50} step={1} presets={[5, 12, 25, 40]}
                   onChange={(v) => setBookings(v)} />
               </div>
             </div>
@@ -307,16 +350,18 @@ export default function EarningsCalculator() {
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-2xl font-extrabold text-ink sm:text-3xl">Plans that grow with you</h2>
               <div className="inline-flex items-center gap-2">
-                <CycleToggle cycle={cycle} setCycle={setCycle} />
-                {maxSaving > 0 && cycle === "annual" && (
-                  <span className="text-[11px] font-semibold text-[#1f7a3d]">Save up to {inr0(maxSaving)}</span>
+                {maxSaving > 0 && (
+                  <span className={`rounded-full bg-[#e9f6ee] px-2 py-1 text-[11px] font-semibold text-[#1f7a3d] ${cycle === "annual" ? "" : "invisible"}`}>
+                    Save up to {inr0(maxSaving)}
+                  </span>
                 )}
+                <CycleToggle cycle={cycle} setCycle={setCycle} />
               </div>
             </div>
 
-            <div className="mt-6 grid gap-5 lg:grid-cols-3">
+            <div className="mt-7 grid gap-7 md:grid-cols-2 md:gap-5">
               {["free", "premium"].map((k) => (
-                <PlanCard key={k} result={results.find((r) => r.plan.key === k)} winnerKey={winnerKey} cycle={cycle} />
+                <PlanCard key={k} result={results.find((r) => r.plan.key === k)} proAdvantage={delta} cycle={cycle} />
               ))}
             </div>
 
