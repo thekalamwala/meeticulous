@@ -133,7 +133,16 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1 },
     { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2 },
   ],
-  '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] } },
+  '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] },
+    // The real row's shape (Schedule page reads these): Mon–Fri, a split Friday, Saturday mornings.
+    weekly_schedule: {
+      monday: [{ start: '10:00', end: '18:00' }], tuesday: [{ start: '10:00', end: '18:00' }],
+      wednesday: [{ start: '10:00', end: '18:00' }], thursday: [{ start: '10:00', end: '18:00' }],
+      friday: [{ start: '10:00', end: '13:00' }, { start: '15:00', end: '18:00' }],
+      saturday: [{ start: '09:00', end: '12:00' }], sunday: [],
+    },
+    buffer_minutes: 15, blocked_dates: ['2026-12-25', '2027-01-01'],
+    cap_per_day: pro ? 6 : null, cap_per_week: null, cap_per_guest: null },
   '/support/unread': { unread: 0 },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },
   '/vendor/intelligence/overview': OVERVIEW(pro),
