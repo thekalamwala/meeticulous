@@ -13,6 +13,8 @@ const { api } = vi.hoisted(() => ({
     createHostCoupon: vi.fn(() => Promise.resolve({ data: {} })),
     updateHostCoupon: vi.fn(() => Promise.resolve({ data: {} })),
     deleteHostCoupon: vi.fn(() => Promise.resolve({ data: { ok: true } })),
+    // Flags off → the legacy look these tests were written for (Kept is dashboard_v2).
+    getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })),
   },
 }));
 vi.mock('../services/api', () => api);

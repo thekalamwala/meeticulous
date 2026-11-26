@@ -470,10 +470,12 @@ const ServiceBooking = () => {
   const isDateSelectable = (day) => {
     const d = new Date(calYear, calMonth, day);
     if (d < today) return false;
-    // Manual blocked dates ("YYYY-MM-DD" strings on the availability row)
+    // Whole days off. The server sends plain "YYYY-MM-DD" strings here (it strips
+    // part-day blocks and reasons); an object entry is read defensively, and only a
+    // whole-day one greys the date. Part-day time off is enforced in the slot list.
     const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     if (Array.isArray(availability?.blocked_dates) &&
-        availability.blocked_dates.some((b) => String(b).slice(0, 10) === dStr)) return false;
+        availability.blocked_dates.some((b) => (typeof b === "string" ? b.slice(0, 10) === dStr : b?.date === dStr && !(b.from && b.to)))) return false;
     if (!availability?.weekly_schedule) return true;
     const name = [
       "sunday",

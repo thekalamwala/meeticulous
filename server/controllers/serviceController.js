@@ -3,12 +3,15 @@
  * Vendor Service Module v2 — full CRUD with slug, rich fields, inclusions, FAQs etc.
  * Does NOT touch existing bookingController / authController / paymentController.
  */
+const { publicAvailability } = require('../utils/timeOff');
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
 const { setPublicCache } = require('../utils/httpCache');
 const { getConfig: getPlatformConfig } = require('../services/platformConfig');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 const { bustPublicReadCaches } = require('../services/publicCacheBust');
+const { sortHostOrder, makeReorderHandler } = require('../services/catalogOrder');
+const { withGuestPrices } = require('../services/guestPrice');
 const responseCache = require('../services/responseCache');
 const { resolveAndValidateCategory } = require('../lib/serviceCategory');
 const { summarizePrices, BENCHMARK_MIN_SAMPLE } = require('../lib/priceBenchmark');
@@ -305,19 +308,27 @@ const createService = async (req, res) => {
 
 const getMyServices = async (req, res) => {
   try {
-    const q = supabaseAdmin.from('services').select(V2_SELECT_COLS).eq('host_id', req.user.id).order('created_at', { ascending: false });
-    let { data, error } = await q;
-    if (error && /Could not find the/i.test(error.message)) {
-      const r = await supabaseAdmin.from('services').select(LEGACY_SELECT_COLS).eq('host_id', req.user.id).order('created_at', { ascending: false });
-      data  = r.data;
-      error = r.error;
+    // Kept Catalog also reads price_on_request (what a guest pays) and sort_order
+    // (v3.227). Each is tried first and dropped on "column not found", so a DB
+    // without them answers exactly as before.
+    const read = (cols) => supabaseAdmin.from('services').select(cols).eq('host_id', req.user.id).order('created_at', { ascending: false });
+    let data; let error;
+    for (const cols of [`${V2_SELECT_COLS},price_on_request,sort_order`, `${V2_SELECT_COLS},price_on_request`, V2_SELECT_COLS, LEGACY_SELECT_COLS]) {
+      ({ data, error } = await read(cols));
+      if (!(error && /Could not find the|column .* does not exist/i.test(error.message))) break;
     }
     if (error) return safeError(res, error);
-    res.json(data || []);
+    const rows = await withGuestPrices(sortHostOrder(data || []), 'service', req.user.id);
+    res.json(rows);
   } catch (err) {
     safeError(res, err);
   }
 };
+
+// ─── PUT /api/services/reorder  (Kept Catalog, v3.227) ───────────────────────
+// The order guests see on the booking page. Busts the public profile cache on
+// success so the new order shows on the next read, not ~2 min later.
+const reorderServices = makeReorderHandler('services', { onSaved: bustPublicReadCaches });
 
 // ─── GET /api/services/:id  (vendor fetches one service) ────────────────────
 
@@ -544,7 +555,7 @@ const buildPublicServiceBySlug = async (slug) => {
       service: svc,
       vendor: vendor || {},
       totalServices: totalServices || 0,
-      availability: availability || null,
+      availability: publicAvailability(availability) || null, // no private time-off reasons
       reviews: reviewList,
       avgRating,
       ratingBreakdown,
@@ -655,7 +666,7 @@ const buildPublicServiceByProfileAndSlug = async (profileSlug, serviceSlug) => {
       appearance,
       totalServices: totalServices || 0,
       totalBookings: totalBookings || 0,
-      availability: availability || null,
+      availability: publicAvailability(availability) || null, // no private time-off reasons
       reviews: reviewList,
       avgRating,
       ratingBreakdown,
@@ -738,6 +749,7 @@ const getPriceBenchmark = async (req, res) => {
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = {
+  reorderServices,
   createService,
   getMyServices,
   getServiceById,

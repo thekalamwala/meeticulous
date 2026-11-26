@@ -29,6 +29,7 @@ const { supabaseAdmin } = require('../../config/supabase');
 const relationshipHealth = require('./relationshipHealth');
 const relationshipTouch = require('./relationshipTouch');
 const touchRecommendationService = require('./touchRecommendationService');
+const { stampEvaluated } = require('./scanRotation');
 
 const BATCH = Number(process.env.GUEST_ENGINE_BATCH) || 500;
 const DEAD = new Set(['cancelled', 'no_show', 'refunded']); // dropped from customer counts
@@ -112,12 +113,20 @@ function recommendationsForGuest(contact, ctx, now = Date.now()) {
 
 // ── I/O ──────────────────────────────────────────────────────────────────────
 
+// Least-recently-evaluated first so successive ticks walk every guest contact (see
+// scanRotation.js); falls back to updated_at on a DB without the v3.139 columns.
 async function loadGuestContacts() {
-  const { data } = await supabaseAdmin.from('contacts')
+  const q = () => supabaseAdmin.from('contacts')
     .select('id, email, phone, user_id, name, created_at, contact_type, last_meaningful_interaction_at, last_activity_at')
     .in('contact_type', ['guest', 'buyer'])
-    .not('email', 'is', null)
-    .order('updated_at', { ascending: true }).limit(BATCH);
+    .not('email', 'is', null);
+  if (healthColumns) {
+    const { data, error } = await q().order('health_computed_at', { ascending: true, nullsFirst: true }).limit(BATCH);
+    if (!error) return data || [];
+    if (!/column .* does not exist|Could not find/i.test(error.message || '')) return [];
+    healthColumns = false;
+  }
+  const { data } = await q().order('updated_at', { ascending: true }).limit(BATCH);
   return data || [];
 }
 
@@ -168,10 +177,11 @@ async function run(now = Date.now()) {
   const supportOpen = await openSupportUserIds(contacts.map((c) => c.user_id));
 
   let customers = 0; let recsOut = 0;
+  const notWritten = []; // evaluated without a health write — stamped after the loop so the scan rotates
   for (const c of contacts) {
     try {
       const ctx = guestCtxFromBookings(byEmail.get(norm(c.email)) || [], now);
-      if (!ctx.hasBooking) continue;                 // only actual customers get a relationship pass
+      if (!ctx.hasBooking) { notWritten.push(c.id); continue; } // only actual customers get a relationship pass
       customers += 1;
       ctx.supportOpen = supportOpen.has(c.user_id);
       ctx.negativeFeedback = false;                  // guest-side negative signal wiring is a follow-up
@@ -185,6 +195,7 @@ async function run(now = Date.now()) {
       console.error(`[crm] guest engine: contact ${c.id} failed:`, err.message);
     }
   }
+  if (healthColumns) await stampEvaluated('contacts', notWritten, now);
   return { scanned: contacts.length, customers, recs: recsOut };
 }
 

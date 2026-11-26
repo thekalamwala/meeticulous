@@ -10,7 +10,13 @@ import toast from "react-hot-toast";
 import {
   PageHeader, Card, Button, FormField, Input, Textarea, Select, Sheet,
   Badge, StatusBadge, EmptyState, ErrorState, ConfirmSheet,
+  FieldStyle, cn,
 } from "../components/dashboard/ui";
+import useFeatureFlags from "../hooks/useFeatureFlags";
+import {
+  KeptPage, KeptHeader, KeptList, KeptRow, RowThumb, RowSwitch, IconAction, KeptEditor, KeptEmpty,
+  KeptError, KeptSkeleton, KeptCard, PinnedAction, pinnedBtn, primaryBtn, quietBtn,
+} from "./catalog/KeptKit";
 
 const MAX_TIERS = 3;
 const emptyTier = { name: "", type: "paid", price_inr: "", perks: "" };
@@ -29,6 +35,10 @@ export default function Memberships() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState(null);
+  const [fetched, setFetched] = useState(false); // first load finished (Kept skeleton)
+  // Kept look (dashboard_v2). Same state and handlers; only the shell differs.
+  const { flags } = useFeatureFlags();
+  const kept = !!flags?.dashboard_v2;
 
   const fetchProgram = async () => {
     setLoadError(false);
@@ -40,9 +50,17 @@ export default function Memberships() {
         getHostMembers().then(({ data: m }) => setMembers(m)).catch(() => {});
       }
     } catch { setLoadError(true); }
+    finally { setFetched(true); }
   };
   useEffect(() => { if (on) fetchProgram(); }, [on]);
 
+  if (!on && kept) return (
+    <KeptPage pinned={false}>
+      <KeptHeader title="Memberships" sub="A monthly fee for ongoing access." />
+      <KeptEmpty icon={Lock} title="Memberships are coming soon"
+        sub="Turn your attention into recurring revenue with free and paid membership tiers." />
+    </KeptPage>
+  );
   if (!on) return (
     <div className="mx-auto max-w-2xl p-4">
       <BackButton />
@@ -105,6 +123,138 @@ export default function Memberships() {
     try { await deleteMembershipTier(confirmDelete.id); setConfirmDelete(null); await fetchProgram(); }
     catch (e) { toast.error(e?.response?.data?.message || "Could not delete"); }
   };
+
+  if (kept) {
+    const canAddTier = !!program && tiers.length < MAX_TIERS;
+    const isLive = program?.status === "live";
+    return (
+      <KeptPage pinned={canAddTier && !showTier}>
+        <KeptHeader title="Memberships"
+          sub={!fetched ? "Loading your membership…" : program ? `${program.name} · ${isLive ? "live" : "draft"} · ${tiers.length} of ${MAX_TIERS} tiers` : "One program, up to three tiers. Free and paid, billed monthly."}
+          action={canAddTier ? <button type="button" onClick={openAddTier} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add tier</button> : null} />
+
+        {!fetched ? <KeptSkeleton rows={2} /> : loadError && !program ? (
+          <KeptError what="membership details" onRetry={fetchProgram} />
+        ) : (
+          <>
+            <KeptCard title={program ? "Your program" : "Start your program"}
+              sub={program ? null : "Name it first. You add tiers and go live after."}
+              action={program ? (
+                <span className={cn("rounded-[8px] px-2.5 py-1 text-[12.5px] font-semibold", isLive ? "bg-pink-50 text-maroon" : "bg-cream text-muted")}>
+                  {isLive ? "Live" : "Draft"}
+                </span>
+              ) : null}>
+              <FieldStyle.Provider value="filled">
+                <div className="space-y-1">
+                  <FormField label="Program name">
+                    <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Inner Circle" />
+                  </FormField>
+                  <FormField label="Blurb" hint="What members get, in a sentence.">
+                    <Textarea value={form.blurb} onChange={(e) => setForm((f) => ({ ...f, blurb: e.target.value }))} rows={2} />
+                  </FormField>
+                </div>
+              </FieldStyle.Provider>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button type="button" onClick={saveProgram} disabled={saving} className={primaryBtn}>{program ? "Save program" : "Create program"}</button>
+                {program && (
+                  <button type="button" onClick={togglePublish} className={quietBtn}>{isLive ? "Move to draft" : "Go live"}</button>
+                )}
+              </div>
+              {program && !isLive && liveTiers === 0 && (
+                <p className="mb-0 mt-3 text-[13.5px] text-muted">Turn on at least one tier, then go live.</p>
+              )}
+            </KeptCard>
+
+            {program && (
+              tiers.length === 0 ? (
+                <KeptEmpty icon={Users} title="No tiers yet" sub="Add a free or paid tier to give members something to join."
+                  action={<button type="button" onClick={openAddTier} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a tier</button>} />
+              ) : (
+                <KeptList label="Tiers" head={<p className="mb-0 mr-auto text-[13.5px] font-semibold text-muted">Tiers · {tiers.length} of {MAX_TIERS}</p>}>
+                  {tiers.map((t) => {
+                    const perks = Array.isArray(t.perks) ? t.perks : [];
+                    return (
+                      <KeptRow key={t.id} onOpen={() => openEditTier(t)}
+                        thumb={<RowThumb icon={Users} />}
+                        title={t.name}
+                        detail={perks.length ? perks.join(" · ") : "No perks listed yet"}
+                        price={t.type === "free" ? "Free" : `₹${Number(t.price_inr).toLocaleString("en-IN")}/mo`}
+                        note={t.type === "free" ? null : "billed monthly"}
+                        trailing={(
+                          <>
+                            <RowSwitch checked={t.status === "live"} onChange={() => toggleTierLive(t)} word={t.status === "live" ? "Live" : "Draft"}
+                              label={`${t.status === "live" ? "Move" : "Publish"} ${t.name}${t.status === "live" ? " to draft" : ""}`} />
+                            <IconAction danger label={`Delete ${t.name}`} onClick={() => setConfirmDelete(t)} />
+                          </>
+                        )} />
+                    );
+                  })}
+                </KeptList>
+              )
+            )}
+
+            {program && members && (
+              <KeptCard title="Members"
+                action={(
+                  <div className="text-right">
+                    <p className="mb-0 font-display text-[20px] font-extrabold tabular-nums text-maroon">{members.member_count || 0} active</p>
+                    {members.mrr > 0 && <p className="mb-0 text-[13px] text-muted">₹{Number(members.mrr).toLocaleString("en-IN")}/mo</p>}
+                  </div>
+                )}>
+                {(!members.members || members.members.length === 0) ? (
+                  <p className="mb-0 text-[14px] text-muted">No one has joined yet. Members show here as they sign up.</p>
+                ) : (
+                  <ul className="-mx-5 divide-y divide-neutral-200 sm:-mx-6">
+                    {members.members.map((m) => (
+                      <li key={m.id} className="flex items-center gap-3 px-5 py-3 sm:px-6">
+                        <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold text-ink">{m.member.name}</span>
+                        {m.tier && <span className="shrink-0 truncate rounded-[8px] bg-cream px-2.5 py-1 text-[12.5px] font-semibold text-muted">{m.tier.name}</span>}
+                        <StatusBadge status={m.status} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </KeptCard>
+            )}
+          </>
+        )}
+
+        <KeptEditor open={showTier} onClose={() => setShowTier(false)} formId="tier-form" saving={false}
+          title={editingTier ? "Edit tier" : "Add tier"} subtitle={editingTier ? tierForm.name || undefined : "Members pick a tier when they join."}
+          saveLabel="Save tier"
+          onDelete={editingTier ? () => { setShowTier(false); setConfirmDelete(editingTier); } : undefined}>
+          <form id="tier-form" onSubmit={(e) => { e.preventDefault(); submitTier(); }} className="space-y-1">
+            <FormField label="Tier name">
+              <Input value={tierForm.name} onChange={(e) => setTierForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Premium" />
+            </FormField>
+            <FormField label="Type">
+              <Select value={tierForm.type} onChange={(e) => setTierForm((f) => ({ ...f, type: e.target.value }))}>
+                <option value="paid">Paid</option>
+                <option value="free">Free</option>
+              </Select>
+            </FormField>
+            {tierForm.type === "paid" && (
+              <FormField label="Price (₹ / month)">
+                <Input type="number" inputMode="decimal" min="1" value={tierForm.price_inr}
+                  onChange={(e) => setTierForm((f) => ({ ...f, price_inr: e.target.value }))} />
+              </FormField>
+            )}
+            <FormField label="Perks" hint="One per line.">
+              <Textarea rows={4} value={tierForm.perks} onChange={(e) => setTierForm((f) => ({ ...f, perks: e.target.value }))} />
+            </FormField>
+          </form>
+        </KeptEditor>
+
+        <ConfirmSheet open={!!confirmDelete} danger title="Delete tier?"
+          message={confirmDelete ? `"${confirmDelete.name}" will be removed.` : ""}
+          confirmLabel="Delete" onConfirm={removeTier} onClose={() => setConfirmDelete(null)} />
+
+        <PinnedAction show={canAddTier && !showTier}>
+          <button type="button" onClick={openAddTier} className={pinnedBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a tier</button>
+        </PinnedAction>
+      </KeptPage>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl p-4 space-y-4">

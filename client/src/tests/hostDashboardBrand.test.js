@@ -21,6 +21,7 @@ const PAGES = [
   'pages/Bookings.jsx',
   'pages/ClientsList.jsx',
   'pages/ClientDetail.jsx',
+  'pages/ClientsV2.jsx',
   'pages/Earnings.jsx',
   'pages/Availability.jsx',
   'pages/Products.jsx',
@@ -39,6 +40,11 @@ const PAGES = [
   'pages/services/ServicesDirectory.jsx',
   'pages/ProfileSetup.jsx',
   'pages/UpgradePlan.jsx',
+  // Kept Catalog (2026-11-26)
+  'pages/CatalogV2.jsx',
+  'pages/catalog/KeptKit.jsx',
+  'pages/catalog/BottomSheet.jsx',
+  'pages/catalog/ServicePreviewCard.jsx',
 ];
 
 const GRAY = /\b(?:text|bg|border|ring|from|to|via|divide|placeholder|fill|stroke)-gray-\d/g;

@@ -11,23 +11,23 @@ export function EmptyState({ icon: Icon, title, script, description, action, cla
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-blush/40 px-6 py-12 text-center',
+        'flex flex-col items-center justify-center rounded-[20px] bg-cream px-6 py-12 text-center',
         className,
       )}
     >
       {Icon && (
-        <div className="mb-3 rounded-full bg-blush p-3 text-maroon">
+        <div className="mb-4 grid h-12 w-12 place-items-center rounded-[14px] bg-blush text-maroon">
           <Icon className="h-6 w-6" />
         </div>
       )}
       {title && (
-        <h3 className="text-sm font-semibold text-ink">
+        <h3 className="mb-0 font-display text-[17px] font-bold tracking-[-0.02em] text-ink">
           {title}
           {script && <> <span className="font-serif font-normal italic text-rose">{script}</span></>}
         </h3>
       )}
-      {description && <p className="mt-1 max-w-sm text-sm text-muted">{description}</p>}
-      {action && <div className="mt-4">{action}</div>}
+      {description && <p className="mt-1.5 max-w-sm text-[14px] text-muted">{description}</p>}
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }

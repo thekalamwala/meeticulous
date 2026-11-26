@@ -91,9 +91,35 @@ function conversionPatch({ won, status, convertedAt, wonAt }) {
   return patch;
 }
 
+const PROFILE_PAGE = 1000;
+
+// Load every profile's match keys ONCE per pass: exact last-10 phone digits and
+// exact email. This replaced a per-lead `profiles ILIKE %phone%` + `email =`
+// lookup, which on ~11k cold leads cost ~22k Supabase requests an hour and used
+// up the Render bandwidth quota (prod API suspended 2026-11-25). Profiles are
+// few (hosts + guests), leads are many — so read the small side once.
+async function loadProfileIndex() {
+  const byPhone = new Map(), byEmail = new Map();
+  for (let from = 0; ; from += PROFILE_PAGE) {
+    const { data, error } = await supabaseAdmin.from('profiles')
+      .select('id, phone, email, created_at').order('id')
+      .range(from, from + PROFILE_PAGE - 1);
+    if (error) throw new Error(`profiles index: ${error.message}`);
+    for (const p of data || []) {
+      const last10 = (normalizePhone(p.phone) || '').slice(-10);
+      if (last10 && !byPhone.has(last10)) byPhone.set(last10, p);
+      if (p.email && !byEmail.has(p.email)) byEmail.set(p.email, p);
+    }
+    if (!data || data.length < PROFILE_PAGE) break;
+  }
+  return { byPhone, byEmail };
+}
+
 // Pass 1 — stitch unlinked leads to profiles.
 async function linkLeadsToProfiles() {
   let linked = 0, from = 0;
+  const { byPhone, byEmail } = await loadProfileIndex();
+  if (!byPhone.size && !byEmail.size) return 0;
   for (;;) {
     const { data: leads } = await supabaseAdmin.from('leads')
       .select('id, phone, email').is('profile_id', null)
@@ -101,18 +127,9 @@ async function linkLeadsToProfiles() {
     if (!leads?.length) break;
 
     for (const l of leads) {
-      let profile = null;
-      const phone = normalizePhone(l.phone);
-      if (phone) {
-        const last10 = phone.slice(-10);
-        // Loose substring pre-filter, then exact last-10 match in JS to avoid
-        // linking a lead to a profile that merely contains the digits.
-        const { data: cands } = await supabaseAdmin.from('profiles').select('id, phone, created_at').ilike('phone', `%${last10}%`).limit(10);
-        profile = matchByPhone(cands || [], last10);
-      }
-      if (!profile && l.email) {
-        ({ data: profile } = await supabaseAdmin.from('profiles').select('id, created_at').eq('email', l.email).limit(1).maybeSingle());
-      }
+      // Exact last-10 phone match first (same rule as matchByPhone), then exact email.
+      const last10 = (normalizePhone(l.phone) || '').slice(-10);
+      const profile = (last10 && byPhone.get(last10)) || (l.email && byEmail.get(l.email)) || null;
       if (profile) {
         await supabaseAdmin.from('leads').update({ profile_id: profile.id, updated_at: new Date().toISOString() }).eq('id', l.id);
         linked++;

@@ -163,8 +163,13 @@ Items previously listed here as pending are now live:
     (`health_state` CHECK + `health_score` / `health_signals` / `health_computed_at`). Additive,
     RLS unchanged (service-role only). Code is schema-fallback safe (`guestRelationshipEngine`
     skips the health write, `deskService` guest query fails soft) so it was safe before apply.
+  - **CRM is OFF until 2027-01-01 (founder decision 2026-11-26).** `crm_admin_sends` was flipped
+    **OFF** on 2026-11-26, and the new `crm_automation` flag (ships OFF, fail-closed, PR #454) gates
+    EVERY CRM background job — attribution, lifecycle + guest engines, list engagement, second-touch,
+    send queue, sequence steps, follow-up + cold-call reminders, cold-call recap. Turn both back on in
+    Admin → Feature flags in January. The CRM admin pages and manual cold calling work with them off.
   - **`crm_admin_sends` — the CRM master send switch.** On the current Meeticulous DB
-    (`spquowzrefozmrzoszkf`) it is **ON** (`enabled=true`, re-verified 2026-11-12; on 2026-11-01 it was OFF and no CRM email had
+    (`spquowzrefozmrzoszkf`) it was **ON** from 2026-11-12 until 2026-11-26 (see the line above; on 2026-11-01 it was OFF and no CRM email had
     been sent from this DB). The history below is from the old Mumbai/Tokyo DBs: it was enabled on
     prod Mumbai since 2026-08-27 (~100+ real messages) and staging Tokyo since 2026-09-02.
     When it is ON: Phase 2 is therefore NOT advisory-only on
@@ -324,6 +329,14 @@ Items previously listed here as pending are now live:
   guard, sampled by intel-rollup/intel-prune, never called on the ingest path. **Filename note:**
   number collides with `v3.218_community_membership.sql` (membership) — cosmetic only, both applied,
   Supabase names migrations independently. Shipped with PR #371.
+- **v3.227** (`v3.227_catalog_sort_order.sql`) — applied 2026-11-26 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`, founder-approved) and verified: nullable `sort_order integer` (no
+  default) on `services` / `products` / `courses` + `idx_{table}_host_sort (host_id, sort_order)`;
+  still 0 anon/authenticated write grants. The host-set Catalog order (Kept Catalog reorder,
+  `PUT /api/{services,products,courses}/reorder`). NULL = never placed; every read sorts
+  `sort_order NULLS LAST, created_at DESC` (`services/catalogOrder.js`), so untouched hosts keep
+  newest-first. Code is schema-fallback safe (order read in its own query; reorder answers 409
+  without the column). Rollback: `ALTER TABLE … DROP COLUMN IF EXISTS sort_order` on the three.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

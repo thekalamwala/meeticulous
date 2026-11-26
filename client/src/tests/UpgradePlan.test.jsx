@@ -40,7 +40,9 @@ beforeEach(() => {
 const renderFor = async (plan) => {
   useAuth.mockReturnValue({ user: { plan }, updateUser: vi.fn() });
   render(<MemoryRouter><UpgradePlan /></MemoryRouter>);
-  await waitFor(() => expect(screen.getAllByText(/Pro/).length).toBeGreaterThan(0));
+  // Wait for the plan CTAs themselves, not just any "Pro" text: the page chrome can
+  // match /Pro/ before the plans load, which made this test race under load.
+  await waitFor(() => expect(screen.getAllByRole('button', { name: /pro/i }).length).toBeGreaterThan(0));
 };
 
 describe('UpgradePlan — tier-aware CTAs', () => {

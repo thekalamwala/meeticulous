@@ -1,3 +1,4 @@
+const { sanitizeTimeOff, publicAvailability } = require("../utils/timeOff");
 const { supabaseAdmin } = require("../config/supabase");
 const { safeError } = require('../utils/httpError');
 const { setPublicCache } = require('../utils/httpCache');
@@ -315,6 +316,8 @@ const buildHostProfile = async (username) => {
   }
   host.booking_count = totalBookings;
   services = (services || []).map((s) => ({ ...s, booking_count: countsByService[s.id] || 0 }));
+  // The host's own order (Kept Catalog, v3.227), newest-first where unplaced.
+  services = await require('../services/catalogOrder').applyHostOrder('services', host.id, services);
 
   // Resolve the primary category's human label for display (best-effort).
   if (host?.primary_category) {
@@ -342,7 +345,8 @@ const buildHostProfile = async (username) => {
     }
   } catch { /* rating is best-effort — a reviews read hiccup must not drop the profile */ }
 
-  return { payload: { host, services: services || [], availability, reviews, avgRating } };
+  // Public payload: whole days off only, no private reasons (utils/timeOff).
+  return { payload: { host, services: services || [], availability: publicAvailability(availability), reviews, avgRating } };
 };
 
 // GET /api/host/:username -- public profile
@@ -838,8 +842,9 @@ const setAvailability = async (req, res) => {
     // produce an empty calendar (host appears open, guests see no slots).
     const scheduleError = validateWeeklySchedule(weekly_schedule);
     if (scheduleError) return res.status(400).json({ message: scheduleError });
-    if (blocked_dates != null && !Array.isArray(blocked_dates))
-      return res.status(400).json({ message: 'blocked_dates must be a list of dates.' });
+    // Time off: plain dates (whole day) or { date, reason?, from?, to? } (utils/timeOff).
+    const timeOff = sanitizeTimeOff(blocked_dates);
+    if (timeOff.error) return res.status(400).json({ message: timeOff.error });
     if (buffer_minutes != null && (!Number.isFinite(Number(buffer_minutes)) || Number(buffer_minutes) < 0 || Number(buffer_minutes) > 480))
       return res.status(400).json({ message: 'buffer_minutes must be between 0 and 480.' });
 
@@ -867,7 +872,7 @@ const setAvailability = async (req, res) => {
     const basePayload = {
       host_id: req.user.id,
       weekly_schedule,
-      blocked_dates,
+      blocked_dates: timeOff.value,
       timezone,
       buffer_minutes: buffer_minutes ?? 0, // Task 13
       updated_at: new Date().toISOString(),

@@ -39,6 +39,8 @@ function ExploreFull() {
   // fallback ('exact' | 'partial' | 'relaxed_topic' | 'relaxed_location' | 'none').
   const [parsed,     setParsed]     = useState(null);
   const [fetching,   setFetching]   = useState(false);
+  const [fetchError, setFetchError] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   const reqRef   = useRef(0);
   const abortRef = useRef(null);
@@ -81,6 +83,7 @@ function ExploreFull() {
     const controller = new AbortController();
     abortRef.current = controller;
     setFetching(true);
+    setFetchError(false);
     getExploreServices({ q, category, service, page, limit: PAGE_SIZE }, { signal: controller.signal })
       .then(res => {
         if (reqId !== reqRef.current) return;
@@ -94,9 +97,10 @@ function ExploreFull() {
         setServices([]);
         setMeta({ total: 0, totalPages: 0, page: 1 });
         setParsed(null);
+        setFetchError(true);
       })
       .finally(() => { if (reqId === reqRef.current) setFetching(false); });
-  }, [q, category, service, page]);
+  }, [q, category, service, page, retry]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -183,22 +187,22 @@ function ExploreFull() {
             Book 1:1 services with coaches, therapists, mentors &amp; more
           </p>
           <form onSubmit={handleSearchSubmit} className="relative mx-auto mt-8 max-w-xl">
-            <div className="flex overflow-hidden rounded-xl border border-black/10 bg-white transition-shadow focus-within:border-primary/40 focus-within:shadow-md">
+            <div className="mt-input !h-14 !gap-1 !pr-1.5">
               <input
                 value={inputVal}
                 onChange={e => setInputVal(e.target.value)}
                 placeholder="Try “Mock Interview in Nagpur” or “Career Consultation online”"
                 aria-label="Search services"
-                className="flex-1 bg-transparent px-4 py-3 text-[15px] text-ink outline-none placeholder:text-muted"
+                className="text-left text-[15px]"
               />
               {inputVal && (
                 <button type="button" onClick={clearSearch}
-                  className="px-3 text-muted transition-colors hover:text-ink" aria-label="Clear search">
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-muted transition-colors hover:text-ink" aria-label="Clear search">
                   <X size={16} />
                 </button>
               )}
               <button type="submit" aria-label="Search"
-                className="bg-primary px-5 text-white transition-colors hover:bg-[#2B0A14]">
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-white transition-colors hover:bg-maroon-dark">
                 <Search size={18} />
               </button>
             </div>
@@ -212,7 +216,7 @@ function ExploreFull() {
         <div>
           <h2 className="font-heading text-xl font-bold tracking-tight text-ink">{headingText}</h2>
           <p className="mt-0.5 text-sm text-muted">
-            {fetching && services.length === 0 ? 'Searching…' : `${meta.total} service${meta.total === 1 ? '' : 's'} found`}
+            {fetchError ? 'Search is temporarily unavailable' : fetching && services.length === 0 ? 'Searching…' : `${meta.total} service${meta.total === 1 ? '' : 's'} found`}
             {q && pWhere && !fallbackNote && ` · ${pWhere}`}
           </p>
         </div>
@@ -262,6 +266,14 @@ function ExploreFull() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : fetchError ? (
+          <div role="alert" className="rounded-[16px] border border-black/5 bg-[#F8FAFC] px-6 py-16 text-center">
+            <p className="font-heading text-lg font-bold text-ink">We couldn’t load the search results</p>
+            <p className="mt-2 text-sm text-muted">The service may be temporarily unavailable. Try again in a moment.</p>
+            <button type="button" onClick={() => setRetry((attempt) => attempt + 1)} className="btn mt-5 inline-flex items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2B0A14]">
+              Try again
+            </button>
           </div>
         ) : services.length === 0 ? (
           <div className="rounded-2xl border border-black/5 bg-[#F8FAFC] px-6 py-16 text-center">

@@ -9,6 +9,8 @@ vi.mock('../services/api', () => ({
   hostGetCategories: vi.fn(),
   listServiceCategories: vi.fn(),
   updateProfile: vi.fn(),
+  // Flags off → the legacy shell these tests were written for (Kept is dashboard_v2).
+  getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })),
 }));
 // FeatureGate → render children so the gated sections (Overview, FAQ, etc.) show.
 vi.mock('../components/common/FeatureGate', () => ({ default: ({ children }) => children }));

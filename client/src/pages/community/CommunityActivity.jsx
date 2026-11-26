@@ -39,8 +39,8 @@ const CommunityActivity = () => {
     </>
   );
 
-  if (err) return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your community activity." onRetry={load} /></div>;
-  if (data === null) return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-20 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+  if (err) return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your community activity." onRetry={load} /></div>;
+  if (data === null) return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-20 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
 
   const posts = data.posts || [];
   const comments = data.comments || [];
@@ -49,7 +49,7 @@ const CommunityActivity = () => {
 
   if (!posts.length && !comments.length) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         {header}
         <EmptyState icon={MessageSquare} title="No community activity yet"
           description="Posts and replies you write in the community show up here."
@@ -59,10 +59,10 @@ const CommunityActivity = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         <Tile label="Posts" value={posts.length} hint="Recent" accent />
         <Tile label="Comments" value={comments.length} hint="Recent" />
         <Tile label="Likes earned" value={likes} hint="On the above" />

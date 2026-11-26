@@ -94,7 +94,7 @@ export const NAV = [
     // a home (the old "Chat" section, now AI support).
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/referrals', label: 'Refer & Earn', icon: 'nav-refer' },
@@ -165,13 +165,24 @@ export const NAV_V2 = [
     // is not one of the four, so it keeps its own line; see below.
     id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
-      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog', '/dashboard/service', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons'] },
+      // The combined list. `railHidden`: the section row ("Catalog") lands here and
+      // lights up on it, but it is not repeated as a sub-row — the dropdown lists
+      // only the five types (founder call, 2026-11-26).
+      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog'], railHidden: true },
+      // Each type also gets its own row (founder call, 2026-11-26), opening that
+      // type's own page, with a + (addTo) straight to its create form — the same
+      // shape Services always had with /dashboard/service/add-new.
+      { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service', addTo: '/dashboard/service/add-new', addLabel: 'Add a service' },
+      { to: '/dashboard/products', label: 'Products', icon: 'nav-products', matchPrefix: ['/dashboard/products', '/dashboard/product/'], addTo: '/dashboard/product/add-new', addLabel: 'Add a product' },
+      { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', matchPrefix: ['/dashboard/courses', '/dashboard/course/'], addTo: '/dashboard/course/add-new', addLabel: 'Add a course', visible: (c) => !!c.flags?.course_purchase },
       // Memberships stays its OWN entry. It arrived on the base branch after this
       // one was cut, and the catalog cannot absorb it: catalogModel fetches
       // services, products, courses and coupons, so a membership program would
       // not appear in the list that replaced its rail line. Collapsing it would
       // leave /dashboard/memberships reachable only by typing the URL.
       { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
+      // Coupons are called Discounts in the product; the URL stays /dashboard/coupons.
+      { to: '/dashboard/coupons', label: 'Discounts', icon: 'nav-refer', matchPrefix: ['/dashboard/coupons', '/dashboard/coupon/'], addTo: '/dashboard/coupon/add-new', addLabel: 'Add a discount', visible: (c) => !!c.flags?.coupons },
     ],
   },
   {
@@ -183,7 +194,7 @@ export const NAV_V2 = [
   {
     // dashboard_sections_v2 (ships OFF): graduated Host Lab Intelligence onto real
     // bookings. Hidden entirely until the flag is on; its routes redirect home off-flag.
-    id: 'intelligence', label: 'Intelligence', icon: 'nav-earnings',
+    id: 'intelligence', label: 'Insights', icon: 'nav-earnings',
     items: [
       { to: '/dashboard/intelligence/overview', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/intelligence/overview' },
       { to: '/dashboard/intelligence/revenue', label: 'Revenue', icon: 'nav-earnings', matchPrefix: '/dashboard/intelligence/revenue' },
@@ -193,26 +204,33 @@ export const NAV_V2 = [
     visible: (c) => !!c.flags?.dashboard_sections_v2,
   },
   {
+    // Kept (founder-approved 2026-11-25): Payouts, Transactions and Invoices are ONE
+    // Money page with tabs, so the section is a single item that opens on Payouts and
+    // stays lit on every tab's URL. Earnings moved to Intelligence › Revenue.
     id: 'money', label: 'Money', icon: 'rail-earnings',
     items: [
-      { to: '/dashboard/earnings', label: 'Earnings', icon: 'nav-earnings' },
-      { to: '/dashboard/payments/payouts', label: 'Payouts', icon: 'nav-payouts', matchPrefix: '/dashboard/payments/payouts', badgeKey: 'verification', badgeNoun: 'verify to get paid' },
-      { to: '/dashboard/payments/transactions', label: 'Transactions', icon: 'nav-transactions', matchPrefix: '/dashboard/payments/transactions' },
-      { to: '/dashboard/invoices', label: 'Invoices', icon: 'nav-invoices', matchPrefix: '/dashboard/invoices' },
+      { to: '/dashboard/payments/payouts', label: 'Money', icon: 'nav-payouts', matchPrefix: ['/dashboard/payments', '/dashboard/invoices', '/dashboard/kyc'], badgeKey: 'verification', badgeNoun: 'verify to get paid' },
     ],
   },
   {
+    // Grow (Kept, founder-approved 2026-11-26): one section with in-page tabs.
+    // Overview is the landing (the phone's raised centre tab opens it). Reviews and
+    // Refer & earn keep their old URLs.
     id: 'grow', label: 'Grow', icon: 'nav-refer',
     items: [
-      { to: '/dashboard/testimonials', label: 'Social proof', icon: 'nav-profile' },
+      { to: '/dashboard/grow', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/grow' },
+      { to: '/dashboard/grow/page', label: 'Your page', icon: 'nav-profile', matchPrefix: '/dashboard/grow/page' },
+      { to: '/dashboard/testimonials', label: 'Reviews', icon: 'nav-profile' },
       { to: '/dashboard/referrals', label: 'Refer & earn', icon: 'nav-refer' },
     ],
   },
   {
     // dashboard_sections_v2 (ships OFF): the console's view of /community — this
     // host's own activity, open questions to answer, and the spaces. Hidden until
-    // the flag is on; routes redirect home off-flag.
-    id: 'community', label: 'Community', icon: 'nav-chat',
+    // the flag is on; routes redirect home off-flag. Stays its OWN section so it can
+    // be promoted (founder, 2026-11-26): `isNew` shows a "New" badge in the rail
+    // and on the phone's More sheet.
+    id: 'community', label: 'Community', icon: 'nav-chat', isNew: true,
     items: [
       { to: '/dashboard/community/activity', label: 'Activity', icon: 'nav-chat', matchPrefix: '/dashboard/community/activity' },
       { to: '/dashboard/community/mentions', label: 'Mentions', icon: 'nav-chat', matchPrefix: '/dashboard/community/mentions' },
@@ -224,7 +242,7 @@ export const NAV_V2 = [
   {
     id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: ['/dashboard/profile', '/dashboard/settings'] },
       { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
       { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
       { to: '/dashboard/chat', label: 'Help & support', icon: 'nav-chat', matchPrefix: '/dashboard/chat', badgeKey: 'chatUnread', badgeNoun: 'new reply' },

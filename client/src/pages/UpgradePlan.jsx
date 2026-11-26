@@ -186,10 +186,39 @@ const UpgradePlan = ({ embedded = false } = {}) => {
   return (
     <div className={embedded ? '' : 'mx-auto max-w-6xl'}>
       {!embedded && <BackButton />}
-      {embedded && (
-        <div className="mb-4 flex flex-col gap-2.5">
-        </div>
-      )}
+      {/* Kept (embedded in Settings): the shell gives the title; the plan facts
+          sit in one calm card. Same values as the legacy header below. */}
+      {embedded ? (
+        <section className="mb-5 rounded-[24px] bg-white p-5 lg:p-6">
+          <p className="mb-0 text-[13px] text-muted lg:text-[14px]">Your plan</p>
+          <p className="mb-0 mt-0.5 font-display text-[26px] font-extrabold leading-tight tracking-[-0.03em] text-ink lg:text-[28px]">
+            {gift ? GIFTED_PRO_LABEL : planLabel(currentPlan, currentPlan)}
+          </p>
+          <p className="mb-0 mt-1 text-[13px] text-muted lg:text-[14px]">
+            {gift && expiry && daysLeft > 0 ? `Free until ${expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}.`
+              : !gift && expiry && daysLeft > 0 ? `Renews in ${daysLeft} day${daysLeft === 1 ? "" : "s"}${user?.billing_cadence ? `, billed ${user.billing_cadence === "annual" ? "yearly" : "monthly"}` : ""}.`
+              : expiry && daysLeft <= 0 ? <span className="font-semibold text-error-fg">Expired. Pick a plan below to keep your Pro tools.</span>
+              : onPaidPlan ? "Active." : "Free forever. Upgrade any time."}
+          </p>
+          {hasActiveSub && (
+            <div className="mt-4 flex flex-col gap-3 border-t border-neutral-200/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="mb-0 text-[13.5px] text-ink lg:text-[14px]">
+                {status === "cancelled"
+                  ? <>Auto-renew is off. Access ends {expiry ? expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "at the end of this period"}.</>
+                  : <>Auto-renew is on. Next charge {expiry ? expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "at the end of this period"}.</>}
+              </p>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button variant="secondary" size="sm" onClick={() => setShowDetails(true)}>View details</Button>
+                {status === "active" && (
+                  <Button variant="danger-outline" size="sm" onClick={() => setConfirmCancel(true)} disabled={cancelling}>
+                    {cancelling ? "Cancelling…" : "Cancel auto-renew"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+      ) : (
       <PageHeader
         title="Upgrade Your Plan"
         subtitle={
@@ -202,11 +231,12 @@ const UpgradePlan = ({ embedded = false } = {}) => {
           </>
         }
       />
+      )}
 
       <GiftedProCard onKeepPro={() => setConfirmKeep(plans.find((p) => p.slug === recommendedSlug) || null)} />
 
       {/* Manage current subscription */}
-      {hasActiveSub && (
+      {hasActiveSub && !embedded && (
         <Card className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm text-neutral-600">
             {status === "cancelled" ? (
@@ -228,7 +258,7 @@ const UpgradePlan = ({ embedded = false } = {}) => {
 
       {/* Free-plan hosts: lay out the whole case to upgrade, right away. */}
       {!loading && !onPaidPlan && (
-        <div className="mb-7 rounded-2xl border border-maroon/20 bg-maroon/5 p-5 sm:p-6">
+        <div className={embedded ? "mb-5 rounded-[24px] bg-white p-5 lg:p-6" : "mb-7 rounded-2xl border border-maroon/20 bg-maroon/5 p-5 sm:p-6"}>
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" strokeWidth={2.25} />
             <h2 className="text-base font-display font-extrabold text-maroon sm:text-lg">Why hosts upgrade</h2>
@@ -236,15 +266,15 @@ const UpgradePlan = ({ embedded = false } = {}) => {
           <p className="mt-1 text-sm text-neutral-600">
             You're on the free plan. Here's what a paid plan unlocks — most hosts earn it back in their first few bookings.
           </p>
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className={cn("mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2", !embedded && "lg:grid-cols-4")}>
             {UPGRADE_REASONS.map(({ Icon, title, body }) => (
-              <div key={title} className="flex gap-3 rounded-xl border border-primary/10 bg-white/70 p-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+              <div key={title} className={embedded ? "flex gap-3 rounded-[16px] bg-cream p-3" : "flex gap-3 rounded-xl border border-primary/10 bg-white/70 p-3"}>
+                <span className={embedded ? "grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-blush text-maroon" : "grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"}>
                   <Icon className="h-5 w-5" strokeWidth={2.25} />
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-neutral-900">{title}</p>
-                  <p className="mt-0.5 text-xs leading-snug text-neutral-500">{body}</p>
+                  <p className={cn("mt-0.5 leading-snug", embedded ? "text-[12.5px] text-muted" : "text-xs text-neutral-500")}>{body}</p>
                 </div>
               </div>
             ))}
@@ -253,23 +283,27 @@ const UpgradePlan = ({ embedded = false } = {}) => {
       )}
 
       {/* Cadence toggle */}
-      <div className="mb-7 flex items-center justify-center gap-2">
+      <div className={cn("flex items-center gap-2", embedded ? "mb-4 justify-start" : "mb-7 justify-center")}>
         {/* Same cadence toggle as the public pricing page (PricingCards). */}
-        <div className="inline-flex items-center gap-1 rounded-full border-2 border-neutral-200 bg-white p-1">
+        <div className={embedded ? "inline-flex items-center gap-1 rounded-[14px] bg-white p-1" : "inline-flex items-center gap-1 rounded-full border-2 border-neutral-200 bg-white p-1"}>
           {["monthly", "annual"].map((c) => (
-            <button key={c} onClick={() => setCadence(c)}
-              className={cn("inline-flex items-center gap-1.5 rounded-full px-5 py-1.5 text-sm font-semibold transition-colors", cadence === c ? "bg-ink text-white" : "text-neutral-500 hover:text-ink")}>
+            <button key={c} type="button" onClick={() => setCadence(c)} aria-pressed={cadence === c}
+              className={cn("inline-flex items-center gap-1.5 px-5 text-sm font-semibold transition-colors",
+                embedded ? cn("min-h-[40px] rounded-[10px]", cadence === c ? "bg-maroon text-white" : "text-muted hover:bg-blush hover:text-maroon")
+                  : cn("rounded-full py-1.5", cadence === c ? "bg-ink text-white" : "text-neutral-500 hover:text-ink"))}>
               {c === "monthly" ? "Monthly" : "Annual"}
-              {c === "annual" && <span className={cn("rounded-full px-1.5 py-0.5 text-[10px] font-bold", cadence === "annual" ? "bg-primary text-white" : "bg-primary/10 text-primary")}>save more</span>}
+              {c === "annual" && <span className={cn("px-1.5 py-0.5 font-bold", embedded ? "rounded-[6px] text-[12px]" : "rounded-full text-[10px]", cadence === "annual" ? (embedded ? "bg-white/20 text-white" : "bg-primary text-white") : "bg-primary/10 text-primary")}>save more</span>}
             </button>
           ))}
         </div>
       </div>
 
       {loading ? (
-        <p className="py-10 text-center text-sm text-neutral-400">Loading plans…</p>
+        embedded
+          ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2" aria-busy="true" aria-label="Loading plans">{[0, 1].map((i) => <span key={i} className="h-[340px] animate-pulse rounded-[24px] bg-white" />)}</div>
+          : <p className="py-10 text-center text-sm text-neutral-400">Loading plans…</p>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className={embedded ? "grid grid-cols-1 gap-4 sm:grid-cols-2" : "grid grid-cols-1 gap-6 md:grid-cols-3"}>
           {plans.map((plan) => {
             const isCurrentTier = currentPlan === plan.slug;
             // "Current Plan" only when tier AND cadence match — otherwise the
@@ -284,17 +318,21 @@ const UpgradePlan = ({ embedded = false } = {}) => {
               ? annualEquivOfMonthly - Number(plan.annual_price) : 0;
 
             return (
-              <div key={plan.slug} className={cn("relative flex flex-col rounded-2xl border-2 bg-white p-6 dash-elev-1",
+              <div key={plan.slug} className={embedded
+                ? cn("relative flex flex-col rounded-[24px] bg-white p-5 lg:p-6", (isCurrentTier || isRecommended) && "ring-2 ring-inset ring-maroon")
+                : cn("relative flex flex-col rounded-2xl border-2 bg-white p-6 dash-elev-1",
                 isCurrentTier ? "border-primary ring-2 ring-primary/20"
                   : isRecommended ? "border-primary shadow-lg ring-2 ring-primary/30"
                   : "border-neutral-200")}>
-                {isRecommended && (
+                {isRecommended && (embedded ? (
+                  <span className="absolute right-4 top-4 whitespace-nowrap rounded-[8px] bg-maroon px-2 py-0.5 text-[12px] font-semibold text-white">Most popular</span>
+                ) : (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-0.5 text-[11px] font-bold text-white shadow">
                     Most Popular
                   </span>
-                )}
+                ))}
                 <div className="mb-4">
-                  <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-semibold text-primary">{planLabel(plan.slug, plan.name)}</span>
+                  <span className={embedded ? "rounded-[8px] bg-blush px-2.5 py-1 text-[13px] font-semibold text-maroon" : "rounded-full bg-sand px-2.5 py-1 text-xs font-semibold text-primary"}>{planLabel(plan.slug, plan.name)}</span>
                   <div className="mt-3">
                     {!paid ? (
                       <p className="font-heading text-4xl font-extrabold text-ink">Free</p>
@@ -308,7 +346,7 @@ const UpgradePlan = ({ embedded = false } = {}) => {
                           {inr(Math.round(price * (1 + GST_RATE)))}
                           <span className="ml-1 text-sm font-normal text-neutral-400">/ {cadence === "monthly" ? "month" : "year"}</span>
                         </p>
-                        <p className="mt-1 text-[11px] text-neutral-500">incl. GST · {inr(price)} + 18% GST</p>
+                        <p className={cn("mt-1 text-neutral-500", embedded ? "text-[12.5px]" : "text-[11px]")}>incl. GST · {inr(price)} + 18% GST</p>
                         {cadence === "annual" && !onPaidPlan && <FoundingNote className="mt-2" />}
                         {user?.plan === "premium_founding" && isCurrentTier && (
                           <p className="mt-2 text-[11px] font-semibold text-maroon">Founding member — your price is locked for life.</p>
@@ -330,9 +368,9 @@ const UpgradePlan = ({ embedded = false } = {}) => {
                 </ul>
 
                 {isCurrentExact && !gift ? (
-                  <div className="rounded-xl bg-neutral-100 py-2.5 text-center text-sm font-medium text-neutral-500">Current Plan</div>
+                  <div className={cn("py-2.5 text-center text-sm font-medium text-neutral-500", embedded ? "rounded-[12px] bg-cream" : "rounded-xl bg-neutral-100")}>{embedded ? "Your plan" : "Current Plan"}</div>
                 ) : !paid ? (
-                  <div className="rounded-xl border border-neutral-200 py-2.5 text-center text-sm text-neutral-400">Default plan</div>
+                  <div className={cn("py-2.5 text-center text-sm", embedded ? "rounded-[12px] bg-cream text-neutral-500" : "rounded-xl border border-neutral-200 text-neutral-400")}>{embedded ? "Free plan" : "Default plan"}</div>
                 ) : (
                   <Button full onClick={() => (gift ? setConfirmKeep(plan) : setPendingPlan(plan))} disabled={paying === plan.slug || !cadenceAvailable}>
                     {paying === plan.slug ? "Opening payment…"
@@ -351,14 +389,14 @@ const UpgradePlan = ({ embedded = false } = {}) => {
 
       {/* Full Free vs Pro comparison — free hosts only (paid hosts already have Pro). */}
       {!loading && !onPaidPlan && (
-        <div className="mt-10 rounded-2xl border border-maroon/15 bg-white p-4 sm:p-6">
+        <div className={embedded ? "mt-5 rounded-[24px] bg-white p-4 sm:p-6" : "mt-10 rounded-2xl border border-maroon/15 bg-white p-4 sm:p-6"}>
           <PlanComparison />
         </div>
       )}
 
       {/* Paid hosts: route custom / high-volume needs to Enterprise. */}
       {!loading && onPaidPlan && (
-        <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-5 sm:flex-row sm:items-center sm:p-6">
+        <div className={cn("flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center sm:p-6", embedded ? "mt-5 rounded-[24px] bg-white" : "mt-8 rounded-2xl border border-neutral-200 bg-neutral-50")}>
           <div className="flex items-start gap-3">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
               <Building2 className="h-6 w-6" strokeWidth={2} />
@@ -376,9 +414,15 @@ const UpgradePlan = ({ embedded = false } = {}) => {
         </div>
       )}
 
+      {embedded ? (
+        <p className="mb-0 mt-5 px-1 text-[12.5px] text-muted lg:text-[13px]">
+          Plans renew {cadence === "annual" ? "yearly" : "monthly"} until you cancel; you keep access until the period ends. Prices include 18% GST. Payments by Razorpay.
+        </p>
+      ) : (
       <Card className="mt-8 text-center text-sm text-neutral-500">
         Plans auto-renew {cadence}. Cancel anytime — you keep access until the period ends. GST charged on top. · Powered by Razorpay.
       </Card>
+      )}
 
       <Modal
         open={!!pendingPlan}

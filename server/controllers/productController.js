@@ -5,6 +5,8 @@ const otpStore = require('../utils/otpStore');
 const { identifierOf } = require('../utils/bookingGrant');
 const crypto = require('crypto');
 const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEngine');
+const { sortHostOrder, applyHostOrder } = require('../services/catalogOrder');
+const { withGuestPrices } = require('../services/guestPrice');
 const platformConfig = require('../services/platformConfig');
 const { sendProductDownloadEmail } = require('../utils/productEmail');
 const { runInBackground } = require('../utils/background');
@@ -92,7 +94,8 @@ const getMyProducts = async (req, res) => {
     const { data, error } = await supabaseAdmin.from('products')
       .select('*').eq('host_id', req.user.id).order('created_at', { ascending: false });
     if (error) return safeError(res, error);
-    res.json(data || []);
+    // Kept Catalog: the host's order (v3.227) + what a guest pays (server-computed).
+    res.json(await withGuestPrices(sortHostOrder(data || []), 'product', req.user.id));
   } catch (error) { safeError(res, error); }
 };
 
@@ -166,7 +169,8 @@ const getHostProducts = async (req, res) => {
       .eq('host_id', host.id).eq('is_active', true)
       .order('created_at', { ascending: false });
     if (error) return safeError(res, error);
-    res.json(data || []);
+    // The host's own order (v3.227); falls back to newest-first.
+    res.json(await applyHostOrder('products', host.id, data || []));
   } catch (error) { safeError(res, error); }
 };
 

@@ -31,7 +31,7 @@ export default function ConsentBanner({ variant = "full" }) {
       <div
         role="dialog"
         aria-label="Cookie and analytics consent"
-        className="fixed inset-x-0 bottom-0 z-[9999] flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-black/10 bg-white/95 px-4 py-2.5 text-xs text-[#252525] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-[9999] flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-black/10 bg-white/95 px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] text-xs text-[#252525] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] backdrop-blur"
       >
         <span>We use cookies for analytics &amp; marketing. Essential analytics always run.</span>
         <span className="flex items-center gap-2">
@@ -47,7 +47,7 @@ export default function ConsentBanner({ variant = "full" }) {
     <div
       role="dialog"
       aria-label="Cookie and analytics consent"
-      className="fixed z-[9999] bottom-5 right-5 max-[600px]:bottom-2.5 max-[600px]:right-2.5 max-[600px]:max-w-[94%] w-[372px] max-w-[372px] flex flex-col items-center gap-3 rounded-[16px] border border-black/5 bg-white px-6 pb-6 pt-5 max-[600px]:px-4 text-[#252525] shadow-[0_24px_60px_-20px_rgba(26,26,26,0.4)]"
+      className="fixed z-[9999] bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] right-5 max-[600px]:bottom-[calc(0.625rem+env(safe-area-inset-bottom,0px))] max-[600px]:right-2.5 max-[600px]:max-w-[94%] w-[372px] max-w-[372px] flex flex-col items-center gap-3 rounded-[16px] border border-black/5 bg-white px-6 pb-6 pt-5 max-[600px]:px-4 text-[#252525] shadow-[0_24px_60px_-20px_rgba(26,26,26,0.4)]"
     >
       {/* Illustration-led card: two cookie characters (inline SVG, CookieDuo)
           above a bold headline — replaced the old pop-out cookie photo. */}

@@ -32,7 +32,7 @@ import { SETTINGS_NAV } from "./dashboardNav";
 // Canonical cover-photo aspect ratio. Cropped to this on upload and rendered at
 // this ratio in every place the cover shows (here, HostProfile, ServiceBooking)
 // so one upload looks identical everywhere. Change here = change the box classes too.
-const COVER_ASPECT = 3; // 3:1 banner
+export const COVER_ASPECT = 3; // 3:1 banner
 
 // Keep only the digits of a phone number (e.g. "+91 98765 43210" → "919876543210").
 const digitsOf = (s) => String(s || '').replace(/[^\d]/g, '');
@@ -63,7 +63,7 @@ const LiveChip = ({ children }) => (
 // label shown before the input, `base` is the full URL we store (public pages
 // render the stored value as an href). `plain` platforms take a full value
 // (website URL / email). `pro` platforms are gated to paid plans.
-const SOCIAL_PLATFORMS = [
+export const SOCIAL_PLATFORMS = [
   { key: 'instagram', label: 'Instagram',    prefix: 'instagram.com/',    base: 'https://instagram.com/',    ph: 'yourhandle' },
   { key: 'facebook',  label: 'Facebook',     prefix: 'facebook.com/',     base: 'https://facebook.com/',     ph: 'yourpage' },
   { key: 'linkedin',  label: 'LinkedIn',     prefix: 'linkedin.com/in/',  base: 'https://linkedin.com/in/',  ph: 'you' },
@@ -83,7 +83,7 @@ const SOCIAL_PLATFORMS = [
 ];
 
 // Stored value (full URL) → the handle shown in the input.
-const handleFromUrl = (p, url = '') => {
+export const handleFromUrl = (p, url = '') => {
   if (p.plain || !p.base || !url) return url || '';
   const noScheme = url.replace(/^https?:\/\/(www\.)?/i, '');
   const baseNoScheme = p.base.replace(/^https?:\/\/(www\.)?/i, '');
@@ -92,7 +92,7 @@ const handleFromUrl = (p, url = '') => {
     : url; // legacy value that doesn't match the base — show it raw
 };
 // Typed handle → the full URL we store (empty stays empty).
-const urlFromHandle = (p, handle = '') => {
+export const urlFromHandle = (p, handle = '') => {
   const h = handle.trim().replace(/^@+/, '').replace(/^\/+/, '');
   if (!h) return '';
   return (p.plain || !p.base) ? h : p.base + h;
@@ -143,7 +143,7 @@ const Favicon = ({ domain, name }) => {
 // a valid email (email field), or an http(s) URL. Bare domains are normalised
 // to https:// to match the "full URL" UX the placeholders imply.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const sanitizeSocialLinks = (links = {}) => {
+export const sanitizeSocialLinks = (links = {}) => {
   const out = {};
   for (const { key, type } of SOCIAL_PLATFORMS) {
     const raw = String(links[key] ?? '').trim();
@@ -242,7 +242,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, inline =
       <button type="button" onClick={() => setEditing(true)}
         className={cn('group gap-1 text-left', inline ? 'inline-flex max-w-full items-center' : 'flex w-full items-start gap-1.5', textClass)}>
         <span className={cn('truncate', !value && 'font-normal text-neutral-400')}>{value || placeholder}</span>
-        <Pencil className={cn('h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100', !inline && 'mt-0.5')} strokeWidth={2.25} />
+        <Pencil className={cn('h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100 [@media(hover:none)]:opacity-100', !inline && 'mt-0.5')} strokeWidth={2.25} />
       </button>
     );
   }
@@ -469,7 +469,7 @@ const ProfileSetup = ({ embedded = false } = {}) => {
                     alt=""
                     className="h-full w-full object-cover object-center"
                   />
-                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100 [@media(hover:none)]:opacity-100">
                     <Camera className="h-3.5 w-3.5" strokeWidth={2.25} /> {form.cover_image ? "Change" : "Add cover"}
                   </span>
                 </button>

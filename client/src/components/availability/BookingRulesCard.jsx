@@ -68,7 +68,7 @@ const Card = ({ variant, title, subtitle, pro, mascot, children }) => (
   </section>
 );
 
-const TZ = [
+export const TZ = [
   ['Asia/Kolkata', 'Asia/Kolkata (GMT +05:30)'],
   ['America/New_York', 'America/New_York (EST)'],
   ['America/Los_Angeles', 'America/Los_Angeles (PST)'],
@@ -77,7 +77,7 @@ const TZ = [
   ['Asia/Dubai', 'Asia/Dubai (GST)'],
   ['Asia/Singapore', 'Asia/Singapore (SGT)'],
 ];
-const BUFFERS = [[0, 'No gap'], [5, '5 minutes'], [10, '10 minutes'], [15, '15 minutes'], [30, '30 minutes'], [60, '1 hour']];
+export const BUFFERS = [[0, 'No gap'], [5, '5 minutes'], [10, '10 minutes'], [15, '15 minutes'], [30, '30 minutes'], [60, '1 hour']];
 
 export default function BookingRulesCard({ timezone, setTimezone, bufferMinutes, setBufferMinutes, caps, setCaps, isFree, onChange }) {
   const touch = () => onChange && onChange();

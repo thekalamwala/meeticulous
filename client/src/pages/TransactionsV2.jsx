@@ -1,9 +1,7 @@
-// Transactions — dashboard_v2 graduation. The existing Transactions page is
-// already a modern, real-data view (filters, search, pagination, detail modal,
-// CSV export). Rather than rebuild its money logic, we reuse it verbatim with
-// `embedded` — that swaps only the hero for the shared Money SubNav + v2 heading.
-import Transactions from './Transactions';
+// Transactions — the Money page's second tab (Kept). See ./money/MoneyV2.jsx.
+import MoneyV2 from './money/MoneyV2';
+import TransactionsTab from './money/TransactionsTab';
 
-const TransactionsV2 = () => <Transactions embedded />;
-
-export default TransactionsV2;
+export default function TransactionsV2() {
+  return <MoneyV2 tab="transactions">{({ verified }) => <TransactionsTab verified={verified} />}</MoneyV2>;
+}
