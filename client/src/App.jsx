@@ -206,6 +206,7 @@ const AccountPane       = lazy(() => import('./pages/settings/AccountPane'));
 const NotificationsPane = lazy(() => import('./pages/settings/NotificationsPane'));
 const IntegrationsPane  = lazy(() => import('./pages/settings/IntegrationsPane'));
 const HelpHub           = lazy(() => import('./pages/help/HelpHub'));
+const NotificationsPage = lazy(() => import('./pages/notifications/NotificationsPage'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -508,6 +509,11 @@ function ChatRoute() {
   const { flags } = useFeatureFlags();
   // Kept: the chat page IS Help (Tithi + answers + feedback). ChatPageV2 stays for reference.
   return flags.dashboard_v2 ? <HelpHub /> : <ChatPage />;
+}
+// Kept: every notification, grouped by day (the bell opens it on phones). Additive route.
+function NotificationsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <NotificationsPage /> : <Navigate to="/dashboard" replace />;
 }
 // Kept: feedback is one option on Help now; the old URL opens Help with its sheet up.
 function FeedbackRoute() {
@@ -823,6 +829,7 @@ function App() {
           <Route path="/dashboard/invoices" element={<DashboardWrapper><InvoicesRoute /></DashboardWrapper>} />
           <Route path="/dashboard/feedback" element={<DashboardWrapper><FeedbackRoute /></DashboardWrapper>} />
           <Route path="/dashboard/chat" element={<DashboardWrapper><ChatRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/notifications" element={<DashboardWrapper><NotificationsRoute /></DashboardWrapper>} />
 
           {/* Host Lab — redesign prototype of the host dashboard. Its own shell,
               its own sample data, zero API calls. Deliberately NOT wrapped in

@@ -121,8 +121,11 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     community_v2: true, community_memberships: true, availability_editor: true, google_calendar: true,
   },
   '/notifications': { notifications: [
-    { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(-1), read_at: null, data: {} },
-  ], unreadCount: 1 },
+    { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(0, 9, 12), read_at: null, data: {} },
+    { id: 'n2', type: 'payment', title: 'Payment received', body: '₹1,499 from Meera Iyer for Funnel Teardown', link: '/dashboard/earnings', created_at: at(-1, 18, 40), read_at: null, data: {} },
+    { id: 'n3', type: 'booking_rescheduled', title: 'Booking moved', body: 'Kabir Rao moved Growth Sprint Workshop to Friday, 4:00pm', link: '/dashboard/bookings', created_at: at(-1, 10, 5), read_at: at(-1, 12), data: {} },
+    { id: 'n4', type: 'payout', title: 'Payout sent', body: '₹2,840 is on its way to your bank', link: '/dashboard/payments/payouts', created_at: at(-4, 9, 0), read_at: at(-4, 10), data: {} },
+  ], unreadCount: 2 },
   '/notifications/channel': {},
   '/kyc/me': { status: 'not_started', pending_earnings: 1424.05, payouts_ready: false },
   '/host/services': SERVICES,
