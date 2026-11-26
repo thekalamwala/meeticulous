@@ -3,6 +3,7 @@
 // figure here is made up. No real guest data belongs in this file.
 import { catalogFixtures } from './dashPreviewCatalog';
 import { buildCrmFixtures } from './dashPreviewCrm';
+import { buildMoneyFixtures } from './dashPreviewMoney';
 
 const day = 86_400_000;
 const at = (days, h = 10, m = 30) => {
@@ -219,6 +220,7 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/vendor/intelligence/demand': DEMAND(pro),
   ...buildCrmFixtures(),
   ...GROW(growCase()),
+  ...buildMoneyFixtures(),
   // Catalog (kept-catalog): services/products/courses/discounts/memberships.
   // Last on purpose: its '/services' rows are a superset of the CRM picker's.
   ...catalogFixtures(),

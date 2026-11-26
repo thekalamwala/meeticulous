@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useKyc } from '../../context/KycContext';
-import { Card, FormField, Input, Select, Button } from '../../components/dashboard/ui';
+import { FormField, Input, Select, Button } from '../../components/dashboard/ui';
 
 const IFSC = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
@@ -23,10 +23,10 @@ export default function KycBank() {
   };
 
   return (
-    <Card className="p-4 sm:p-5">
-      <h2 className="mb-0.5 text-base font-semibold text-gray-900">Bank account</h2>
-      <p className="mb-4 text-sm text-gray-500">Payouts are sent to this account after verification.</p>
-      <form onSubmit={next} className="space-y-3">
+    <section className="rounded-[24px] bg-white p-5 sm:p-6">
+      <h2 className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink sm:text-[20px]">Bank account</h2>
+      <p className="mb-5 mt-1 text-[14px] text-muted">Payouts are sent to this account after verification.</p>
+      <form onSubmit={next} className="space-y-4">
         <FormField label="Account holder name" htmlFor="b-holder" required className="mb-0">
           <Input id="b-holder" value={bank.holder_name} onChange={set('holder_name')} placeholder="As per bank records" />
         </FormField>
@@ -58,6 +58,6 @@ export default function KycBank() {
           <Button type="submit" size="lg" full>Continue</Button>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }
