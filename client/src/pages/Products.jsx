@@ -10,6 +10,7 @@ import {
 } from "../services/api";
 import { planLabel, normalizePlan } from "../utils/themeUtils";
 import { useAuth } from "../context/AuthContext";
+import useAddNewRoute, { useEditParam } from "../hooks/useAddNewRoute";
 import { useFeature } from "../context/FeatureContext";
 import BackButton from "../components/common/BackButton";
 import ThumbnailCropper from "../components/common/ThumbnailCropper";
@@ -140,6 +141,9 @@ const Products = () => {
     setShowForm(true);
     setDirty(false);
   };
+  // /dashboard/product/add-new opens the create form (rail +, Catalog "New").
+  // Waits for plans so a plan without products sees the upsell, not a form.
+  useAddNewRoute({ open: openCreate, ready: canCreate && plans !== null, formOpen: showForm, listPath: "/dashboard/products" });
   const openEdit = (p) => {
     setForm({
       title: p.title,
@@ -158,6 +162,8 @@ const Products = () => {
     setFileError("");
     setThumbMode("url");
   };
+  // /dashboard/products?edit=<id> (from the Catalog) opens that product.
+  useEditParam(products, openEdit);
   const doDiscard = () => {
     setShowForm(false);
     setEditingId(null);

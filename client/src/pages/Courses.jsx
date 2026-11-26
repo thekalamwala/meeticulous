@@ -4,6 +4,7 @@ import {
 } from "../services/api";
 import { normalizePlan } from "../utils/themeUtils";
 import { useAuth } from "../context/AuthContext";
+import useAddNewRoute, { useEditParam } from "../hooks/useAddNewRoute";
 import { useFeature } from "../context/FeatureContext";
 import BackButton from "../components/common/BackButton";
 import ThumbnailCropper from "../components/common/ThumbnailCropper";
@@ -60,6 +61,8 @@ const Courses = () => {
   useEffect(() => { fetchCourses(); }, []);
 
   const openCreate = () => { setForm(emptyForm); setEditingId(null); setShowForm(true); setDirty(false); };
+  // /dashboard/course/add-new opens the create form (rail +, Catalog "New").
+  useAddNewRoute({ open: openCreate, ready: canCreate, formOpen: showForm, listPath: "/dashboard/courses" });
   const openEdit = (c) => {
     setForm({
       title: c.title, description: c.description || "",
@@ -71,6 +74,8 @@ const Courses = () => {
     });
     setEditingId(c.id); setShowForm(true); setDirty(false);
   };
+  // /dashboard/courses?edit=<id> (from the Catalog) opens that course.
+  useEditParam(courses, openEdit);
   const doDiscard = () => { setShowForm(false); setEditingId(null); setDirty(false); setConfirmDiscard(false); };
   const handleCancel = () => { if (dirty) { setConfirmDiscard(true); return; } doDiscard(); };
   const handleChange = (f, v) => { setForm((s) => ({ ...s, [f]: v })); setDirty(true); };

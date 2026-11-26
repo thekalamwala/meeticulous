@@ -3,8 +3,9 @@
  * Handles: basic info, thumbnail crop/zoom, rich text, inclusions/exclusions, FAQ builder, notes.
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, MapPin, AlertTriangle } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { ChevronLeft, Plus, MapPin, AlertTriangle, Eye } from 'lucide-react';
 import { svcCreate, svcUpdate, uploadImage, hostGetCategories, listServiceCategories, hostSuggestServiceCategory, aiGenerateListing, updateProfile, getPriceBenchmark } from '../../services/api';
 import toast from 'react-hot-toast';
 import { TrendingUp } from 'lucide-react';
@@ -16,6 +17,16 @@ import { useAuth } from '../../context/AuthContext';
 import { normalizePlan } from '../../utils/themeUtils';
 import CancellationPolicyField from '../../components/services/CancellationPolicyField';
 import { fieldError } from '../../utils/apiError';
+import useFeatureFlags from '../../hooks/useFeatureFlags';
+import ServicePreviewCard from '../catalog/ServicePreviewCard';
+import BottomSheet from '../catalog/BottomSheet';
+
+// Card shells. Kept (dashboard_v2): a borderless white 24px card on cream; the
+// legacy look keeps the bordered Card. Module-level so a re-render never swaps
+// the component type under the fields (which would drop focus mid-typing).
+const LegacyBox = ({ className, ...p }) => <Box className={className} {...p} />;
+const KeptBox = ({ className, ...p }) => <section className={cn('rounded-[24px] bg-white', className)} {...p} />;
+const KEPT_PRESS = 'transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:active:scale-100 touch-manipulation select-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose';
 
 // ₹ floor for paid services on the self-serve plans; Supreme is exempt, ₹0 free is
 // always allowed. Mirrors the server's planMiddleware.MIN_SERVICE_PRICE.
@@ -330,7 +341,18 @@ const SuggestSubcategoryModal = ({ primary, onClose }) => {
 
 export default function ServiceForm({ initialData, serviceId }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const isEdit = !!serviceId;
+  // Kept editor (dashboard_v2): same fields, same save; new shell. A pushed
+  // screen with Save pinned on a phone, form + live card preview on desktop.
+  const { flags } = useFeatureFlags();
+  const kept = !!flags?.dashboard_v2;
+  const Box = kept ? KeptBox : LegacyBox;
+  const h2 = kept ? 'font-display text-[18px] font-bold tracking-[-0.02em] text-ink sm:text-[20px]' : 'text-base font-display font-extrabold text-maroon';
+  // Where Back / Save return: the screen the host came from (Catalog passes it),
+  // else the services list as before.
+  const backTo = (kept && location.state?.from) || '/dashboard/services';
+  const [previewOpen, setPreviewOpen] = useState(false);
   const { user, updateUser } = useAuth() || {};
   // Offline (in-person) services need a venue. map_link is a profile-level field
   // (shared across all the host's offline services), so it's edited inline here
@@ -488,7 +510,7 @@ export default function ServiceForm({ initialData, serviceId }) {
         await svcCreate(payload);
         toast.success('Service created!');
       }
-      navigate('/dashboard/services');
+      navigate(backTo);
     } catch (err) {
       // Surface the first field-level validation error instead of the generic
       // "Validation failed", so a save that trips a field cap tells the host
@@ -500,20 +522,45 @@ export default function ServiceForm({ initialData, serviceId }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form id="service-form" onSubmit={handleSubmit} className={cn(kept && 'pb-28 lg:pb-0')}>
       {/* Page header */}
-      <button type="button" onClick={() => navigate('/dashboard/services')}
-        className="mb-3 inline-flex items-center gap-1 text-sm text-neutral-500 transition-colors hover:text-neutral-800">
-        <ChevronLeft className="h-4 w-4" /> Back to services
-      </button>
-      <PageHeader
-        title={isEdit ? 'Edit Service' : 'Add New Service'}
-        subtitle={isEdit ? 'Update your service details' : 'Create a new service to offer to clients'}
-      />
+      {kept ? (
+        <header className="mb-5 flex flex-col gap-2 sm:mb-6">
+          <button type="button" onClick={() => navigate(backTo)}
+            className={cn('-ml-2 inline-flex h-11 w-fit items-center gap-1 rounded-[12px] px-2 text-[14px] font-semibold text-muted hover:bg-blush hover:text-maroon', KEPT_PRESS)}>
+            <ChevronLeft className="h-5 w-5" strokeWidth={2.4} /> {backTo === '/dashboard/catalog' ? 'Catalog' : 'Services'}
+          </button>
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="mb-0 truncate font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[34px]">
+                {isEdit ? (form.title.trim() || 'Edit service') : 'New service'}
+              </h1>
+              <p className="mt-1.5 text-[14px] text-muted sm:text-[15px]">
+                {isEdit ? 'Changes show on your page as soon as you save.' : 'Guests can book it as soon as you publish.'}
+              </p>
+            </div>
+          </div>
+        </header>
+      ) : (
+        <>
+          <button type="button" onClick={() => navigate('/dashboard/services')}
+            className="mb-3 inline-flex items-center gap-1 text-sm text-neutral-500 transition-colors hover:text-neutral-800">
+            <ChevronLeft className="h-4 w-4" /> Back to services
+          </button>
+          <PageHeader
+            title={isEdit ? 'Edit Service' : 'Add New Service'}
+            subtitle={isEdit ? 'Update your service details' : 'Create a new service to offer to clients'}
+          />
+        </>
+      )}
+
+      {/* Kept desktop: the form beside a sticky live preview of the guest's card. */}
+      <div className={cn(kept && 'lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6')}>
+      <div className="min-w-0">
 
       {/* ── ABOVE THE FOLD: Basic info ── */}
-      <Card padded={false} className="mb-6 p-6">
-        <h2 className="mb-5 text-base font-display font-extrabold text-maroon">Basic Information</h2>
+      <Box className="mb-6 p-6">
+        <h2 className={cn('mb-5', h2)}>Basic Information</h2>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Left column */}
@@ -710,7 +757,7 @@ export default function ServiceForm({ initialData, serviceId }) {
             </FeatureGate>
           </div>
         </div>
-      </Card>
+      </Box>
 
       {/* ── BELOW THE FOLD: balanced two-column layout. Columns stretch to equal
           height; FAQ sits directly below Overview on the left. ── */}
@@ -718,8 +765,8 @@ export default function ServiceForm({ initialData, serviceId }) {
         {/* Left: Overview, then FAQ directly below it */}
         <div className="flex flex-col gap-6">
           <FeatureGate flag="service_rich_overview">
-            <Card padded={false} className="p-6">
-              <h2 className="mb-1 text-base font-display font-extrabold text-maroon">Overview</h2>
+            <Box className="p-6">
+              <h2 className={cn('mb-1', h2)}>Overview</h2>
               <p className="mb-4 text-xs text-neutral-400">Shown on the Overview tab of your public service page</p>
               <RichEditor value={form.long_description} onChange={v => set('long_description', v)}/>
               {/* Parity with the server cap (serviceWriteRules long_description = 20000);
@@ -727,53 +774,92 @@ export default function ServiceForm({ initialData, serviceId }) {
               <div className={`mt-2 text-right text-xs ${(form.long_description?.length || 0) > 20000 ? 'text-red-500' : 'text-neutral-400'}`}>
                 {(form.long_description?.length || 0).toLocaleString()} / 20,000
               </div>
-            </Card>
+            </Box>
           </FeatureGate>
 
           {/* FAQ — directly below Overview */}
           <FeatureGate flag="service_faqs">
-            <Card padded={false} className="p-6">
-              <h2 className="mb-1 text-base font-display font-extrabold text-maroon">FAQs</h2>
+            <Box className="p-6">
+              <h2 className={cn('mb-1', h2)}>FAQs</h2>
               <p className="mb-4 text-xs text-neutral-400">Optional · Add as many as you need</p>
               <FAQBuilder value={form.faqs} onChange={v => set('faqs', v)}/>
-            </Card>
+            </Box>
           </FeatureGate>
         </div>
 
         {/* Right: Inclusions, Exclusions, Notes */}
         <div className="flex flex-col gap-6">
           <FeatureGate flag="service_inclusions">
-            <Card padded={false} className="p-6">
-              <h2 className="mb-1 text-base font-display font-extrabold text-maroon">What's Included</h2>
+            <Box className="p-6">
+              <h2 className={cn('mb-1', h2)}>What's Included</h2>
               <p className="mb-3 text-xs text-neutral-400">Press Enter or comma after each item</p>
               <TagInput value={form.included_items} onChange={v => set('included_items', v)} placeholder="Type and press Enter…" color="green"/>
-            </Card>
+            </Box>
           </FeatureGate>
 
           <FeatureGate flag="service_inclusions">
-            <Card padded={false} className="p-6">
-              <h2 className="mb-1 text-base font-display font-extrabold text-maroon">Not Included</h2>
+            <Box className="p-6">
+              <h2 className={cn('mb-1', h2)}>Not Included</h2>
               <p className="mb-3 text-xs text-neutral-400">Press Enter or comma after each item</p>
               <TagInput value={form.excluded_items} onChange={v => set('excluded_items', v)} placeholder="Type and press Enter…" color="red"/>
-            </Card>
+            </Box>
           </FeatureGate>
 
           {/* Important Note */}
-          <Card padded={false} className="flex-1 p-6">
-            <h2 className="mb-1 text-base font-display font-extrabold text-maroon">Important Notes</h2>
+          <Box className="flex-1 p-6">
+            <h2 className={cn('mb-1', h2)}>Important Notes</h2>
             <p className="mb-3 text-xs text-neutral-400">Optional · Shown to clients before booking</p>
             <Textarea rows={4} value={form.important_note} onChange={e => set('important_note', e.target.value)} placeholder="e.g. Please bring Search Console access. Calls are recorded." />
-          </Card>
+          </Box>
         </div>
       </div>
 
-      {/* Submit bar */}
-      <div className="sticky bottom-0 z-20 -mx-4 flex items-center justify-between gap-4 border-t border-neutral-200 bg-white/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
-        <Button type="button" variant="secondary" onClick={() => navigate('/dashboard/services')}>Cancel</Button>
-        <Button type="submit" disabled={saving} className="min-w-[140px]">
-          {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Publish Service'}
-        </Button>
       </div>
+      {kept && (
+        <aside className="hidden lg:sticky lg:top-6 lg:flex lg:flex-col lg:gap-3">
+          <p className="mb-0 text-[13px] font-semibold text-faint">How guests see it</p>
+          <ServicePreviewCard form={form} feeOnly={feeOnly} hostName={user?.name} />
+          <Button type="submit" disabled={saving} className="w-full">
+            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Publish service'}
+          </Button>
+          <Button type="button" variant="secondary" className="w-full" onClick={() => navigate(backTo)}>Cancel</Button>
+        </aside>
+      )}
+      </div>
+
+      {/* Submit bar */}
+      {!kept && (
+        <div className="sticky bottom-0 z-20 -mx-4 flex items-center justify-between gap-4 border-t border-neutral-200 bg-white/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
+          <Button type="button" variant="secondary" onClick={() => navigate('/dashboard/services')}>Cancel</Button>
+          <Button type="submit" disabled={saving} className="min-w-[140px]">
+            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Publish Service'}
+          </Button>
+        </div>
+      )}
+
+      {/* Kept phone + tablet: Save pinned in the thumb zone above the tab bar,
+          clear of its raised centre button, with the card preview one tap away
+          in a sheet. Portalled, since transformed shell wrappers would otherwise
+          pin it to themselves; the form attribute keeps the button submitting
+          this form from outside it. */}
+      {kept && createPortal(
+        <div className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] z-30 flex gap-2 bg-cream/90 px-4 pb-9 pt-2 backdrop-blur-md lg:hidden">
+          <button type="button" onClick={() => setPreviewOpen(true)}
+            className={cn('inline-flex h-12 shrink-0 items-center gap-2 rounded-[12px] bg-white px-4 text-[15px] font-semibold text-maroon active:bg-blush', KEPT_PRESS)}>
+            <Eye className="h-4 w-4" strokeWidth={2.4} /> Preview
+          </button>
+          <button type="submit" form="service-form" disabled={saving}
+            className={cn('flex h-12 flex-1 items-center justify-center rounded-[12px] bg-maroon text-[15px] font-semibold text-white active:bg-maroon-dark disabled:opacity-60', KEPT_PRESS)}>
+            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Publish service'}
+          </button>
+        </div>,
+        document.body,
+      )}
+      {kept && (
+        <BottomSheet open={previewOpen} onClose={() => setPreviewOpen(false)} title="How guests see it">
+          <div className="px-2 pb-2"><ServicePreviewCard form={form} feeOnly={feeOnly} hostName={user?.name} className="bg-cream" /></div>
+        </BottomSheet>
+      )}
 
       {suggestOpen && <SuggestSubcategoryModal primary={primaryCat} onClose={() => setSuggestOpen(false)} />}
     </form>

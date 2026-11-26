@@ -44,6 +44,12 @@ export function installDashPreview(api) {
     } else {
       data = { success: true, preview: true }; // never reaches a server
     }
+    // A fixture can stand for a failing endpoint, so error states can be seen.
+    if (data && data.__previewError) {
+      return Promise.reject(Object.assign(new Error(`[dash-preview] ${data.__previewError}`), {
+        config, response: { status: data.__previewError, data: { message: 'Preview error' }, headers: {}, config },
+      }));
+    }
     return { data, status: 200, statusText: 'OK', headers: {}, config, request: {} };
   };
   // eslint-disable-next-line no-console

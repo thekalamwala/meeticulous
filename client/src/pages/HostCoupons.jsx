@@ -9,6 +9,7 @@ import {
   Badge, EmptyState, ErrorState, ConfirmSheet, cn,
 } from "../components/dashboard/ui";
 import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
+import useAddNewRoute from "../hooks/useAddNewRoute";
 
 const emptyForm = {
   code: "", discount_type: "percent", discount_value: "",
@@ -48,6 +49,11 @@ export default function HostCoupons() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // /dashboard/coupon/add-new opens the create form (rail +, Catalog "New"),
+  // once we know coupons are switched on for this platform.
+  const openNew = useCallback(() => setShowForm(true), []);
+  useAddNewRoute({ open: openNew, ready: coupons !== null && loadError !== "disabled", formOpen: showForm, listPath: "/dashboard/coupons" });
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 

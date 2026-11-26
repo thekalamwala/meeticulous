@@ -28,7 +28,9 @@ export const TYPE_LABEL = {
   service: 'Service',
   product: 'Product',
   course: 'Course',
-  coupon: 'Offer',
+  // Coupons are called Discounts in the product (Kept, founder call 2026-11-25).
+  // Code, routes and the API keep "coupon".
+  coupon: 'Discount',
   membership: 'Membership',
 };
 
@@ -37,7 +39,7 @@ export const TYPE_PLURAL = {
   service: 'Services',
   product: 'Products',
   course: 'Courses',
-  coupon: 'Offers',
+  coupon: 'Discounts',
   membership: 'Memberships',
 };
 
@@ -64,19 +66,24 @@ export const HOME_OF = {
   membership: '/dashboard/memberships',
 };
 
-// Where "add a new one of this type" lands. Services have a dedicated add route;
-// the rest add on their own management page. Membership has no per-item create —
-// tiers are added on the program page, so it points there too.
+// Where "add a new one of this type" lands. Every type that creates items has an
+// add-new route (2026-11-26): services their own editor, products / courses /
+// coupons their page with the create form open (useAddNewRoute). Membership has
+// no per-item create — tiers are added on the program page, so it points there.
 export const ADD_ROUTE = {
   service: '/dashboard/service/add-new',
-  product: '/dashboard/products',
-  course: '/dashboard/courses',
-  coupon: '/dashboard/coupons',
+  product: '/dashboard/product/add-new',
+  course: '/dashboard/course/add-new',
+  coupon: '/dashboard/coupon/add-new',
   membership: '/dashboard/memberships',
 };
 
-export const editHref = (item) =>
-  (item.kind === 'service' ? `/dashboard/service/edit/${item.id}` : HOME_OF[item.kind]);
+export const editHref = (item) => {
+  if (item.kind === 'service') return `/dashboard/service/edit/${item.id}`;
+  // Products and courses edit inline on their own page; ?edit= opens that one.
+  if (item.kind === 'product' || item.kind === 'course') return `${HOME_OF[item.kind]}?edit=${encodeURIComponent(item.id)}`;
+  return HOME_OF[item.kind];
+};
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
@@ -98,12 +105,17 @@ export function normalise(row, kind) {
     return {
       id: row.id,
       kind,
-      title: row.code || 'Untitled offer',
+      title: row.code || 'Untitled discount',
       // A coupon has no price. Null, not 0 — 0 would render as "Free", which is
       // a different and wrong claim.
       price: null,
       active: !!row.active,
       meta: couponSummary(row),
+      image: null,
+      guestTotal: null,
+      sortOrder: null,
+      createdAt: row.created_at || null,
+      detail: couponDetail(row),
     };
   }
 
@@ -121,6 +133,13 @@ export function normalise(row, kind) {
       price,
       active: row.status === 'live',
       meta: free ? 'Free' : (price ? `₹${price.toLocaleString('en-IN')}/mo` : null),
+      image: null,
+      // A tier is billed at its own price — no booking fee on top (v3.225 note).
+      guestTotal: null,
+      sortOrder: Number.isFinite(Number(row.position)) ? Number(row.position) : null,
+      createdAt: row.created_at || null,
+      perMonth: !free,
+      detail: free ? 'Free tier' : 'Billed monthly',
     };
   }
 
@@ -131,7 +150,80 @@ export function normalise(row, kind) {
     price: num(row.price),
     active: !!row.is_active,
     meta: kind === 'service' && row.duration ? `${row.duration} min` : null,
+    image: row.thumbnail_url || null,
+    // What a guest pays, worked out by the SERVER from pricingEngine (guest_total
+    // on the host list endpoints). Never computed here: null when the server did
+    // not send it, and the card then shows the listed price alone.
+    guestTotal: Number.isFinite(Number(row.guest_total)) && row.guest_total !== null ? Number(row.guest_total) : null,
+    priceOnRequest: row.price_on_request === true,
+    sortOrder: Number.isFinite(Number(row.sort_order)) && row.sort_order !== null ? Number(row.sort_order) : null,
+    createdAt: row.created_at || null,
+    detail: detailOf(row, kind),
   };
+}
+
+const MODE = { online: 'Online', offline: 'In person', in_person: 'In person', hybrid: 'Online or in person', phone: 'Phone call' };
+const PRODUCT_KIND = { pdf: 'PDF', template: 'Template', ebook: 'Ebook', prompt_pack: 'Prompt pack', resource: 'Resource', other: 'Download' };
+
+/** The second line under a title: the one or two facts a host scans for. */
+function detailOf(row, kind) {
+  if (kind === 'service') {
+    return [row.duration ? `${row.duration} min` : null, MODE[row.meeting_mode] || null].filter(Boolean).join(' · ') || null;
+  }
+  if (kind === 'product') {
+    const sold = num(row.purchase_count);
+    return [PRODUCT_KIND[row.type] || 'Download', sold ? `${sold.toLocaleString('en-IN')} sold` : null].filter(Boolean).join(' · ');
+  }
+  if (kind === 'course') {
+    const n = Array.isArray(row.course_lessons) ? row.course_lessons.length : 0;
+    const sold = num(row.purchase_count);
+    return [n ? `${n} ${n === 1 ? 'lesson' : 'lessons'}` : 'No lessons yet', sold ? `${sold.toLocaleString('en-IN')} sold` : null].filter(Boolean).join(' · ');
+  }
+  return null;
+}
+
+/** A discount's second line: how often it was used and when it ends. */
+function couponDetail(c) {
+  const used = num(c.times_redeemed);
+  const cap = c.max_redemptions ? ` of ${num(c.max_redemptions).toLocaleString('en-IN')}` : '';
+  const ends = c.expires_at
+    ? (new Date(c.expires_at).getTime() < Date.now()
+      ? 'Ended'
+      : `Ends ${new Date(c.expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`)
+    : 'No end date';
+  return `${used.toLocaleString('en-IN')}${cap} used · ${ends}`;
+}
+
+/** Types whose order the host can set (they carry a sort_order column, v3.227). */
+export const REORDERABLE = ['service', 'product', 'course'];
+
+/**
+ * The order a host sees — and guests see on the booking page: the host's own
+ * order first (sort_order ascending), then anything never placed, newest first.
+ * Matches the server's ORDER BY sort_order NULLS LAST, created_at DESC.
+ */
+export function byHostOrder(a, b) {
+  const sa = a.sortOrder; const sb = b.sortOrder;
+  if (sa !== null && sb !== null && sa !== sb) return sa - sb;
+  if (sa !== null && sb === null) return -1;
+  if (sa === null && sb !== null) return 1;
+  return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
+}
+
+/** Group items by type in TYPES order, each group in host order. Empty groups dropped. */
+export function groupByKind(items, order = TYPES) {
+  return order
+    .map((kind) => [kind, items.filter((i) => i.kind === kind).sort(byHostOrder)])
+    .filter(([, list]) => list.length > 0);
+}
+
+/** Move one id within a list of ids. Out-of-range or same index returns a copy. */
+export function moveId(ids, from, to) {
+  const out = [...ids];
+  if (from < 0 || from >= out.length || to < 0 || to >= out.length || from === to) return out;
+  const [x] = out.splice(from, 1);
+  out.splice(to, 0, x);
+  return out;
 }
 
 /**
@@ -177,6 +269,8 @@ export function selectItems(items, { q = '', kind = 'all', status = 'all', sort 
     // among the free items and read as a claim about them.
     price: (a, b) => (b.price ?? -1) - (a.price ?? -1),
     type: (a, b) => a.kind.localeCompare(b.kind) || String(a.title).localeCompare(String(b.title)),
+    // The host's own order (sort_order), as guests see it on the booking page.
+    host: byHostOrder,
   };
 
   return [...out].sort(by[sort] || by.name);

@@ -792,6 +792,11 @@ function App() {
           <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
           <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
+          {/* "Add new" routes for each catalog type, like /dashboard/service/add-new:
+              the type's own page with its create form open (useAddNewRoute). */}
+          <Route path="/dashboard/product/add-new" element={<DashboardWrapper><Products /></DashboardWrapper>} />
+          <Route path="/dashboard/course/add-new" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
+          <Route path="/dashboard/coupon/add-new" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradeRoute /></DashboardWrapper>} />
