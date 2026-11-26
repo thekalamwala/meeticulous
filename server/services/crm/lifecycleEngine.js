@@ -29,6 +29,7 @@ const leadScore = require('./leadScore');
 const relationshipHealth = require('./relationshipHealth');
 const relationshipTouch = require('./relationshipTouch');
 const touchRecommendationService = require('./touchRecommendationService');
+const { stampEvaluated } = require('./scanRotation');
 const leadService = require('./leadService');
 const sequenceService = require('./sequenceService');
 const followUpService = require('./followUpService');
@@ -131,10 +132,19 @@ function decide(lead, ctx = {}, now = Date.now()) {
 
 // ── I/O helpers ──────────────────────────────────────────────────────────────
 
+// Least-recently-evaluated first (never-evaluated leads lead), so successive ticks
+// walk the whole open pool — see scanRotation.js. Falls back to updated_at on a DB
+// without the v3.135 health columns.
 async function loadOpenLeads() {
-  const { data } = await supabaseAdmin.from('leads').select('*')
-    .not('status', 'in', `(${OPEN_EXCLUDE.join(',')})`)
-    .order('updated_at', { ascending: true }).limit(BATCH);
+  const q = () => supabaseAdmin.from('leads').select('*')
+    .not('status', 'in', `(${OPEN_EXCLUDE.join(',')})`);
+  if (healthColumns) {
+    const { data, error } = await q().order('health_computed_at', { ascending: true, nullsFirst: true }).limit(BATCH);
+    if (!error) return data || [];
+    if (!/column .* does not exist|Could not find/i.test(error.message || '')) return [];
+    healthColumns = false;
+  }
+  const { data } = await q().order('updated_at', { ascending: true }).limit(BATCH);
   return data || [];
 }
 
@@ -317,8 +327,9 @@ async function writeScoring(lead, d) {
 // healthy the relationship is, decaying with time-since-meaningful-interaction. Takes
 // a PRECOMPUTED health (so the tick computes it once and reuses it for the touch recs),
 // persists state/score/signals. Same schema-fallback discipline as writeScoring.
+// Returns true when the row was written (which also stamps health_computed_at).
 async function writeHealth(lead, health) {
-  if (!healthColumns || !healthChanged(lead, health)) return;
+  if (!healthColumns || !healthChanged(lead, health)) return false;
   const { error } = await supabaseAdmin.from('leads').update({
     health_state: health.state,
     health_score: health.score,
@@ -329,6 +340,7 @@ async function writeHealth(lead, health) {
     healthColumns = false;
     console.warn('[crm] lifecycle: health columns missing (run v3.135) — skipping health writeback');
   }
+  return !error;
 }
 
 // Relationship touch recommendations (v3.136) — the single most relevant relationship
@@ -391,6 +403,7 @@ async function run() {
 
   let moved = 0, enrolled = 0, tasks = 0;
   const touchRecs = [];
+  const unchanged = []; // evaluated but not written — stamped after the loop so the scan rotates
   for (const lead of leads) {
     try {
       const d = decide(lead, ctxMap.get(lead.profile_id) || {}, now);
@@ -405,7 +418,7 @@ async function run() {
       // Relationship layer: compute health once, persist it, and emit the touch rec.
       const healthCtx = { ...(ctxMap.get(lead.profile_id) || {}), meetsRoi: rules.meetsRoiGate(ctxMap.get(lead.profile_id) || {}) };
       const health = relationshipHealth.compute(lead, healthCtx, now);
-      await writeHealth(lead, health);
+      if (!(await writeHealth(lead, health))) unchanged.push(lead.id);
       touchRecs.push(...touchRecsFor(lead, health, healthCtx, now));
 
       if (d.changed) { await leadService.changeStatus(lead.id, d.status, null); moved++; }
@@ -436,6 +449,7 @@ async function run() {
     }
   }
   await flushTouchRecs(touchRecs, now);
+  if (healthColumns) await stampEvaluated('leads', unchanged, now);
   return { scanned: leads.length, moved, enrolled, tasks, churned: churn.churned, dryRun: DRYRUN };
 }
 
