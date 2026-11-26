@@ -90,3 +90,28 @@ jobs:
       # if the remote build later fails — watch Vercel, not just Actions.
       - name: Deploy (remote build, fire-and-forget)
         run: vercel deploy --prod --no-wait --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Vercel Hobby caps Deployment Storage at 10 GB, and Vercel keeps every
+      # deployment forever. Each production build stores ~50 MB of prerendered
+      # output, so at ~2.3 deploys/day storage grew ~3.3 GB/month: 64 retained
+      # deployments had already eaten 3.09 GB by 2026-11-25 and would have hit
+      # the cap (= project PAUSED, site down) in early Feb 2027. A one-off prune
+      # that day freed ~3.0 GB; this step stops it coming back.
+      #
+      # Keeps the newest KEEP deployments as rollback targets, and ALWAYS keeps
+      # whatever currently serves PROD_ALIAS even if it has aged out of that
+      # window — deleting the live deployment would take production down.
+      # Runs on failure too: a failed deploy still leaves storage to reclaim.
+      # continue-on-error so housekeeping can never be the reason a deploy is
+      # reported broken; check this step's log if storage starts climbing again.
+      #
+      # Plain node, no jq: the runner already has node, so the same script runs
+      # locally (`node scripts/pruneVercelDeployments.mjs --dry-run`) and what
+      # ships is what was tested.
+      - name: Prune old deployments
+        if: always()
+        continue-on-error: true
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PRUNE_KEEP: '5'
+        run: node scripts/pruneVercelDeployments.mjs
