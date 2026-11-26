@@ -282,8 +282,28 @@ async function hasOpenLifecycleTask(leadId) {
   return !!(data && data.length);
 }
 
+// Order-insensitive value equality. jsonb comes back from Postgres with its keys
+// re-ordered, so a plain JSON.stringify would see every health_signals as changed.
+const canon = (v) => JSON.stringify(v ?? null, (_, x) =>
+  (x && typeof x === 'object' && !Array.isArray(x))
+    ? Object.keys(x).sort().reduce((o, k) => { o[k] = x[k]; return o; }, {})
+    : x);
+const same = (a, b) => canon(a) === canon(b);
+
+// The tick rescans the same leads every 15 min, and almost all of them come out
+// unchanged. Writing anyway cost ~1,000 Supabase requests per tick and was a big
+// part of the egress that got the prod API suspended (2026-11-25). So a lead is
+// written only when its result actually changed. next_action_at keeps the time the
+// CURRENT next action was set, so a lead that is due stays due.
+function scoringChanged(lead, d) {
+  return !same(lead.score, d.score) || !same(lead.intent, d.intent) || !same(lead.next_action, d.nextAction);
+}
+function healthChanged(lead, h) {
+  return !same(lead.health_state, h.state) || !same(lead.health_score, h.score) || !same(lead.health_signals, h.signals);
+}
+
 async function writeScoring(lead, d) {
-  if (!scoringColumns) return;
+  if (!scoringColumns || !scoringChanged(lead, d)) return;
   const { error } = await supabaseAdmin.from('leads')
     .update({ score: d.score, intent: d.intent, next_action: d.nextAction, next_action_at: new Date().toISOString() })
     .eq('id', lead.id);
@@ -298,7 +318,7 @@ async function writeScoring(lead, d) {
 // a PRECOMPUTED health (so the tick computes it once and reuses it for the touch recs),
 // persists state/score/signals. Same schema-fallback discipline as writeScoring.
 async function writeHealth(lead, health) {
-  if (!healthColumns) return;
+  if (!healthColumns || !healthChanged(lead, health)) return;
   const { error } = await supabaseAdmin.from('leads').update({
     health_state: health.state,
     health_score: health.score,
@@ -314,12 +334,21 @@ async function writeHealth(lead, health) {
 // Relationship touch recommendations (v3.136) — the single most relevant relationship
 // moment for this lead, emitted into the touch_recommendations queue for the Desk.
 // Best-effort; the service self-guards a missing table. NOTHING is sent from here.
-async function upsertTouchRecs(lead, health, ctx, now) {
-  const recs = [
+// Recs are collected for the whole tick and flushed in chunks (flushTouchRecs): one
+// dedupe lookup per chunk instead of one per lead.
+function touchRecsFor(lead, health, ctx, now) {
+  return [
     ...relationshipTouch.recommendationsFor(lead, health, ctx, now),
     ...relationshipTouch.milestoneRecommendationsFor(lead, ctx, now), // anniversaries + booking milestones (once-ever)
   ];
-  if (recs.length) await touchRecommendationService.upsertOpen(recs, now);
+}
+
+// Chunked so the `dedupe_key IN (...)` list stays well inside URL limits.
+const TOUCH_CHUNK = 100;
+async function flushTouchRecs(recs, now) {
+  for (let i = 0; i < recs.length; i += TOUCH_CHUNK) {
+    await touchRecommendationService.upsertOpen(recs.slice(i, i + TOUCH_CHUNK), now);
+  }
 }
 
 // Churn-on-lapse sweep: money-state leads whose paid term has lapsed → Churned +
@@ -361,6 +390,7 @@ async function run() {
   const resolveSeq = seqResolver();
 
   let moved = 0, enrolled = 0, tasks = 0;
+  const touchRecs = [];
   for (const lead of leads) {
     try {
       const d = decide(lead, ctxMap.get(lead.profile_id) || {}, now);
@@ -376,7 +406,7 @@ async function run() {
       const healthCtx = { ...(ctxMap.get(lead.profile_id) || {}), meetsRoi: rules.meetsRoiGate(ctxMap.get(lead.profile_id) || {}) };
       const health = relationshipHealth.compute(lead, healthCtx, now);
       await writeHealth(lead, health);
-      await upsertTouchRecs(lead, health, healthCtx, now);
+      touchRecs.push(...touchRecsFor(lead, health, healthCtx, now));
 
       if (d.changed) { await leadService.changeStatus(lead.id, d.status, null); moved++; }
 
@@ -405,7 +435,8 @@ async function run() {
       console.error(`[crm] lifecycle: lead ${lead.id} failed:`, err.message);
     }
   }
+  await flushTouchRecs(touchRecs, now);
   return { scanned: leads.length, moved, enrolled, tasks, churned: churn.churned, dryRun: DRYRUN };
 }
 
-module.exports = { run, decide, SEQ, churnLapsedLeads, sentimentSignals };
+module.exports = { run, decide, SEQ, churnLapsedLeads, sentimentSignals, scoringChanged, healthChanged };
