@@ -1,8 +1,3 @@
-// Grow / Refer & earn — dashboard_v2 graduation. Reuses the ReferEarn page (real
-// referral link, stats, reward lifecycle table) verbatim with `embedded`, which
-// swaps the hero for the shared Grow SubNav + v2 heading + a "Share page" action.
-import ReferEarn from './ReferEarn';
-
-const ReferEarnV2 = () => <ReferEarn embedded />;
-
-export default ReferEarnV2;
+// Grow / Refer & earn — dashboard_v2 path. The Kept Grow tab replaces the
+// embedded ReferEarn page; the old page still serves off-flag.
+export { default } from './grow/GrowRefer';
