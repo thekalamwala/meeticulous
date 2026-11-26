@@ -141,7 +141,7 @@ export const buildFixtures = ({ pro = false } = {}) => ({
       friday: [{ start: '10:00', end: '13:00' }, { start: '15:00', end: '18:00' }],
       saturday: [{ start: '09:00', end: '12:00' }], sunday: [],
     },
-    buffer_minutes: 15, blocked_dates: ['2026-12-25', '2027-01-01'],
+    buffer_minutes: 15, blocked_dates: [{ date: '2026-12-02', from: '14:00', to: '16:00', reason: 'Doctor' }, '2026-12-25', { date: '2027-01-01', reason: 'New year' }],
     cap_per_day: pro ? 6 : null, cap_per_week: null, cap_per_guest: null },
   '/support/unread': { unread: 0 },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },

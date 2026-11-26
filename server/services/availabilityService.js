@@ -2,7 +2,7 @@
  * availabilityService.js — single source of truth for slot availability.
  *
  * Available = Working Hours
- *           − Manual Blocked Dates (availability.blocked_dates)
+ *           − Time off (availability.blocked_dates: whole days, or part of a day — utils/timeOff)
  *           − Existing Platform Bookings (grace-period aware)
  *           − Google Calendar busy intervals (Free/Busy API)
  *           − Buffer Times (availability.buffer_minutes)
@@ -20,6 +20,7 @@ const { supabaseAdmin } = require("../config/supabase");
 const { getFreeBusy } = require("../config/google");
 const { decrypt: decryptToken } = require("../utils/cryptoTokens");
 const { inAppNotify } = require("../utils/inAppNotify");
+const { isFullDayOff, partDayOff } = require("../utils/timeOff");
 
 // P2-03: a connected host whose Google grant is revoked/unreadable silently stops
 // getting calendar events + Meet links on every booking, with no signal. On a
@@ -96,8 +97,21 @@ const dateInTz = (utcDate, tz) => {
   return { dateStr: s.slice(0, 10), dayName: DAY_NAMES[new Date(s.replace(" ", "T") + "Z").getUTCDay()] };
 };
 
-const isDateBlocked = (blockedDates, dateStr) =>
-  Array.isArray(blockedDates) && blockedDates.some((b) => String(b).slice(0, 10) === dateStr);
+// A whole day off. Entries are legacy "YYYY-MM-DD" strings or time-off objects
+// ({ date, from?, to?, reason? }); only whole-day entries block the date here.
+const isDateBlocked = (blockedDates, dateStr) => isFullDayOff(blockedDates, dateStr);
+
+// Part-day time off on a date, as UTC intervals (wall clock in the host's tz).
+// Treated like Google busy time: a slot that touches it is not offered.
+const timeOffIntervals = (blockedDates, dateStr, tz) => {
+  const p = parseDateStr(dateStr);
+  if (!p) return [];
+  return partDayOff(blockedDates, dateStr).map(({ from, to }) => {
+    const [fh, fm] = from.split(":").map(Number);
+    const [th, tm] = to.split(":").map(Number);
+    return { start: wallClockToUTC(p.y, p.mo, p.d, fh, fm, tz), end: wallClockToUTC(p.y, p.mo, p.d, th, tm, tz) };
+  });
+};
 
 // ── Busy intervals ───────────────────────────────────────────────────────────
 
@@ -271,6 +285,8 @@ const computeSlots = async ({ host, service, availability, dateStr, now = new Da
     getGoogleBusy(host, dayStart, dayEnd, dateStr),
   ]);
 
+  const timeOff = timeOffIntervals(availability?.blocked_dates, dateStr, tz);
+
   const slots = [];
   for (const { start, end } of windows) {
     const [sh, sm] = String(start).split(":").map(Number);
@@ -287,7 +303,8 @@ const computeSlots = async ({ host, service, availability, dateStr, now = new Da
       const free =
         sStart > now &&
         !overlaps(sStartPadded, sEndPadded, platformBusy) &&
-        !overlaps(sStart, sEnd, google.intervals);
+        !overlaps(sStart, sEnd, google.intervals) &&
+        !overlaps(sStart, sEnd, timeOff);
       if (free) slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
       cur += stepMin;
     }
@@ -314,6 +331,8 @@ const validateSlot = async ({ host, service, availability, scheduledAtUTC, exclu
 
   if (isDateBlocked(availability?.blocked_dates, dateStr))
     return { ok: false, reason: "The host is unavailable on this date." };
+  if (overlaps(start, end, timeOffIntervals(availability?.blocked_dates, dateStr, tz)))
+    return { ok: false, reason: "The host is unavailable at this time. Please choose another slot." };
 
   // Inside a working-hours window? Uses the effective schedule, so a host who
   // hasn't customised is bookable on the platform default (Mon–Sat 10:00–18:00)
@@ -360,4 +379,4 @@ const getPlatformBusyExcluding = async (hostId, windowStart, windowEnd, excludeB
   });
 };
 
-module.exports = { computeSlots, validateSlot, wallClockToUTC, isDateBlocked, effectiveSchedule, DEFAULT_WEEKLY_SCHEDULE };
+module.exports = { computeSlots, validateSlot, wallClockToUTC, isDateBlocked, timeOffIntervals, effectiveSchedule, DEFAULT_WEEKLY_SCHEDULE };
