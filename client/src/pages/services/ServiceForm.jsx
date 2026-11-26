@@ -24,7 +24,7 @@ import BottomSheet from '../catalog/BottomSheet';
 // Card shells. Kept (dashboard_v2): a borderless white 24px card on cream; the
 // legacy look keeps the bordered Card. Module-level so a re-render never swaps
 // the component type under the fields (which would drop focus mid-typing).
-const LegacyBox = ({ className, ...p }) => <Box className={className} {...p} />;
+const LegacyBox = ({ className, ...p }) => <Card padded={false} className={className} {...p} />;
 const KeptBox = ({ className, ...p }) => <section className={cn('rounded-[24px] bg-white', className)} {...p} />;
 const KEPT_PRESS = 'transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:active:scale-100 touch-manipulation select-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose';
 
