@@ -4,9 +4,12 @@
 // working; App renders this same component on all four, so switching tabs keeps
 // the heading and tab bar in place and only swaps the body.
 //
-// Tabs: underlined on desktop, chips on a phone (one layout, restyled at sm).
+// Tabs: underlined on desktop, a full-width segmented control below 1024px.
 // Earnings folded into Revenue: /dashboard/earnings redirects there (App.jsx).
 import { NavLink, Navigate, useParams } from 'react-router-dom';
+import { Lock } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { isFreePlan } from '../../utils/themeUtils';
 import { cn } from '../../components/dashboard/ui/v2';
 import IntelOverview from './IntelOverview';
 import IntelRevenue from './IntelRevenue';
@@ -16,23 +19,37 @@ import IntelDemand from './IntelDemand';
 const TABS = [
   { id: 'overview', label: 'Overview', Body: IntelOverview },
   { id: 'revenue', label: 'Revenue', Body: IntelRevenue },
-  { id: 'audience', label: 'Audience', Body: IntelAudience },
-  { id: 'demand', label: 'Demand', Body: IntelDemand },
+  { id: 'audience', label: 'Audience', Body: IntelAudience, pro: true },
+  { id: 'demand', label: 'Demand', Body: IntelDemand, pro: true },
 ];
 
-const Tabs = () => (
-  <nav aria-label="Insights" className="dash-noscrollbar -mx-1 flex gap-2 overflow-x-auto px-1 sm:mx-0 sm:gap-7 sm:overflow-visible sm:border-b sm:border-neutral-200 sm:px-0">
+// Starter sees a small "Pro" tag on the Pro-only tabs (mock). The server is still
+// the gate; this tag only sets expectations before the click.
+const Tabs = ({ starter }) => (
+  // Phone/tablet (<1024): one full-width segmented control, like Bookings.
+  // Desktop: text tabs with a maroon underline on a hairline (mock).
+  <nav aria-label="Insights" className="grid grid-cols-4 gap-1 rounded-[14px] bg-white p-1 lg:flex lg:gap-7 lg:rounded-none lg:border-b lg:border-neutral-200 lg:bg-transparent lg:p-0">
     {TABS.map((t) => (
       <NavLink key={t.id} to={`/dashboard/intelligence/${t.id}`}
         className={({ isActive }) => cn(
-          'shrink-0 whitespace-nowrap text-[14px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
-          // Phone: chips. Desktop: text tabs with a maroon underline on the hairline.
-          'rounded-[12px] px-4 py-2 sm:-mb-px sm:rounded-none sm:border-b-2 sm:px-0.5 sm:pb-3 sm:pt-1 sm:text-[15px]',
+          'inline-flex h-10 min-w-0 items-center justify-center rounded-[10px] px-1 text-[13px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+          'lg:-mb-px lg:h-auto lg:shrink-0 lg:rounded-none lg:border-b-2 lg:px-0.5 lg:pb-3 lg:pt-1 lg:text-[15px]',
           isActive
-            ? 'bg-maroon text-white sm:border-maroon sm:bg-transparent sm:text-maroon'
-            : 'bg-white text-muted hover:bg-blush hover:text-maroon sm:border-transparent sm:bg-transparent sm:hover:bg-transparent',
+            ? 'bg-maroon text-white lg:border-maroon lg:bg-transparent lg:text-maroon'
+            : 'text-muted active:bg-blush lg:border-transparent lg:hover:text-maroon',
         )}>
-        {t.label}
+        {() => (
+          <span className="inline-flex min-w-0 items-center gap-1">
+            <span className="truncate">{t.label}</span>
+            {starter && t.pro && (
+              <>
+                {/* Phone segments are narrow: a lock glyph; desktop: a "Pro" tag (mock). */}
+                <Lock aria-label="Pro" className="h-3 w-3 shrink-0 lg:hidden" strokeWidth={2.6} />
+                <span className="hidden shrink-0 rounded-[6px] bg-blush px-1.5 py-px text-[12px] font-semibold leading-tight text-maroon lg:inline">Pro</span>
+              </>
+            )}
+          </span>
+        )}
       </NavLink>
     ))}
   </nav>
@@ -40,14 +57,18 @@ const Tabs = () => (
 
 const Insights = () => {
   const { tab } = useParams();
+  const { user } = useAuth();
   const current = TABS.find((t) => t.id === tab);
   if (!current) return <Navigate to="/dashboard/intelligence/overview" replace />;
   const { Body } = current;
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
       <header className="flex flex-col gap-4 sm:gap-5">
-        <h1 className="mb-0 font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[34px]">Insights</h1>
-        <Tabs />
+        <div>
+          <h1 className="mb-0 font-display text-[26px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon lg:text-[34px]">Insights</h1>
+          <p className="mb-0 mt-1.5 text-[13.5px] text-muted sm:text-[15px]">What your bookings are telling you, and where to act next.</p>
+        </div>
+        <Tabs starter={isFreePlan(user?.plan)} />
       </header>
       <Body key={current.id} />
     </div>

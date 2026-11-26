@@ -38,12 +38,13 @@ export const monthSeries = (byMonth = []) => {
   return byMonth.map((m) => ({ ...m, label: monthLabel(m.month, years.size > 1) }));
 };
 
+// Period: a full-width segmented control on a phone, a compact one on desktop.
 const PeriodChips = ({ value, onChange }) => (
-  <div role="group" aria-label="Period" className="dash-noscrollbar flex gap-2 overflow-x-auto">
+  <div role="group" aria-label="Period" className="grid grid-cols-4 gap-1 rounded-[14px] bg-white p-1 lg:w-fit lg:flex">
     {PERIODS.map((p) => (
       <button key={p.value} type="button" onClick={() => onChange(p.value)} aria-pressed={value === p.value}
-        className={cn('shrink-0 rounded-[12px] px-3.5 py-2 text-[13.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
-          value === p.value ? 'bg-ink text-white' : 'bg-white text-muted hover:bg-blush hover:text-maroon')}>
+        className={cn('inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-[10px] px-1 text-[13px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose lg:px-4 lg:text-[13.5px]',
+          value === p.value ? 'bg-ink text-white' : 'text-muted active:bg-blush lg:hover:bg-blush lg:hover:text-maroon')}>
         {p.label}
       </button>
     ))}
@@ -88,16 +89,31 @@ const WentPanel = ({ s }) => {
   );
 };
 
-const NowPanel = ({ settlement, upcoming, go }) => (
-  <Panel title="Where it is now" subtitle="Paid out, on the way, or still to be paid"
-    action={<button type="button" onClick={() => go('/dashboard/payments/payouts')} className={linkBtn}>Payouts <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
-    <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-      {settlement && <Fact label="In your bank" value={inr(settlement.settled, { compact: true })} hint="Settled" />}
-      {settlement && <Fact label="On its way" value={inr(settlement.pending, { compact: true })} hint="Paid, not settled yet" />}
-      {upcoming && <Fact label="Booked, unpaid" value={inr(upcoming.value, { compact: true })} hint={plural(upcoming.bookings, 'booking')} />}
-    </div>
-  </Panel>
-);
+// Grouped list rows (label + meta left, amount right): reads as one list on a
+// phone instead of three stacked cards.
+const NowPanel = ({ settlement, upcoming, go }) => {
+  const rows = [
+    settlement && ['In your bank', 'Settled', settlement.settled],
+    settlement && ['On its way', 'Paid by guests, not settled yet', settlement.pending],
+    upcoming && ['Booked, not paid yet', plural(upcoming.bookings, 'booking'), upcoming.value],
+  ].filter(Boolean);
+  return (
+    <Panel title="Where it is now" subtitle="Paid out, on the way, or still to be paid"
+      action={<button type="button" onClick={() => go('/dashboard/payments/payouts')} className={linkBtn}>Payouts <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+      <ul className="flex flex-col divide-y divide-neutral-200">
+        {rows.map(([label, meta, v]) => (
+          <li key={label} className="flex min-h-[56px] items-center justify-between gap-3 py-2.5">
+            <span className="min-w-0">
+              <span className="block truncate text-[14.5px] font-semibold text-ink">{label}</span>
+              <span className="block truncate text-[12.5px] text-faint">{meta}</span>
+            </span>
+            <span className="shrink-0 font-display text-[20px] font-extrabold tabular-nums tracking-[-0.02em] text-ink">{inr(v)}</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+};
 
 const MonthPanel = ({ byMonth }) => {
   const rows = monthSeries(byMonth);
@@ -225,8 +241,8 @@ const IntelRevenue = () => {
           )}
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <Tile label="You kept" value={inr(s.net, { compact: true })} accent hint="After fees and refunds" />
-            <Tile label="Guests paid" value={inr(s.gross, { compact: true })} hint="Before anything comes out" />
+            <Tile label="You kept" value={inr(s.net, { compact: true })} accent hint="After fees" />
+            <Tile label="Guests paid" value={inr(s.gross, { compact: true })} hint="Before fees" />
             <Tile label="Paid bookings" value={s.bookings.toLocaleString('en-IN')} hint={`${inr(s.aov)} each on average`} />
             <Tile label="Kept per booking" value={inr(s.netAov)} hint="On average" />
           </div>

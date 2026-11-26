@@ -95,9 +95,9 @@ const IntelDemand = () => {
           ? <>Guests book most <em className={serif}>on {days.length > 2 ? 'several days' : days.map((d) => `${d}s`).join(' and ')}.</em></>
           : <>Busy days show up here <em className={serif}>after a few bookings.</em></>}
         sub={peaks.length === 1
-          ? `The busiest time to book is ${blockName(peaks[0])}. Share your link just before it.`
+          ? `Busiest time to book: ${blockName(peaks[0])}. Share your link just before.`
           : peaks.length === 2
-            ? `The busiest times to book are ${blockName(peaks[0])} and ${blockName(peaks[1])}.`
+            ? `Busiest times to book: ${blockName(peaks[0])} and ${blockName(peaks[1])}.`
           : 'Which days and hours guests book in, and how often they come back.'} />
 
       {days.length > 0 && (
