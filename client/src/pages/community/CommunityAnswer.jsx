@@ -50,13 +50,13 @@ const CommunityAnswer = () => {
     </>
   );
 
-  if (err) return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load community questions." onRetry={load} /></div>;
-  if (items === null) return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-20 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+  if (err) return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load community questions." onRetry={load} /></div>;
+  if (items === null) return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-20 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
 
   const noReplies = items.filter((i) => !i.comment_count).length;
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
       <div className="grid grid-cols-2 gap-2">

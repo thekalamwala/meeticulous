@@ -441,7 +441,7 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, so
       {showPromo && <PromoMobile go={go} onClose={onClosePromo} />}
 
       {/* Calendar slider + today's meetings */}
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex items-center gap-1.5">
           <button type="button" aria-label="Earlier days" onClick={() => nudge(-1)}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon">
@@ -621,7 +621,7 @@ const TodayV2 = () => {
 
   if (status === 'error') {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         <PageHeading title="Today" />
         <ErrorState message="Couldn't load your dashboard." onRetry={load} />
       </div>
@@ -654,7 +654,7 @@ const TodayV2 = () => {
       />
 
       {status === 'loading' ? (
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}
         </div>
       ) : (

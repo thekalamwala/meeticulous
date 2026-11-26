@@ -108,14 +108,14 @@ const CatalogV2 = () => {
   );
 
   if (sources === null) {
-    return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-40 rounded-xl" /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-40 rounded-xl" /></div>;
   }
   if (failed.length === sources.length) {
-    return <div className="flex flex-col gap-2.5">{header}<ErrorState onRetry={fetchAll} /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState onRetry={fetchAll} /></div>;
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
       {failed.length > 0 && (

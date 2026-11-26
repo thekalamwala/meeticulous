@@ -49,23 +49,23 @@ const EarningsV2 = () => {
   );
 
   if (err) {
-    return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your earnings." onRetry={load} /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your earnings." onRetry={load} /></div>;
   }
   if (bookings === null) {
-    return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
   }
 
   const { paid, gross, net, byService } = summarizeEarnings(bookings, periodStart(period));
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
       <CommissionMeter commissionPaid={commissionPaid} isFree={isFreePlan(user?.plan)} src="earnings" />
 
       <SegmentedControl value={period} onChange={setPeriod} options={PERIODS} />
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         <Tile label="Net earnings" value={inr(net, { compact: true })} accent hint="Your share, after fees" />
         <Tile label="Gross revenue" value={inr(gross, { compact: true })} hint="Before platform fee" />
         <Tile label="Paid bookings" value={paid.length} hint="In this period" />

@@ -16,7 +16,8 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 
 - At most two grounds per page section: cream + maroon, or cream + blush.
 - Body text is ink or maroon. Rose is never used for body text.
-- No gradients, glassmorphism, blur, 3D blobs, neon or purple/blue.
+- No gradients, glassmorphism, blur, 3D blobs, neon or purple/blue. **One exception:** the four
+  official plush mascots (see *Product UI — Kept* below) are 3D and multicoloured by design.
 - Proportion: cream 45 · maroon 20 · blush 15 · ink 10 · pink 5 · rose 3 · marigold 2.
 - **Community topic pills are the one multicoloured surface** (`.mt-topic--1..8`): a topic
   hashes its name to a fixed tone so the same topic is always the same colour. The tones are
@@ -76,6 +77,43 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - **Meeting** only for an actual video call ("Google Meet link"). It hides that the guest pays.
 - Never rename code or data for this: the `bookings` table and API stay.
 
+## Product UI — Kept (dashboard, approved 2026-11-25)
+The host dashboard follows **Kept**: the brand stays maroon; the structure borrows from the
+best SaaS consoles (a tinted page with white cards, one focal band per page, big type, real
+imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
+- **Grounds:** cream page + white cards. Cards have **no border** and a 24px radius (20 for
+  metric tiles, 32 for the band). A card never holds a bordered card. Hairlines only between rows.
+- **Insight band** (`InsightBand` in `client/src/components/dashboard/ui/v2.jsx`): maroon-700 +
+  loop pattern + the page's ONE ee thread + at most one mascot. Once per page, at the top. Its
+  headline is a sentence built from real figures; at most two actions.
+- **Type floor:** nothing under 12px. Page title 28/34px, card title 18/20px, metric 24/28px,
+  body 14–15px, meta 12.5–13px. No uppercase labels except the band's eyebrow.
+- **Maroon means act or matters:** actions, the active nav item, the band, a featured metric's
+  ring. Never a filled maroon stat tile.
+- **Notices** are a white card with a blush icon chip, one sentence and one button, never a
+  full-width coloured banner.
+- **Control radius (dashboard):** buttons, tabs, nav rows and icon buttons are rounded
+  rectangles: 12px (10px small / inside a group), badges 8px, tags 6px. Full circles only for
+  avatars, dots, toggles and the tab-bar centre button. Pills read soft but make hover fills
+  and focus rings look off (founder call, 2026-11-25). The marketing site keeps its pills.
+- **Rail (desktop nav):** 232px wide, 34px rows at 13.5px, 28px sub-rows at 13px, 18px icons. Sized
+  so every section can expand on a 768px-tall laptop without the footer being cropped.
+- **Hover never moves anything in the dashboard:** no lift, no scale, no wobble, no hover shadow.
+  Hover only tints the background (white → pink-50 / cream → blush) and links shift colour. This
+  overrides the kit's general "cards lift 2px" rule inside the product (founder call, 2026-11-25).
+- **Hover and press fills take the element's own shape, never a pill.** A row that runs edge to
+  edge inside a card (accordion headers, list rows) has a square hover; the card's 24px corner
+  clips the first and last rows. An inset row (with space around it inside the card) uses 12px.
+  The dashboard sets `--btn-radius: 12px` on `.dash`, so a button with no radius class can never
+  fall back to the marketing pill.
+- **Mascots** (`client/public/about/mascot-*.png`, 400px sources): purple star = Intelligence /
+  Pro, orange panda = Money / KYC, blue axolotl = Bookings / Today, green sprout = Grow / first
+  steps. One per screen, ≥96px, only in bands, empty states, Pro previews, onboarding and
+  celebrations. Never beside a number, in a data card or in a table. Never recolour or crop
+  through the face.
+- **Charts:** one hue (maroon-600); a second series or deduction is rose-500. Human labels
+  ("Oct", "Mon", "9 am"), 11px minimum, every chart has a tooltip.
+
 ## Before shipping any page, check
 - [ ] Only tokens, no stray hexes or fonts
 - [ ] At most one thread, at most one serif phrase
@@ -85,3 +123,4 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - [ ] Focus ring visible on every interactive element
 - [ ] Official logo files used, untouched
 - [ ] Visit is called what the customer calls it (appointment / session / booking)
+- [ ] Dashboard: no text under 12px, no bordered cards, at most one band and one mascot
