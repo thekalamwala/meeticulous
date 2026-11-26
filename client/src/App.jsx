@@ -201,6 +201,7 @@ const ProfileSetupV2 = lazy(() => import('./pages/ProfileSetupV2'));
 // Grow (Kept): one section with tabs — Overview · Your page · Reviews · Refer & earn · Community.
 const GrowOverview = lazy(() => import('./pages/grow/GrowOverview'));
 const GrowYourPage = lazy(() => import('./pages/grow/YourPage'));
+const GrowCommunity = lazy(() => import('./pages/grow/GrowCommunity'));
 const UpgradePlanV2  = lazy(() => import('./pages/UpgradePlanV2'));
 const KycHomeV2      = lazy(() => import('./pages/kyc/KycHomeV2'));
 const ChatPageV2     = lazy(() => import('./pages/ChatPageV2'));
@@ -483,6 +484,12 @@ function GrowHomeRoute() {
 function GrowPageRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <GrowYourPage /> : <Navigate to="/dashboard/profile" replace />;
+}
+// Community's four routes: a Grow tab on the dashboard_v2 path (Mentions opens
+// Activity on its Mentions filter), the four old pages otherwise.
+function CommunityRoute({ view, Old }) {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <GrowCommunity view={view} /> : <Old />;
 }
 function ReferralsRoute() {
   const { flags } = useFeatureFlags();
@@ -785,10 +792,10 @@ function App() {
           <Route path="/dashboard/intelligence/revenue" element={<DashboardWrapper><SectionsRoute><IntelRevenue /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/intelligence/audience" element={<DashboardWrapper><SectionsRoute><IntelAudience /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/intelligence/demand" element={<DashboardWrapper><SectionsRoute><IntelDemand /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityActivity /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityMentions /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityAnswer /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunitySpaces /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="activity" Old={CommunityActivity} /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="mentions" Old={CommunityMentions} /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="answer" Old={CommunityAnswer} /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="spaces" Old={CommunitySpaces} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileRoute /></DashboardWrapper>} />
           <Route path="/dashboard/kyc" element={<DashboardWrapper><KycRoute /></DashboardWrapper>} />
           {/* KycProvider sits OUTSIDE DashboardWrapper on purpose: DashboardLayout

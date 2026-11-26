@@ -177,3 +177,44 @@ export const PinnedBar = ({ children, show = true }) => createPortal(
   </AnimatePresence>,
   document.body,
 );
+
+/* ── Empty — an honest empty state with the green sprout (Grow / first steps). */
+export const Empty = ({ title, body, action, compact = false }) => (
+  <div className={cn('flex flex-col items-center px-5 text-center', compact ? 'py-6' : 'py-10')}>
+    <img src="/about/mascot-green.png" alt="" aria-hidden="true" className={cn('object-contain', compact ? 'h-16 w-16' : 'h-24 w-24')} />
+    <p className="mb-0 mt-3 font-display text-[17px] font-bold tracking-[-0.02em] text-ink lg:text-[18px]">{title}</p>
+    {body && <p className="mb-0 mt-1 max-w-[40ch] text-[13.5px] text-muted lg:text-[14px]">{body}</p>}
+    {action && <div className="mt-4">{action}</div>}
+  </div>
+);
+
+/* ── CardHead — a card's title row (18/20px), optional action on the right. */
+export const CardHead = ({ title, sub, action, id }) => (
+  <div className="flex items-start justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6">
+    <div className="min-w-0">
+      <h2 id={id} className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink lg:text-[20px]">{title}</h2>
+      {sub && <p className="mb-0 mt-1 text-[13px] text-muted lg:text-[14px]">{sub}</p>}
+    </div>
+    {action}
+  </div>
+);
+
+export const press = 'transition active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100';
+const btn = cn('inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[12px] px-4 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-45', press, ring);
+export const btnPrimary = cn(btn, 'bg-maroon text-white hover:bg-maroon-dark');
+export const btnSoft = cn(btn, 'bg-blush text-maroon hover:bg-pink-100');
+export const btnDanger = cn(btn, 'bg-error-bg text-error-fg hover:bg-error-bg/80');
+export const input = 'w-full rounded-[16px] border border-neutral-200 bg-white px-3.5 text-[16px] text-ink placeholder:text-faint outline-none transition focus:border-maroon focus:ring-[3px] focus:ring-rose/40 lg:text-[15px]';
+export const rowBase = cn('flex min-h-[56px] w-full items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-pink-50 active:bg-pink-50 sm:px-6', tappable, ring);
+
+/* ── Field — label above, hint below; inputs stay 16px on a phone. */
+export const Field = ({ label, hint, htmlFor, children, count }) => (
+  <div className="flex flex-col gap-1.5">
+    <div className="flex items-baseline justify-between gap-2">
+      <label htmlFor={htmlFor} className="text-[13px] font-semibold text-ink lg:text-[14px]">{label}</label>
+      {count}
+    </div>
+    {children}
+    {hint && <p className="mb-0 text-[12px] text-muted lg:text-[12.5px]">{hint}</p>}
+  </div>
+);

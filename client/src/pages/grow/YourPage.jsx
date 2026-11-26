@@ -33,37 +33,10 @@ import {
   COVER_ASPECT, SOCIAL_PLATFORMS, handleFromUrl, sanitizeSocialLinks, urlFromHandle,
 } from '../ProfileSetup';
 import GrowShell, {
-  PinnedBar, Sheet, card, readShared, ring, tappable, useCopyPageLink, useIsDesktop,
+  CardHead, Field, PinnedBar, Sheet, btnPrimary, btnSoft, card, input, press, readShared, ring, rowBase, tappable,
+  useCopyPageLink, useIsDesktop,
 } from './GrowShell';
 import { pageFields, pagePayload, pageUrl, waShare } from './growModel';
-
-const press = 'transition active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100';
-const btn = cn('inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[12px] px-4 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-45', press, ring);
-const btnPrimary = cn(btn, 'bg-maroon text-white hover:bg-maroon-dark');
-const btnSoft = cn(btn, 'bg-blush text-maroon hover:bg-pink-100');
-const input = 'w-full rounded-[16px] border border-neutral-200 bg-white px-3.5 text-[16px] text-ink placeholder:text-faint outline-none transition focus:border-maroon focus:ring-[3px] focus:ring-rose/40 lg:text-[15px]';
-const rowBase = cn('flex min-h-[56px] w-full items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-pink-50 active:bg-pink-50 sm:px-6', tappable, ring);
-
-const CardHead = ({ title, sub, action }) => (
-  <div className="flex items-start justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6">
-    <div className="min-w-0">
-      <h2 className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink lg:text-[20px]">{title}</h2>
-      {sub && <p className="mb-0 mt-1 text-[13px] text-muted lg:text-[14px]">{sub}</p>}
-    </div>
-    {action}
-  </div>
-);
-
-const Field = ({ label, hint, htmlFor, children, count }) => (
-  <div className="flex flex-col gap-1.5">
-    <div className="flex items-baseline justify-between gap-2">
-      <label htmlFor={htmlFor} className="text-[13px] font-semibold text-ink lg:text-[14px]">{label}</label>
-      {count}
-    </div>
-    {children}
-    {hint && <p className="mb-0 text-[12px] text-muted lg:text-[12.5px]">{hint}</p>}
-  </div>
-);
 
 /* ── Live preview — a phone-sized copy of the public page, from the form. ─ */
 export const PagePreview = ({ form, services, username, className = '' }) => {
@@ -467,8 +440,11 @@ export default function YourPage() {
             <CardHead title={<span id="yp-link">Link and category</span>} sub="Your link and categories save on their own." />
             <div className="mt-4 flex flex-col gap-5 px-5 sm:px-6">
               <UsernameField user={user} onChanged={(u) => updateUser({ ...user, username: u })} />
-              <CategoriesSection plan={plan}
-                onSaved={(data) => updateUser({ ...user, primary_category: data.primary_category, categories: data.categories })} />
+              <div className="flex flex-col gap-1.5">
+                <p className="mb-0 text-[13px] font-semibold text-ink lg:text-[14px]">Category</p>
+                <CategoriesSection plan={plan}
+                  onSaved={(data) => updateUser({ ...user, primary_category: data.primary_category, categories: data.categories })} />
+              </div>
             </div>
           </section>
 
