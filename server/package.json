@@ -23,7 +23,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.137.0",
     "@sentry/node": "^10.78.0",
-    "@supabase/supabase-js": "^2.119.0",
+    "@supabase/supabase-js": "^2.119.2",
     "archiver": "^7.0.1",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.2",
@@ -41,7 +41,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^1.4.5-lts.1",
     "node-html-parser": "^6.1.13",
-    "nodemailer": "^10.6.0",
+    "nodemailer": "^10.6.1",
     "posthog-node": "^5.74.0",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.8",
