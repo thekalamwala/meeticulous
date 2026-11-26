@@ -133,8 +133,10 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/bookings/host': BOOKINGS,
   '/host/profile-views': { views: 465 },
   '/plans': [
-    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1 },
-    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2 },
+    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1, commission_percentage: 5,
+      limits: { services: -1, bookings_per_year: -1, digital_products: 3 }, support_type: 'email' },
+    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2, commission_percentage: 0,
+      limits: { services: -1, bookings_per_year: -1, digital_products: -1 }, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'priority' },
   ],
   '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] } },
   '/support/unread': { unread: 0 },

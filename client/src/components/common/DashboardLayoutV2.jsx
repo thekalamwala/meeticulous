@@ -351,9 +351,9 @@ const DashboardLayoutV2 = ({ children }) => {
             <PullToRefresh>
               <div className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
                 {/* Today shows KYC inside its own "Needs you" card, and Notifications in
-                    its "Needs your attention" list, so the shell notice would say the
-                    same thing twice there (one fact, one place). */}
-                {!['/dashboard', '/dashboard/notifications'].includes(pathname) && <KycNudgeStrip />}
+                    its "Needs your attention" list, and /dashboard/kyc IS the ask, so the
+                    shell notice would say the same thing twice there (one fact, one place). */}
+                {!['/dashboard', '/dashboard/notifications', '/dashboard/kyc'].includes(pathname) && <KycNudgeStrip />}
                 <PageTransition>{children}</PageTransition>
               </div>
             </PullToRefresh>

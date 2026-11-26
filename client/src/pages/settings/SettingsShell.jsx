@@ -84,10 +84,11 @@ export const BackToSettings = () => (
 
 /**
  * pane: a row id from settingsModel ('account', 'notifications', …).
+ * bare: skip the pane heading when the child page has its own.
  * root: render the phone root list instead of the pane (desktop ignores it and
  * shows the pane, so /dashboard/profile opens on Account there).
  */
-export default function SettingsShell({ pane, root = false, title, sub, action, children }) {
+export default function SettingsShell({ pane, root = false, bare = false, title, sub, action, children }) {
   const desktop = useIsDesktop();
   const reduce = useReducedMotion();
   const row = rowById(pane);
@@ -105,7 +106,8 @@ export default function SettingsShell({ pane, root = false, title, sub, action, 
     <div className="flex min-w-0 flex-col gap-4 lg:gap-5">
       <div className="flex flex-col gap-1">
         <BackToSettings />
-        <PaneHeading title={title || row?.label} sub={sub} action={action} />
+        {/* bare: the embedded page draws its own heading (e.g. Verification). */}
+        {!bare && <PaneHeading title={title || row?.label} sub={sub} action={action} />}
       </div>
       {children}
     </div>
