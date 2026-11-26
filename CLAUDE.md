@@ -163,8 +163,13 @@ Items previously listed here as pending are now live:
     (`health_state` CHECK + `health_score` / `health_signals` / `health_computed_at`). Additive,
     RLS unchanged (service-role only). Code is schema-fallback safe (`guestRelationshipEngine`
     skips the health write, `deskService` guest query fails soft) so it was safe before apply.
+  - **CRM is OFF until 2027-01-01 (founder decision 2026-11-26).** `crm_admin_sends` was flipped
+    **OFF** on 2026-11-26, and the new `crm_automation` flag (ships OFF, fail-closed, PR #454) gates
+    EVERY CRM background job — attribution, lifecycle + guest engines, list engagement, second-touch,
+    send queue, sequence steps, follow-up + cold-call reminders, cold-call recap. Turn both back on in
+    Admin → Feature flags in January. The CRM admin pages and manual cold calling work with them off.
   - **`crm_admin_sends` — the CRM master send switch.** On the current Meeticulous DB
-    (`spquowzrefozmrzoszkf`) it is **ON** (`enabled=true`, re-verified 2026-11-12; on 2026-11-01 it was OFF and no CRM email had
+    (`spquowzrefozmrzoszkf`) it was **ON** from 2026-11-12 until 2026-11-26 (see the line above; on 2026-11-01 it was OFF and no CRM email had
     been sent from this DB). The history below is from the old Mumbai/Tokyo DBs: it was enabled on
     prod Mumbai since 2026-08-27 (~100+ real messages) and staging Tokyo since 2026-09-02.
     When it is ON: Phase 2 is therefore NOT advisory-only on
