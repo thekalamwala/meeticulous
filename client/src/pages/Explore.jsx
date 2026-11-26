@@ -187,22 +187,22 @@ function ExploreFull() {
             Book 1:1 services with coaches, therapists, mentors &amp; more
           </p>
           <form onSubmit={handleSearchSubmit} className="relative mx-auto mt-8 max-w-xl">
-            <div className="flex overflow-hidden rounded-xl border border-black/10 bg-white transition-shadow focus-within:border-primary/40 focus-within:shadow-md">
+            <div className="mt-input !h-14 !gap-1 !pr-1.5">
               <input
                 value={inputVal}
                 onChange={e => setInputVal(e.target.value)}
                 placeholder="Try “Mock Interview in Nagpur” or “Career Consultation online”"
                 aria-label="Search services"
-                className="flex-1 bg-transparent px-4 py-3 text-[15px] text-ink outline-none placeholder:text-muted"
+                className="text-left text-[15px]"
               />
               {inputVal && (
                 <button type="button" onClick={clearSearch}
-                  className="px-3 text-muted transition-colors hover:text-ink" aria-label="Clear search">
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-muted transition-colors hover:text-ink" aria-label="Clear search">
                   <X size={16} />
                 </button>
               )}
               <button type="submit" aria-label="Search"
-                className="bg-primary px-5 text-white transition-colors hover:bg-[#2B0A14]">
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-white transition-colors hover:bg-maroon-dark">
                 <Search size={18} />
               </button>
             </div>

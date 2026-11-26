@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Sprout, Sparkles, Rocket, Crown, Minus, Plus, ArrowRight, Info, Check, Zap, Wallet, Lock, Heart } from "lucide-react";
+import { Sprout, Sparkles, Rocket, Crown, Minus, Plus, ArrowRight, Info, Check, Zap, Wallet, Lock, Heart, TrendingUp } from "lucide-react";
 import Seo from "../components/common/Seo";
 import { ogCard } from "../config/ogImages";
 import { SITE_URL } from "../utils/seo";
@@ -17,7 +17,6 @@ import {
 
 const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
-const ACCENT = { free: "#4AB765", premium: "#960D32" };
 const CTA_LABEL = { free: "Get Started", premium: "Start on Pro" };
 
 // One-line "who's this for" per plan.
@@ -145,27 +144,27 @@ function EarningsBars({ results, winnerKey }) {
   const maxNet = Math.max(...bars.map((b) => b.netAnnual), 1);
   const BAR_MAX = 132;
   return (
-    <div className="mt-4">
-      <div className="flex items-end justify-between gap-3" style={{ height: BAR_MAX + 34 }}>
+    <div className="earnings-bars">
+      <div className="earnings-bars__plot" style={{ height: BAR_MAX + 40 }}>
         {bars.map((b) => {
           const isWin = b.plan.key === winnerKey;
           const muted = b.capped || b.outgrows;
           const h = Math.max(10, (Math.max(0, b.netAnnual) / maxNet) * BAR_MAX);
           return (
-            <div key={b.plan.key} className="flex flex-1 flex-col items-center justify-end">
-              {isWin && <Crown size={16} className="mb-0.5" style={{ color: ACCENT.premium }} fill={ACCENT.premium} />}
-              <span className="mb-1 text-[11px] font-bold text-ink">{inr0(b.netAnnual)}</span>
-              <div className="w-full max-w-[58px] rounded-t-lg transition-all duration-300"
-                style={{ height: h, background: isWin ? ACCENT.premium : "#d9d5cc", opacity: muted ? 0.5 : 1 }} />
+            <div key={b.plan.key} className="earnings-bars__col">
+              {isWin && <Crown size={16} className="earnings-bars__crown" aria-label="Keeps the most" />}
+              <span className="earnings-bars__value">{inr0(b.netAnnual)}</span>
+              <div className={`earnings-bars__bar ${isWin ? "earnings-bars__bar--win" : ""} ${muted ? "earnings-bars__bar--muted" : ""}`}
+                style={{ height: h }} />
             </div>
           );
         })}
       </div>
-      <div className="mt-2 flex justify-between gap-3">
+      <div className="earnings-bars__labels">
         {bars.map((b) => (
-          <div key={b.plan.key} className="flex-1 text-center">
-            <p className="text-xs font-semibold text-ink">{b.plan.name}</p>
-            <p className="text-[10px] text-neutral-500">{b.plan.key === "free" ? "5% fee" : "0% fee"}</p>
+          <div key={b.plan.key}>
+            <p className="earnings-bars__name">{b.plan.name}</p>
+            <p className="earnings-bars__fee">{b.plan.key === "free" ? "5% fee" : "0% fee"}</p>
           </div>
         ))}
       </div>
@@ -176,7 +175,6 @@ function EarningsBars({ results, winnerKey }) {
 function PlanCard({ result, cycle, proAdvantage }) {
   const { plan } = result;
   const Icon = ICON[plan.key] ?? Sparkles;
-  const accent = ACCENT[plan.key];
   const isRec = plan.key === "premium"; // Pro is the recommended plan
   const monthly = plan.monthly;
   const yearly = ANNUAL_FEE[plan.key];
@@ -185,29 +183,19 @@ function PlanCard({ result, cycle, proAdvantage }) {
       ? "Free to start · 5% per booking"
       : `0% commission · ${cycle === "annual" ? `${inr0(yearly)}/yr` : `${inr0(monthly)}/mo`}`;
   return (
-    <div className={`earnings-plan relative flex flex-col rounded-[14px] border p-5 sm:p-6 ${isRec ? "earnings-plan--pro" : ""}`}>
-      {isRec && (
-        <span className="earnings-plan__ribbon absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 px-2.5 py-0.5 text-xs font-bold">
-          <span aria-hidden="true">★</span> Recommended
-        </span>
-      )}
-      <div className="grid grid-cols-[minmax(0,1fr)_28%] items-start gap-2">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]" style={{ color: accent, background: `${accent}14` }}>
-              <Icon size={20} strokeWidth={1.75} />
-            </span>
+    <article className={`earnings-plan ${isRec ? "earnings-plan--pro" : ""}`}>
+      {isRec && <span className="mt-badge mt-badge--official earnings-plan__flag">Recommended</span>}
+
+      <div className="earnings-plan__top">
+        <div className="min-w-0">
+          <div className="earnings-plan__id">
+            <span className="earnings-plan__icon"><Icon size={20} /></span>
             <div>
-              <h3 className="m-0 text-base font-bold leading-tight text-ink">{plan.name}</h3>
-              <p className="m-0 mt-0.5 text-[11px] leading-tight text-neutral-500">{priceNote}</p>
+              <h3 className="earnings-plan__name">{plan.name}</h3>
+              <p className="earnings-plan__note">{priceNote}</p>
             </div>
           </div>
-
-          <p className="mt-4 text-sm font-bold text-ink">{POSITION[plan.key]}</p>
-          <div className="mt-2">
-            <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2B0A14" }}>{inr0(result.netAnnual)}</p>
-            <p className="text-xs text-neutral-500">you keep per year</p>
-          </div>
+          <p className="earnings-plan__position">{POSITION[plan.key]}</p>
         </div>
         <div className="earnings-plan__art" aria-hidden="true">
           {PLAN_MASCOTS[plan.key].map((color) => (
@@ -216,37 +204,35 @@ function PlanCard({ result, cycle, proAdvantage }) {
         </div>
       </div>
 
-      {isRec && proAdvantage > 0 && (
-        <p className="mt-3 self-start rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
-          <span className="mr-1" aria-hidden="true">✦</span>{inr0(proAdvantage)} more in your pocket vs. Starter
-        </p>
-      )}
+      <div>
+        <p className="earnings-plan__amount">{inr0(result.netAnnual)}</p>
+        <p className="earnings-plan__amount-label">you keep per year</p>
+        {isRec && proAdvantage > 0 && (
+          <p className="mt-badge mt-badge--brand earnings-plan__advantage">
+            <TrendingUp size={14} aria-hidden="true" /> {inr0(proAdvantage)} more in your pocket vs. Starter
+          </p>
+        )}
+      </div>
 
-      <ul className="mt-3 flex-1 space-y-1.5">
+      <ul className="earnings-plan__features">
         {FEATURES[plan.key].map((f) => (
-          <li key={f} className="flex items-start gap-2 text-[13px] text-neutral-700">
-            <Check size={15} className="mt-0.5 flex-shrink-0" style={{ color: accent }} /> {f}
-          </li>
+          <li key={f}><Check size={16} aria-hidden="true" /> {f}</li>
         ))}
       </ul>
 
       {result.capped && (
-        <p className="mt-3 rounded-[16px] bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
-          This plan caps at {inr0(plan.maxServicePrice)} per session.
-        </p>
+        <p className="earnings-plan__warn">This plan caps at {inr0(plan.maxServicePrice)} per session.</p>
       )}
       {result.outgrows && (
-        <p className="mt-3 rounded-[16px] bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
+        <p className="earnings-plan__warn">
           Caps at {result.bookingCap.toLocaleString("en-IN")} bookings/year — {result.uncollectedBookings.toLocaleString("en-IN")} you couldn&rsquo;t take.
         </p>
       )}
 
-      <Link to={ROUTE_START}
-        className={`mt-5 inline-flex items-center justify-center gap-1.5 rounded-[10px] px-5 py-3 text-sm font-semibold transition ${isRec ? "text-white hover:opacity-95" : "border border-black/15 text-ink hover:border-black/30"}`}
-        style={isRec ? { background: accent } : undefined}>
-        {CTA_LABEL[plan.key]} <ArrowRight size={16} />
+      <Link to={ROUTE_START} className={`mt-btn mt-btn--block ${isRec ? "" : "mt-btn--secondary"}`}>
+        {CTA_LABEL[plan.key]} <ArrowRight size={16} aria-hidden="true" />
       </Link>
-    </div>
+    </article>
   );
 }
 
@@ -258,13 +244,11 @@ const REASSURE = [
 ];
 
 // Module-level (stable identity) so it doesn't remount on every parent render.
-function CycleToggle({ cycle, setCycle, small }) {
+function CycleToggle({ cycle, setCycle, onBrand }) {
   return (
-    <div className={`inline-flex rounded-full bg-neutral-100 p-0.5 ${small ? "text-[11px]" : "text-xs"}`}>
-      <button type="button" onClick={() => setCycle("annual")} aria-pressed={cycle === "annual"}
-        className={`rounded-full px-3 py-1 font-semibold transition ${cycle === "annual" ? "bg-white text-ink shadow-sm" : "text-neutral-500"}`}>Yearly</button>
-      <button type="button" onClick={() => setCycle("monthly")} aria-pressed={cycle === "monthly"}
-        className={`rounded-full px-3 py-1 font-semibold transition ${cycle === "monthly" ? "bg-white text-ink shadow-sm" : "text-neutral-500"}`}>Monthly</button>
+    <div className={`earnings-cycle ${onBrand ? "earnings-cycle--onbrand" : ""}`}>
+      <button type="button" onClick={() => setCycle("annual")} aria-pressed={cycle === "annual"}>Yearly</button>
+      <button type="button" onClick={() => setCycle("monthly")} aria-pressed={cycle === "monthly"}>Monthly</button>
     </div>
   );
 }
@@ -283,11 +267,12 @@ export default function EarningsCalculator() {
   const maxSaving = annualSaving("premium");
 
   const platformFees = useMemo(() => platformFeesPerYear(earning, bookings), [earning, bookings]);
+  const lowestFee = Math.min(...platformFees.map((r) => r.fee));
   const animatedNet = useCountUp(winner.netAnnual);
   const canonical = `${SITE_URL}/earnings-calculator`;
 
   return (
-    <div className="min-h-screen" style={{ background: "#F8FAFC" }}>
+    <div className="min-h-screen bg-cream">
       <Seo
         title="Earnings Calculator — see what you keep | Meeticulous"
         description="Meeticulous earnings calculator: set your price and monthly bookings to see exactly what you keep — and whether Starter or Pro leaves you the most."
@@ -309,7 +294,7 @@ export default function EarningsCalculator() {
           {/* CALCULATOR + EARNINGS */}
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             {/* Inputs */}
-            <div className="rounded-[16px] border border-black/5 bg-white p-6 sm:p-7">
+            <div className="rounded-2xl bg-white p-6 sm:p-8">
               <StepperInput n={1} title="Set your price per session" sublabel="How much do you charge for each session?"
                 prefix="₹" value={earning} min={500} max={50000} step={500} presets={[1500, 5000, 15000, 30000]}
                 onChange={(v) => setEarning(v)} />
@@ -321,37 +306,39 @@ export default function EarningsCalculator() {
             </div>
 
             {/* Estimated earnings + bar chart */}
-            <div className="rounded-[16px] border p-6 sm:p-7" style={{ borderColor: "rgba(254,81,0,0.18)", background: "linear-gradient(180deg,#fff6f1,#ffffff)" }}>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500">Your estimated earnings</span>
-                <CycleToggle cycle={cycle} setCycle={setCycle} small />
+            <section className="earnings-result" aria-live="polite">
+              {/* ee thread — one per layout, bleeding off an edge, behind content (BRAND_RULES). */}
+              <img src="/brand/ds/02-ee/mt-ee-thread-white.svg" alt="" aria-hidden="true" className="earnings-result__thread" />
+              <div className="earnings-result__head">
+                <span className="mt-overline">Your estimated earnings</span>
+                <CycleToggle cycle={cycle} setCycle={setCycle} onBrand />
               </div>
-              <p className="mt-3 text-lg font-bold text-ink">With {winner.plan.name}, you keep</p>
-              <p className="text-4xl font-extrabold leading-none text-primary sm:text-[2.7rem]">
-                {inr0(animatedNet)}
-              </p>
-              <p className="mt-1 text-sm text-neutral-500">per year</p>
+              <p className="earnings-result__lead">With {winner.plan.name}, you keep</p>
+              <p className="earnings-result__amount">{inr0(animatedNet)}</p>
+              <p className="earnings-result__per">per year</p>
               {!winnerIsFree && delta > 0 ? (
-                <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#e9f6ee] px-3 py-1.5 text-xs font-semibold text-[#1f7a3d]">
-                  🚀 {inr0(delta)} more than the free plan
+                <span className="earnings-result__delta">
+                  <TrendingUp size={14} aria-hidden="true" /> {inr0(delta)} more than the free plan
                 </span>
               ) : (
-                <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-600">
+                <span className="earnings-result__delta earnings-result__delta--quiet">
                   Free plan keeps the most at your volume
                 </span>
               )}
               <EarningsBars results={results} winnerKey={winnerKey} />
-            </div>
+            </section>
           </div>
 
           {/* PLANS */}
           <div className="mt-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">Choose a plan</p>
-            <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-2xl font-extrabold text-ink sm:text-3xl">Plans that grow with you</h2>
-              <div className="inline-flex items-center gap-2">
+            <p className="mt-overline text-maroon">Choose a plan</p>
+            <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[2.5rem]">
+                Plans that grow <span className="font-serif text-[1.08em] font-normal italic tracking-normal">with you</span>
+              </h2>
+              <div className="inline-flex items-center gap-3">
                 {maxSaving > 0 && (
-                  <span className={`rounded-full bg-[#e9f6ee] px-2 py-1 text-[11px] font-semibold text-[#1f7a3d] ${cycle === "annual" ? "" : "invisible"}`}>
+                  <span className={`mt-badge mt-badge--brand ${cycle === "annual" ? "" : "invisible"}`}>
                     Save up to {inr0(maxSaving)}
                   </span>
                 )}
@@ -359,65 +346,76 @@ export default function EarningsCalculator() {
               </div>
             </div>
 
-            <div className="mt-7 grid gap-7 md:grid-cols-2 md:gap-5">
+            <div className="mt-10 grid gap-8 md:grid-cols-2 md:gap-6">
               {["free", "premium"].map((k) => (
                 <PlanCard key={k} result={results.find((r) => r.plan.key === k)} proAdvantage={delta} cycle={cycle} />
               ))}
             </div>
 
-            <p className="mt-4 text-center text-[11px] leading-relaxed text-neutral-500">
+            <p className="earnings-fineprint mt-5 text-center">
               Your guest pays <strong>{inr2(winner.guestPays)}</strong> at a {inr0(earning)} price — your price plus a flat ₹10 booking fee. You never eat it; your take-home is your price minus taxes.
             </p>
           </div>
 
           {/* VS TOPMATE — platform fees only; gateway charges apply everywhere */}
-          <div className="mt-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">Compare platforms</p>
-            <h2 className="mt-1 text-2xl font-extrabold text-ink sm:text-3xl">Platform fees per year vs Topmate</h2>
-            <p className="mt-2 max-w-2xl text-sm text-neutral-600">
+          <div className="mt-20">
+            <p className="mt-overline text-maroon">Compare platforms</p>
+            <h2 className="mt-2 font-display text-3xl font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[2.5rem]">
+              Platform fees per year vs Topmate
+            </h2>
+            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-neutral-600">
               At {inr0(earning)} a session and {bookings} sessions a month, this is what each option takes in platform fees over a year.
             </p>
-            <div className="mt-5 overflow-x-auto rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-[#F8FAFC] text-xs uppercase tracking-wide text-neutral-500">
-                  <tr><th className="px-4 py-3">Option</th><th className="px-4 py-3">How it charges</th><th className="px-4 py-3 text-right">Fees per year</th></tr>
+            <div className="earnings-compare">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Option</th>
+                    <th scope="col" className="earnings-compare__how">How it charges</th>
+                    <th scope="col" className="earnings-compare__fee">Fees per year</th>
+                  </tr>
                 </thead>
                 <tbody>
-                  {platformFees.map((r) => (
-                    <tr key={r.key} className="border-t border-black/5">
-                      <td className="px-4 py-3 font-semibold text-ink">{r.name}</td>
-                      <td className="px-4 py-3 text-neutral-600">{r.note}</td>
-                      <td className="px-4 py-3 text-right font-heading font-bold tabular-nums text-ink">{inr0(r.fee)}</td>
-                    </tr>
-                  ))}
+                  {platformFees.map((r) => {
+                    const lowest = r.fee === lowestFee;
+                    return (
+                      <tr key={r.key} className={lowest ? "is-lowest" : undefined}>
+                        <th scope="row">
+                          <span className="earnings-compare__name">{r.name}</span>
+                          {lowest && <span className="mt-badge mt-badge--official mt-badge--s">Lowest</span>}
+                          <span className="earnings-compare__note">{r.note}</span>
+                        </th>
+                        <td className="earnings-compare__how">{r.note}</td>
+                        <td className="earnings-compare__fee">{inr0(r.fee)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
-            <p className="mt-3 text-[11px] leading-relaxed text-neutral-500">
-              Topmate fees as published on <a href={TOPMATE_FEES.source} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">topmate.io</a> ({TOPMATE_FEES.checked}). Payment gateway charges apply on every platform and are left out of all rows. See the full{" "}
-              <Link to="/compare/topmate-alternative" className="text-primary hover:underline">Topmate comparison</Link>.
+            <p className="earnings-fineprint mt-4">
+              Topmate fees as published on <a href={TOPMATE_FEES.source} target="_blank" rel="noopener noreferrer">topmate.io</a> ({TOPMATE_FEES.checked}). Payment gateway charges apply on every platform and are left out of all rows. See the full{" "}
+              <Link to="/compare/topmate-alternative">Topmate comparison</Link>.
             </p>
           </div>
 
           {/* REASSURANCE */}
-          <div className="mt-12 grid gap-4 rounded-[14px] border border-black/5 bg-white/60 p-5 sm:grid-cols-4">
+          <ul className="earnings-reassure">
             {REASSURE.map(({ icon: I, title, body }) => (
-              <div key={title} className="flex items-start gap-2.5">
-                <I size={18} className="mt-0.5 flex-shrink-0 text-primary" />
-                <div>
-                  <p className="text-sm font-bold text-ink">{title}</p>
-                  <p className="text-xs text-neutral-500">{body}</p>
-                </div>
-              </div>
+              <li key={title}>
+                <span className="earnings-reassure__icon"><I size={20} aria-hidden="true" /></span>
+                <p className="earnings-reassure__title">{title}</p>
+                <p className="earnings-reassure__body">{body}</p>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {/* FOOTNOTE */}
-          <div className="mt-5 flex gap-2.5 text-[11px] leading-relaxed text-neutral-500">
-            <Info size={13} className="mt-0.5 flex-shrink-0" />
+          <div className="earnings-fineprint mt-6 flex gap-2.5">
+            <Info size={14} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
             <p>
               An illustration, not a quote. Figures assume 18% GST (most categories; some differ) and your exact price is confirmed when you list a service. See the{" "}
-              <Link to="/host-fees" className="text-primary hover:underline">Host Fee &amp; Payment Schedule</Link> for the full breakdown.
+              <Link to="/host-fees">Host Fee &amp; Payment Schedule</Link> for the full breakdown.
             </p>
           </div>
         </div>
