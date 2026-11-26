@@ -2,6 +2,7 @@
 // which visit this is for the guest. Both read only data the list already loaded.
 import { describe, expect, it } from 'vitest';
 import { bookingPhaseLine, guestVisit } from '../components/dashboard/BookingDetail';
+import { fmtTime } from '../components/dashboard/ui/v2';
 
 const now = new Date('2026-11-25T15:00:00+05:30');
 const at = (h, m = 0) => new Date(`2026-11-25T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00+05:30`).toISOString();
@@ -12,7 +13,8 @@ describe('bookingPhaseLine', () => {
     expect(bookingPhaseLine(bk({ status: 'cancelled', scheduled_at: at(14, 50) }), now)).toBe('Cancelled');
   });
   it('says on now while the session runs, timed by the service duration', () => {
-    expect(bookingPhaseLine(bk({ scheduled_at: at(14, 45) }), now)).toMatch(/^On now · until 3:15/i);
+    // The time is shown in the viewer's zone (CI runs in UTC), so build it the same way.
+    expect(bookingPhaseLine(bk({ scheduled_at: at(14, 45) }), now)).toBe(`On now · until ${fmtTime(at(15, 15))}`);
   });
   it('counts down under an hour', () => {
     expect(bookingPhaseLine(bk({ scheduled_at: at(15, 20) }), now)).toBe('Starts in 20 min');
