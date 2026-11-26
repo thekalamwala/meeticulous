@@ -1,6 +1,8 @@
 // Sample data for the dev-only dashboard preview (see ./dashPreview.js).
 // Shapes mirror the real API responses (captured 2026-11-25); every person and
 // figure here is made up. No real guest data belongs in this file.
+import { buildCrmFixtures } from './dashPreviewCrm';
+
 const day = 86_400_000;
 const at = (days, h = 10, m = 30) => {
   const d = new Date(Date.now() + days * day);
@@ -134,6 +136,69 @@ const EMPTY = (pro) => ({
 });
 export const buildEmptyFixtures = ({ pro = false } = {}) => EMPTY(pro);
 
+// Grow (Kept) — testimonials, guest reviews, referrals and community activity.
+// localStorage `dash_preview_grow` switches the case for screenshots:
+//   'empty' = a brand-new host (nothing yet) · 'worst' = long names, long text ·
+//   'error' = every Grow read fails. Unset = a typical host.
+const growCase = () => { try { return localStorage.getItem('dash_preview_grow') || ''; } catch { return ''; } };
+const LONG = 'Kavyalakshmi Venkataraghavan-Subramaniam';
+const GROW = (c) => {
+  if (c === 'error') {
+    const fail = new Error('preview: simulated failure');
+    return { '/host/testimonials': fail, '/reviews/received': fail, '/referrals/mine': fail,
+      '/community/users/host-preview/activity': fail, '/community/mentions': fail, '/community/spaces': fail, '/community/feed': fail };
+  }
+  const empty = c === 'empty';
+  const worst = c === 'worst';
+  const q = (i, quote, name, role) => ({ id: `t${i}`, quote: worst ? `${quote} `.repeat(6).trim() : quote, author_name: worst ? LONG : name, author_role: worst ? 'Founder and chief everything officer, a very long company name' : role, author_image_url: null });
+  const rv = (i, rating, comment, name, svc, days) => ({ id: `r${i}`, rating, comment: worst ? `${comment} `.repeat(5).trim() : comment, created_at: at(-days), direction: 'guest_to_host',
+    profiles: { name: worst ? LONG : name, profile_image: '' }, bookings: { services: { title: worst ? 'Growth Sprint Workshop for founders who are stuck at the same plateau' : svc } } });
+  const reviews = empty ? [] : [
+    rv(1, 5, 'Riya found the leak in our signup flow in twenty minutes. Worth every rupee.', 'Aarav Shah', 'Funnel Teardown', 3),
+    rv(2, 5, 'Calm, sharp and practical. We shipped two fixes the same week.', 'Meera Iyer', 'Growth Sprint Workshop', 9),
+    rv(3, 4, 'Good session. I wanted a bit more time on pricing.', 'Kabir Rao', 'Funnel Teardown', 21),
+  ];
+  const post = (i, title, body, likes, comments, days) => ({ id: `p${i}`, title: worst ? `${title} — and a much longer title that keeps going past one line` : title, body, like_count: likes, comment_count: comments, created_at: at(-days), url: `/community/p/post-${i}`, space: { key: 'growth', name: 'Growth' } });
+  return {
+    '/host/testimonials': empty ? [] : [
+      q(1, 'The clearest hour I have spent on our product all year.', 'Divya Pillai', 'Product designer'),
+      q(2, 'Riya made our onboarding feel obvious.', 'Sameer Khan', 'Founder, Tapri'),
+    ],
+    '/reviews/received': { reviews, count: reviews.length, avg: reviews.length ? Math.round((reviews.reduce((n, r) => n + r.rating, 0) / reviews.length) * 10) / 10 : 0 },
+    '/referrals/mine': {
+      username: 'riyakapoor',
+      stats: empty ? { total: 0, earned: 0, pendingValue: 0 } : { total: 3, earned: 1000, pendingValue: 500 },
+      referrals: empty ? [] : [
+        { id: 'rf1', status: 'rewarded', referred_plan: 'premium', cadence: 'monthly', reward_type: 'cash', reward_value: 500, created_at: at(-40) },
+        { id: 'rf2', status: 'rewarded', referred_plan: 'premium', cadence: 'annual', reward_type: 'cash', reward_value: 500, created_at: at(-25) },
+        { id: 'rf3', status: 'qualified', referred_plan: 'premium', cadence: 'monthly', reward_type: 'cash', reward_value: 500, created_at: at(-6) },
+        { id: 'rf4', status: 'pending', referred_plan: null, cadence: null, reward_type: 'cash', reward_value: 0, created_at: at(-2) },
+      ],
+    },
+    '/community/users/host-preview/activity': empty ? { posts: [], comments: [] } : {
+      posts: [
+        post(1, 'What finally fixed my no-shows', 'A reminder the evening before, and a ₹99 deposit. That was it.', 14, 6, 2),
+        post(2, 'Pricing a first workshop', 'I priced too low and filled in a day. Here is what I changed.', 9, 3, 12),
+      ],
+      comments: [
+        { id: 'c1', body: 'Same here. The deposit changed everything.', like_count: 2, created_at: at(-1), parent: { title: 'Do deposits scare guests off?', url: '/community/t/deposits' } },
+      ],
+    },
+    '/community/mentions': { items: empty ? [] : [
+      { id: 'm1', author: { display_name: 'Ishita Menon' }, post: { title: 'Who helped you with your funnel?', url: '/community/t/funnel-help' }, snippet: '@riyakapoor walked me through mine.', created_at: at(-4) },
+    ], next_cursor: null },
+    '/community/spaces': { spaces: [
+      { key: 'growth', name: 'Growth', description: 'Getting found, getting booked.', post_policy: 'everyone' },
+      { key: 'money', name: 'Money and pricing', description: 'What to charge and how to get paid.', post_policy: 'hosts' },
+      { key: 'news', name: 'Meeticulous news', description: 'Releases and notes from the team.', post_policy: 'official' },
+    ] },
+    '/community/feed': { items: empty ? [] : [
+      { id: 'f1', format: 'question', status: 'visible', locked: false, accepted_comment_id: null, title: 'How do you handle guests who reschedule three times?', body: 'Third reschedule this week from the same guest.', author: { display_name: 'Nikhil Joshi' }, comment_count: 0, created_at: at(-1), url: '/community/t/reschedules', space: { name: 'Growth' } },
+      { id: 'f2', format: 'question', status: 'visible', locked: false, accepted_comment_id: null, title: 'Is a free intro call worth it?', body: 'Thinking of adding a 15-minute free call.', author: { display_name: 'Ananya Rao' }, comment_count: 4, created_at: at(-3), url: '/community/t/free-intro', space: { name: 'Money and pricing' } },
+    ], next_cursor: null },
+  };
+};
+
 // Keyed by path relative to the API base, without the query string.
 export const buildFixtures = ({ pro = false } = {}) => ({
   '/auth/me': { ...ME, plan: pro ? 'premium' : 'starter' },
@@ -155,11 +220,22 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1 },
     { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2 },
   ],
-  '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] } },
+  '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] },
+    // The real row's shape (Schedule page reads these): Mon–Fri, a split Friday, Saturday mornings.
+    weekly_schedule: {
+      monday: [{ start: '10:00', end: '18:00' }], tuesday: [{ start: '10:00', end: '18:00' }],
+      wednesday: [{ start: '10:00', end: '18:00' }], thursday: [{ start: '10:00', end: '18:00' }],
+      friday: [{ start: '10:00', end: '13:00' }, { start: '15:00', end: '18:00' }],
+      saturday: [{ start: '09:00', end: '12:00' }], sunday: [],
+    },
+    buffer_minutes: 15, blocked_dates: ['2026-12-25', '2027-01-01'],
+    cap_per_day: pro ? 6 : null, cap_per_week: null, cap_per_guest: null },
   '/support/unread': { unread: 0 },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },
   '/vendor/intelligence/overview': OVERVIEW(pro),
   '/vendor/intelligence/money': MONEY,
   '/vendor/intelligence/audience': AUDIENCE(pro),
   '/vendor/intelligence/demand': DEMAND(pro),
+  ...buildCrmFixtures(),
+  ...GROW(growCase()),
 });
