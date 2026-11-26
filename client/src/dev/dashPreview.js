@@ -80,6 +80,12 @@ export function installDashPreview(api) {
     }
     // A fixture that is an Error simulates a failed read (error-state screenshots).
     if (data instanceof Error) throw Object.assign(data, { config, response: { status: 500, data: {} } });
+    // A fixture can stand for a failing endpoint, so error states can be seen.
+    if (data && data.__previewError) {
+      return Promise.reject(Object.assign(new Error(`[dash-preview] ${data.__previewError}`), {
+        config, response: { status: data.__previewError, data: { message: 'Preview error' }, headers: {}, config },
+      }));
+    }
     return { data, status: 200, statusText: 'OK', headers: {}, config, request: {} };
   };
   // eslint-disable-next-line no-console

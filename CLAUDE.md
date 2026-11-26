@@ -324,6 +324,14 @@ Items previously listed here as pending are now live:
   guard, sampled by intel-rollup/intel-prune, never called on the ingest path. **Filename note:**
   number collides with `v3.218_community_membership.sql` (membership) — cosmetic only, both applied,
   Supabase names migrations independently. Shipped with PR #371.
+- **v3.227** (`v3.227_catalog_sort_order.sql`) — applied 2026-11-26 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`, founder-approved) and verified: nullable `sort_order integer` (no
+  default) on `services` / `products` / `courses` + `idx_{table}_host_sort (host_id, sort_order)`;
+  still 0 anon/authenticated write grants. The host-set Catalog order (Kept Catalog reorder,
+  `PUT /api/{services,products,courses}/reorder`). NULL = never placed; every read sorts
+  `sort_order NULLS LAST, created_at DESC` (`services/catalogOrder.js`), so untouched hosts keep
+  newest-first. Code is schema-fallback safe (order read in its own query; reorder answers 409
+  without the column). Rollback: `ALTER TABLE … DROP COLUMN IF EXISTS sort_order` on the three.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

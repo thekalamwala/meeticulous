@@ -244,7 +244,8 @@ export const Toggle = ({ checked, onChange, label, disabled }) => (
     onClick={() => onChange(!checked)}
     className={cn('relative h-6 w-9 shrink-0 rounded-full border-2 transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
       checked ? 'border-maroon bg-maroon' : 'border-neutral-300 bg-neutral-100', disabled && 'cursor-not-allowed opacity-45')}>
-    <span className={cn('absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
+    {/* 36px track minus its 2px borders leaves 32px; the 16px knob sits 2px in from either end. */}
+    <span className={cn('absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all', checked ? 'left-[14px]' : 'left-0.5')} />
   </button>
 );
 

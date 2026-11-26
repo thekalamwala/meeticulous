@@ -1,6 +1,7 @@
 // Sample data for the dev-only dashboard preview (see ./dashPreview.js).
 // Shapes mirror the real API responses (captured 2026-11-25); every person and
 // figure here is made up. No real guest data belongs in this file.
+import { catalogFixtures } from './dashPreviewCatalog';
 import { buildCrmFixtures } from './dashPreviewCrm';
 import { buildMoneyFixtures } from './dashPreviewMoney';
 
@@ -207,6 +208,7 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     dashboard_v2: true, dashboard_sections_v2: true, console_v2: true, payouts: true, earnings: true,
     transactions: true, services: true, coupons: true, digital_products: true, community: true,
     community_v2: true, community_memberships: true, availability_editor: true, google_calendar: true,
+    course_purchase: true,
   },
   '/notifications': { notifications: [
     { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(0, 9, 12), read_at: null, data: {} },
@@ -255,4 +257,7 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   ...buildCrmFixtures(),
   ...GROW(growCase()),
   ...buildMoneyFixtures(),
+  // Catalog (kept-catalog): services/products/courses/discounts/memberships.
+  // Last on purpose: its '/services' rows are a superset of the CRM picker's.
+  ...catalogFixtures(),
 });

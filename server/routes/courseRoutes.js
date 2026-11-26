@@ -7,6 +7,7 @@ const {
 } = require('../controllers/courseController');
 const { protect, requireHost } = require('../middleware/authMiddleware');
 const { requireFeature } = require('../middleware/requireFeature');
+const { makeReorderHandler } = require('../services/catalogOrder');
 
 // Public course page (lesson titles only — no video_url).
 router.get('/p/:username/:slug', getCoursePublic);
@@ -19,6 +20,8 @@ router.post('/verify', protect, requireFeature('course_purchase'), verifyCourseP
 
 // Host CRUD. Creation is Pro-gated server-side (see courseController).
 router.get('/mine/all', protect, requireHost, getMyCourses);
+// Kept Catalog order (v3.227), declared before PUT /:id.
+router.put('/reorder', protect, requireHost, makeReorderHandler('courses'));
 router.post('/', protect, requireHost, createCourse);
 router.put('/:id', protect, requireHost, updateCourse);
 router.delete('/:id', protect, requireHost, deleteCourse);

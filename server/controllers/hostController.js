@@ -315,6 +315,8 @@ const buildHostProfile = async (username) => {
   }
   host.booking_count = totalBookings;
   services = (services || []).map((s) => ({ ...s, booking_count: countsByService[s.id] || 0 }));
+  // The host's own order (Kept Catalog, v3.227), newest-first where unplaced.
+  services = await require('../services/catalogOrder').applyHostOrder('services', host.id, services);
 
   // Resolve the primary category's human label for display (best-effort).
   if (host?.primary_category) {

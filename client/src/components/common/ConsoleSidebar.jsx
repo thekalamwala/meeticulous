@@ -165,13 +165,24 @@ export const NAV_V2 = [
     // is not one of the four, so it keeps its own line; see below.
     id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
-      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog', '/dashboard/service', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons'] },
+      // The combined list. `railHidden`: the section row ("Catalog") lands here and
+      // lights up on it, but it is not repeated as a sub-row — the dropdown lists
+      // only the five types (founder call, 2026-11-26).
+      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog'], railHidden: true },
+      // Each type also gets its own row (founder call, 2026-11-26), opening that
+      // type's own page, with a + (addTo) straight to its create form — the same
+      // shape Services always had with /dashboard/service/add-new.
+      { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service', addTo: '/dashboard/service/add-new', addLabel: 'Add a service' },
+      { to: '/dashboard/products', label: 'Products', icon: 'nav-products', matchPrefix: ['/dashboard/products', '/dashboard/product/'], addTo: '/dashboard/product/add-new', addLabel: 'Add a product' },
+      { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', matchPrefix: ['/dashboard/courses', '/dashboard/course/'], addTo: '/dashboard/course/add-new', addLabel: 'Add a course', visible: (c) => !!c.flags?.course_purchase },
       // Memberships stays its OWN entry. It arrived on the base branch after this
       // one was cut, and the catalog cannot absorb it: catalogModel fetches
       // services, products, courses and coupons, so a membership program would
       // not appear in the list that replaced its rail line. Collapsing it would
       // leave /dashboard/memberships reachable only by typing the URL.
       { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
+      // Coupons are called Discounts in the product; the URL stays /dashboard/coupons.
+      { to: '/dashboard/coupons', label: 'Discounts', icon: 'nav-refer', matchPrefix: ['/dashboard/coupons', '/dashboard/coupon/'], addTo: '/dashboard/coupon/add-new', addLabel: 'Add a discount', visible: (c) => !!c.flags?.coupons },
     ],
   },
   {

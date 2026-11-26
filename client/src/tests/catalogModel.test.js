@@ -168,11 +168,10 @@ describe('editHref', () => {
     expect(editHref({ kind: 'service', id: 's1' })).toBe('/dashboard/service/edit/s1');
   });
 
-  it('sends the other three to their page, where editing actually lives', () => {
-    // Not a shortcut: products, courses and coupons edit in a modal on their
-    // own page, so there is no per-item route to link to.
-    expect(editHref({ kind: 'product', id: 'p1' })).toBe('/dashboard/products');
-    expect(editHref({ kind: 'course', id: 'c1' })).toBe('/dashboard/courses');
+  it('sends the others to their page, opening the item where it has an inline editor', () => {
+    // Products and courses edit inline on their own page; ?edit= opens the one.
+    expect(editHref({ kind: 'product', id: 'p1' })).toBe('/dashboard/products?edit=p1');
+    expect(editHref({ kind: 'course', id: 'c1' })).toBe('/dashboard/courses?edit=c1');
     expect(editHref({ kind: 'coupon', id: 'o1' })).toBe('/dashboard/coupons');
   });
 });

@@ -16,6 +16,8 @@ vi.mock('../services/api', () => ({
   uploadProductFile: vi.fn().mockResolvedValue({ data: { url: 'https://cdn/x.pdf', name: 'x.pdf', size: 10 } }),
   uploadImage: vi.fn().mockResolvedValue({ data: { url: 'https://cdn/thumb.png' } }),
   getPublicPlans: vi.fn().mockResolvedValue({ data: [] }),
+  // Flags off → the legacy look these tests were written for (Kept is dashboard_v2).
+  getFeatureFlags: vi.fn().mockResolvedValue({ data: {} }),
 }));
 
 vi.mock('react-hot-toast', () => {
