@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useKyc } from '../../context/KycContext';
-import { Card, FormField, Input, Button } from '../../components/dashboard/ui';
+import { FormField, Input, Button } from '../../components/dashboard/ui';
 
 export default function KycAddress() {
   const { address, setAddress, submit } = useKyc();
@@ -32,10 +32,10 @@ export default function KycAddress() {
   };
 
   return (
-    <Card className="p-4 sm:p-5">
-      <h2 className="mb-0.5 text-base font-semibold text-gray-900">Registered address</h2>
-      <p className="mb-4 text-sm text-gray-500">Required to set up your payout account.</p>
-      <form onSubmit={onSubmit} className="space-y-3">
+    <section className="rounded-[24px] bg-white p-5 sm:p-6">
+      <h2 className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink sm:text-[20px]">Registered address</h2>
+      <p className="mb-5 mt-1 text-[14px] text-muted">Required to set up your payout account.</p>
+      <form onSubmit={onSubmit} className="space-y-4">
         <FormField label="Address line 1" htmlFor="a-street1" required className="mb-0">
           <Input id="a-street1" value={address.addr_street1} onChange={setAddr('addr_street1')} placeholder="House / street" />
         </FormField>
@@ -59,6 +59,6 @@ export default function KycAddress() {
           <Button type="submit" size="lg" full disabled={submitting}>{submitting ? 'Submitting…' : 'Submit for verification'}</Button>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }

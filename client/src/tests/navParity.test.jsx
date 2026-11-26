@@ -15,6 +15,7 @@ import { describe, it, expect } from 'vitest';
 import { NAV, NAV_V2, navFor, visibleSections, resolveActive, firstItemTo } from '../components/common/ConsoleSidebar';
 import { HOME_OF } from '../pages/catalog/catalogModel';
 import { GROUPS } from '../components/common/dashboardV2Groups';
+import { MONEY_TABS } from '../pages/money/MoneyV2';
 
 const routesOf = (nav) => nav.flatMap((s) => s.items.map((i) => i.to));
 const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupons: true, community_memberships: true } };
@@ -28,6 +29,10 @@ const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupo
 // Anything the catalog page links to counts as reachable. Everything else must
 // still be a rail entry.
 const CATALOG_COVERS = Object.values(HOME_OF);
+// Kept (founder-approved 2026-11-25): Payouts, Transactions and Invoices are one Money
+// page with tabs, so the rail lists Money once and the tabs reach the rest. Earnings
+// merged into Intelligence › Revenue (the Insights page owns that route's redirect).
+const MONEY_COVERS = [...MONEY_TABS.map((t) => t.to), '/dashboard/earnings'];
 // v2's own surfaces that have no NAV equivalent: the collapsed catalog list, and
 // the dashboard_sections_v2 Intelligence + Community consoles (graduated from the
 // Host Lab prototype; gated by their own OFF flag, so hidden unless it is on).
@@ -44,7 +49,7 @@ const V2_OWN_ROUTES = [
 describe('nothing becomes unreachable under v2', () => {
   it('keeps every NAV page either in the rail or linked from the catalog', () => {
     const v2 = routesOf(NAV_V2);
-    const stranded = routesOf(NAV).filter((to) => !v2.includes(to) && !CATALOG_COVERS.includes(to));
+    const stranded = routesOf(NAV).filter((to) => !v2.includes(to) && !CATALOG_COVERS.includes(to) && !MONEY_COVERS.includes(to));
     // If this fails you added a page to NAV and not to NAV_V2, and the catalog
     // does not link it either — so it is reachable only by typing the URL.
     // Add it to NAV_V2. Do not delete this test.
@@ -125,10 +130,11 @@ describe('the regrouping itself', () => {
     expect(sectionOf('/dashboard/grow/page')).toBe('grow');
   });
 
-  it('leaves Money exactly as it was — it already matched the redesign', () => {
-    const before = NAV.find((s) => s.id === 'money').items.map((i) => i.to).sort();
-    const after = NAV_V2.find((s) => s.id === 'money').items.map((i) => i.to).sort();
-    expect(after).toEqual(before);
+  it('makes Money one item whose tabs reach payouts, transactions and invoices', () => {
+    const items = NAV_V2.find((s) => s.id === 'money').items;
+    expect(items.map((i) => i.to)).toEqual(['/dashboard/payments/payouts']);
+    expect(MONEY_TABS.map((t) => t.to)).toEqual(['/dashboard/payments/payouts', '/dashboard/payments/transactions', '/dashboard/invoices']);
+    for (const to of [...MONEY_TABS.map((t) => t.to), '/dashboard/kyc/flow/start']) expect(resolveActive(to, v2).sectionId).toBe('money');
   });
 });
 
