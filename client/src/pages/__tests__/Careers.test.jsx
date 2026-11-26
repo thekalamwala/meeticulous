@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Careers from '../Careers';
+import { getOpenJobs } from '../../components/careers/careersContent';
 
 const renderPage = () =>
   render(
@@ -11,6 +12,12 @@ const renderPage = () =>
   );
 
 describe('Careers page', () => {
+  it('shows the mascot team hero and the current number of openings', () => {
+    renderPage();
+    expect(screen.getByRole('img', { name: /meeticulous mascots collaborating around a table/i })).toBeTruthy();
+    expect(screen.queryByText(`${getOpenJobs().length} open positions`)).toBeNull();
+  });
+
   it('renders the hero + open-roles heading', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /build the calm way to get booked/i })).toBeInTheDocument();

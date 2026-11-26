@@ -54,7 +54,7 @@ const tone = (status) => CARD_TONE[String(status || "").toLowerCase()] || CARD_T
 /* ===========================================================================
  * RESCHEDULE MODAL — unchanged (real availability + rescheduleBooking)
  * ========================================================================= */
-const RescheduleModal = ({ booking, onClose, onDone }) => {
+export const RescheduleModal = ({ booking, onClose, onDone }) => {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
   const [calYear, setCalYear] = useState(new Date().getFullYear());
