@@ -32,6 +32,19 @@ export const inr = (n, opts = {}) => {
 };
 export const pct = (n) => `${Math.round((Number(n) || 0) * 100)}%`;
 
+/* Big money figures: the ₹ glyph sits low against Bricolage digits, so set it
+ * apart by 3px and lift the digits 2px to share its optical line (founder spec,
+ * 2026-11-25). Non-rupee values pass through untouched. */
+export const Figure = ({ value }) => {
+  if (typeof value !== 'string' || !value.startsWith('₹')) return value;
+  return (
+    <>
+      <span className="mr-[3px]">₹</span>
+      <span className="relative -top-[2px]">{value.slice(1)}</span>
+    </>
+  );
+};
+
 /* ── Dates ─────────────────────────────────────────────────────────────── */
 const d = (iso) => new Date(iso);
 export const fmtDay = (iso) => (iso ? d(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—');
@@ -66,7 +79,7 @@ export const useLast = (value) => {
 };
 
 /* ── Drawer — right-side peek, animated, no scroll lock (Linear-style). ─── */
-export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w-[480px]' }) => {
+export const Drawer = ({ open, onClose, title, subtitle, children, footer, bodyClassName = '', width = 'sm:w-[480px]' }) => {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -94,7 +107,8 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
                 <X className="h-5 w-5" strokeWidth={2.2} />
               </button>
             </header>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5">{children}</div>
+            <div className={cn('min-h-0 flex-1 overflow-y-auto overscroll-contain p-5', bodyClassName)}>{children}</div>
+            {footer && <footer className="shrink-0 border-t border-neutral-200 bg-white px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">{footer}</footer>}
           </motion.aside>
         </>
       )}
@@ -109,7 +123,7 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
 // was a reaction to big corners on 2px-BORDERED panels; with the border gone the
 // big radius reads right. `flush` panels (lists, tables) keep one hairline under
 // the header so rows don't touch the title.
-export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => {
+export const Panel = ({ title, subtitle, action, children, className = '', bodyClassName = '', flush = false }) => {
   const head = title || action;
   return (
     <section className={cn('overflow-hidden rounded-[24px] bg-white', className)}>
@@ -123,7 +137,7 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
           {action}
         </header>
       )}
-      <div className={flush ? '' : cn('px-5 pb-5 sm:px-6 sm:pb-6', head ? 'pt-4' : 'pt-5 sm:pt-6')}>{children}</div>
+      <div className={cn(!flush && 'px-5 pb-5 sm:px-6 sm:pb-6', !flush && (head ? 'pt-4' : 'pt-5 sm:pt-6'), bodyClassName)}>{children}</div>
     </section>
   );
 };
@@ -156,13 +170,13 @@ export const SubNav = ({ items }) => (
 );
 
 /* ── Tile — the one stat shape. ────────────────────────────────────────── */
-export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = false, spark, more, children }) => {
+export const Tile = ({ label, value, note, delta, deltaLabel, hint, onClick, accent = false, spark, art, more, children }) => {
   const Tag = onClick ? 'button' : 'div';
   const up = delta != null && delta >= 0;
   const footer = delta != null || hint || more;
   return (
     <Tag type={onClick ? 'button' : undefined} onClick={onClick}
-      className={cn('flex min-w-0 flex-col rounded-[20px] bg-white p-4 text-left transition sm:p-5',
+      className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-4 text-left transition sm:p-5', art && 'pr-[96px] lg:pr-[112px]',
         // Featured = a maroon ring, never a filled maroon tile: the filled tile was
         // the loudest thing on the page even when its value was ₹0 (Kept audit).
         accent && 'ring-2 ring-inset ring-maroon',
@@ -176,9 +190,14 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
           and tiles sit in a row, so proportional digits make neighbouring values
           jitter against each other and shift width as they refresh. Harmless on
           the few tiles whose value is a word: it only affects digits. */}
-      <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]">{value}</span>
+      {/* No figure yet: say so in a sentence, never a dash or a fake ₹0 (Kept: honest states). */}
+      {value == null && note
+        ? <span className="mt-2 text-[15px] font-medium leading-snug text-muted">{note}</span>
+        : <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]"><Figure value={value} /></span>}
       {footer && (
-        <div className="mt-2.5 flex items-center gap-1.5 text-[12.5px]">
+        // With art, the footer drops to the tile's foot and runs the full width,
+        // in front of the mascot (founder call, 2026-11-25) — the value keeps clear of it.
+        <div className={cn('relative z-10 flex items-center gap-1.5 text-[12.5px]', art ? 'mt-auto -mr-[80px] pt-2.5 lg:-mr-[96px]' : 'mt-2.5')}>
           {delta != null && (
             <span className={cn('inline-flex shrink-0 items-center gap-0.5 font-semibold', up ? 'text-success-fg' : 'text-error-fg')}>
               {up ? <TrendingUp className="h-3.5 w-3.5" strokeWidth={2.4} /> : <TrendingDown className="h-3.5 w-3.5" strokeWidth={2.4} />}
@@ -190,6 +209,9 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
         </div>
       )}
       {children}
+      {/* art: a large monoline icon in the card's empty right side — no chip, no
+          background, out of the flow so it never adds height (Kept, 2026-11-25). */}
+      {art && <span aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-maroon sm:right-4">{art}</span>}
     </Tag>
   );
 };
@@ -213,7 +235,7 @@ const STATUS_WORD = {
 };
 export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-[8px] px-2.5 py-0.5 text-[11.5px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[8px] px-2.5 py-0.5 text-[12px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */
@@ -404,7 +426,7 @@ export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', s
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
                 <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-ink/80">{s.row[labelKey]}</span>
                 <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">{(s.row[valueKey]).toLocaleString('en-IN')}</span>
-                <span className="w-9 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
+                <span className="w-9 shrink-0 text-right text-[11px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
               </button>
             </li>
           );
@@ -445,22 +467,29 @@ const MASCOT = {
   purple: '/about/mascot-purple.png', orange: '/about/mascot-orange.png',
   blue: '/about/mascot-blue.png', green: '/about/mascot-green.png',
 };
-export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, className = '' }) => (
-  <section className={cn('relative isolate overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
+export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, compact = false, className = '' }) => (
+  <section className={cn('relative isolate flex flex-col justify-center overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
     <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-50"
       style={{ backgroundImage: 'url(/brand/ds/03-patterns/mt-pattern-loop-on-maroon.svg)', backgroundSize: '180px' }} />
-    <img src="/brand/ds/02-ee/mt-ee-thread-pink.svg" alt="" aria-hidden="true"
-      className="pointer-events-none absolute -bottom-2 -right-24 -z-10 w-[420px] opacity-90 sm:w-[560px]" />
-    {mascot && MASCOT[mascot] && (
-      <img src={MASCOT[mascot]} alt="" aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 right-2 w-[104px] sm:right-6 sm:w-[180px]" />
-    )}
-    <div className={cn('grid gap-5', aside && 'lg:grid-cols-[1.25fr_1fr] lg:items-center', mascot && 'pr-[96px] sm:pr-[190px]')}>
+    {/* The ee thread runs from the bottom-middle of the card to its top-right corner,
+        both ends running off the edges, with the ee at the midpoint and the mascot on
+        the ee (founder call, 2026-11-25). The span is a size container so the angle and
+        length follow the card at any size; 32px of overshoot hides the rounded caps. */}
+    <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 [--m:96px] sm:[--m:128px]" style={{ containerType: 'size' }}>
+      <img src="/brand/ds/02-ee/mt-ee-thread-pink.svg" alt=""
+        className="absolute left-1/2 top-full max-w-none opacity-90"
+        style={{ width: 'calc(hypot(50cqw, 100cqh) + 32px)', transformOrigin: '0 50%', transform: 'translateY(-50%) rotate(atan2(-100cqh, 50cqw)) translateX(-16px)' }} />
+      {mascot && MASCOT[mascot] && (
+        <img src={MASCOT[mascot]} alt="" className="absolute w-[var(--m)]"
+          style={{ left: 'calc(75cqw - var(--m) / 2)', top: 'calc(50cqh - var(--m) / 2)' }} />
+      )}
+    </span>
+    <div className={cn('grid gap-5', aside && 'lg:grid-cols-[1.25fr_1fr] lg:items-center', mascot && (compact ? 'pr-[96px] sm:pr-[150px]' : 'pr-[96px] sm:pr-[190px]'))}>
       <div className="min-w-0">
         {eyebrow && <p className="mb-0 text-[12px] font-semibold uppercase tracking-[0.08em] text-pink">{eyebrow}</p>}
         <h2 className="mb-0 mt-2 max-w-[22ch] font-display text-[24px] font-extrabold leading-[1.08] tracking-[-0.03em] text-white sm:text-[32px]">{title}</h2>
         {sub && <p className="mt-2.5 max-w-[48ch] text-[14px] text-white/80 sm:text-[15px]">{sub}</p>}
-        {actions && <div className="mt-5 flex flex-wrap gap-2.5">{actions}</div>}
+        {actions && <div className={cn('flex flex-wrap gap-2.5', compact ? 'mt-4' : 'mt-5')}>{actions}</div>}
       </div>
       {aside && <div className="min-w-0">{aside}</div>}
     </div>

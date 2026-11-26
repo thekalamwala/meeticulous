@@ -141,6 +141,16 @@ html.dash-app body {
   overscroll-behavior-y: none;
 }
 
+/* The dashboard hides the window scrollbar (founder call, 2026-11-25). When a page
+   loads short (skeletons) and then grows, the bar appearing used to push the whole
+   layout sideways by its width. Wheel, trackpad, touch and keys still scroll. */
+html.dash-app {
+  scrollbar-width: none;
+}
+html.dash-app::-webkit-scrollbar {
+  display: none;
+}
+
 #root {
   min-height: 100vh;
   isolation: isolate;

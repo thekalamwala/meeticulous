@@ -19,16 +19,14 @@
 // No command-palette search here: the lab's was mock-backed, and there is no
 // /host/search endpoint yet. ponytail: add search when that endpoint lands.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Home, CalendarDays, Users, MessagesSquare, Package, CalendarRange,
-  CreditCard, TrendingUp, Settings, ChevronRight, PanelLeft, Sparkles, X,
+  CreditCard, TrendingUp, Settings, ChevronRight, PanelLeft, Sparkles,
   LifeBuoy,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import useIsMobile from '../../hooks/useIsMobile';
 import useSupportUnread from '../../hooks/useSupportUnread';
 import useFeatureFlags from '../../hooks/useFeatureFlags';
 import { normalizePlan } from '../../utils/themeUtils';
@@ -37,9 +35,10 @@ import { PageTransition } from '../dashboard/ui/PageTransition';
 import {
   visibleSections, resolveActive, firstItemTo, isLocked, computeBadges, isLeafSection,
 } from './ConsoleSidebar';
-import { NotifBell, ProfileMenu } from './DashboardLayout';
+import { ProfileMenu } from './DashboardLayout';
 import { GROUPS } from './dashboardV2Groups';
-import MobileTabBar from './MobileTabBar';
+import KeptTabBar from './KeptTabBar';
+import NotificationsDrawer from './NotificationsDrawer';
 import useDashboardChrome from '../../hooks/useDashboardChrome';
 import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
@@ -245,23 +244,38 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
   );
 };
 
-/* Topbar — real notifications + profile, no mock search. */
-const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome }) => (
-  <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:h-16 lg:px-10">
-    {/* Mobile: the logo is Home (founder decision, 2026-11-25), so it looks pressable
-        and carries a maroon underline while you're on Today. */}
+/* Topbar — help, notifications and the profile card (top-right corner, founder
+ * pick). Desktop shows the card with your name; phones show just the avatar. */
+const greetingFor = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
+
+// Same 56px height as the rail header, so the logo, the greeting and the profile
+// card sit on one line (founder pick, 2026-11-25).
+const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
+  <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:px-8">
+    {/* Mobile: the logo still goes home; Today also has its own tab now (founder, 2026-11-25). */}
     <Link to="/dashboard" title="Meeticulous — Home" aria-label="Meeticulous — Home"
       className="group/home grid justify-items-center gap-1 rounded-[12px] p-1 transition active:scale-95 lg:hidden">
       <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" className="h-8 w-8 object-contain" />
-      <span aria-hidden="true" className={cn('h-[3px] w-4 rounded-full', onHome ? 'bg-maroon' : 'bg-transparent')} />
     </Link>
+    {/* Today's heading lives in the topbar: "Good evening, Riya". Other pages keep
+        their own page titles. */}
+    {onHome && (
+      <h1 className="mb-0 min-w-0 truncate font-display text-[19px] font-extrabold tracking-[-0.03em] text-maroon lg:text-[24px]">
+        {greetingFor()}{user?.name ? `, ${user.name.trim().split(/\s+/)[0]}` : ''}
+      </h1>
+    )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
       <Link to="/help" title="Support" aria-label="Support"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
-      <NotifBell />
-      <ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} />
+      <NotificationsDrawer />
+      <div className="hidden lg:block">
+        <ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} identity
+          triggerClassName="flex h-12 max-w-[260px] items-center gap-2.5 rounded-[14px] bg-white py-1.5 pl-1.5 pr-3 transition hover:bg-pink-100"
+          chevronClassName="h-4 w-4 shrink-0 text-faint" />
+      </div>
+      <div className="lg:hidden"><ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} /></div>
     </div>
   </header>
 );
@@ -269,15 +283,12 @@ const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome })
 const DashboardLayoutV2 = ({ children }) => {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
-  const isMobile = useIsMobile('(max-width: 1023px)');
 
-  const [navOpen, setNavOpen] = useState(false);
   const [railCollapsed, toggleRail] = useRailState();
-  const navTriggerRef = useRef(null);
 
   // The window scrolls in this shell (<main> is min-h, not a scroll container), so
   // reset the window on navigation, not <main>.
-  useEffect(() => { setNavOpen(false); window.scrollTo({ top: 0 }); }, [pathname]);
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [pathname]);
   useDashboardChrome();
 
   const plan = normalizePlan(user?.plan);
@@ -292,8 +303,6 @@ const DashboardLayoutV2 = ({ children }) => {
   const chatUnread = useSupportUnread();
   const badges = { ...computeBadges(user), chatUnread };
   const activeTo = resolveActive(pathname, sections).to;
-
-  const closeNav = useCallback(() => setNavOpen(false), []);
 
   return (
     <RefreshProvider>
@@ -331,40 +340,25 @@ const DashboardLayoutV2 = ({ children }) => {
           <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} collapsed={railCollapsed} />
         </aside>
 
-        {/* Mobile drawer */}
-        {isMobile && navOpen && createPortal(
-          <div className="lg:hidden">
-            <div className="fixed inset-0 z-[60] bg-ink/40" onClick={closeNav} aria-hidden="true" />
-            <div role="dialog" aria-modal="true" aria-label="Navigation" className="dash-v2 fixed inset-y-0 left-0 z-[60] flex w-[288px] max-w-[86vw] flex-col bg-neutral-100 pb-[env(safe-area-inset-bottom,0px)] pt-[env(safe-area-inset-top,0px)]">
-              <div className="flex h-16 shrink-0 items-center gap-2.5 px-5">
-                <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-8 w-8 object-contain" />
-                <span className="flex-1 font-display text-[18px] font-extrabold tracking-[-0.02em] text-maroon">Meeticulous</span>
-                <button type="button" onClick={closeNav} aria-label="Close navigation" className="grid h-10 w-10 place-items-center rounded-[12px] text-muted hover:bg-white">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} onNavigate={closeNav} />
-            </div>
-          </div>,
-          document.body,
-        )}
 
         {/* Content — offset by the fixed rail on lg+. */}
         <div className={cn('transition-[padding] duration-200', railCollapsed ? 'lg:pl-[64px]' : 'lg:pl-[232px]')}>
-          <TopbarV2 onOpenNav={() => setNavOpen(true)} user={user} plan={plan} initial={initial} logout={logout} onHome={pathname === '/dashboard'} />
+          <TopbarV2 user={user} plan={plan} initial={initial} logout={logout} onHome={pathname === '/dashboard'} />
           <main className="min-h-[calc(100dvh-44px)]">
             {/* No scrollerRef: the window scrolls here. Passing <main> made scrollTop read 0
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
             <PullToRefresh>
-              <div className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-2 sm:px-6 lg:px-10 lg:pb-12 lg:pt-4">
-                <KycNudgeStrip />
+              <div className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
+                {/* Today shows KYC inside its own "Needs you" card, so the shell notice
+                    would say the same thing twice there. */}
+                {pathname !== '/dashboard' && <KycNudgeStrip />}
                 <PageTransition>{children}</PageTransition>
               </div>
             </PullToRefresh>
           </main>
         </div>
 
-        <MobileTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
+        <KeptTabBar />
       </div>
     </RefreshProvider>
   );

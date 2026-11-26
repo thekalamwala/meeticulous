@@ -108,11 +108,20 @@ imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
   fall back to the marketing pill.
 - **Mascots** (`client/public/about/mascot-*.png`, 400px sources): purple star = Intelligence /
   Pro, orange panda = Money / KYC, blue axolotl = Bookings / Today, green sprout = Grow / first
-  steps. One per screen, ≥96px, only in bands, empty states, Pro previews, onboarding and
-  celebrations. Never beside a number, in a data card or in a table. Never recolour or crop
-  through the face.
+  steps. Use them in bands, empty states, Pro previews, onboarding and celebrations. **Exception
+  (founder call, 2026-11-25):** Today carries more than one mascot on purpose: the band's mascot
+  (standing on the ee), one per metric tile (80px, 96px on desktop) in the tile's empty right side,
+  matched by domain (orange = money, purple = insights, blue = bookings, green = growth) and placed
+  out of the flow so it never adds height, and the green sprout on the setup checklist (64px beside
+  the heading on a phone; on desktop it fills the space under the heading). Every other page keeps one mascot per screen. Never in
+  a table or a list row. Never recolour or crop through the face.
 - **Charts:** one hue (maroon-600); a second series or deduction is rose-500. Human labels
   ("Oct", "Mon", "9 am"), 11px minimum, every chart has a tooltip.
+- **One fact, one place:** a task (verify KYC, confirm a booking) is asked for in one place on a
+  page. A metric shows the number; the ask lives in the setup checklist or the bell.
+- **Honest values:** when a figure isn't available, the value slot says so in a sentence
+  ("Not tracked yet"), never a dash or a ₹0. Blocks that load show a skeleton, never an empty
+  state, until their data has arrived.
 
 ## Before shipping any page, check
 - [ ] Only tokens, no stray hexes or fonts
@@ -123,4 +132,5 @@ imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
 - [ ] Focus ring visible on every interactive element
 - [ ] Official logo files used, untouched
 - [ ] Visit is called what the customer calls it (appointment / session / booking)
-- [ ] Dashboard: no text under 12px, no bordered cards, at most one band and one mascot
+- [ ] Dashboard: no text under 12px (charts 11px), no bordered cards, one band, one mascot per
+  screen (Today's exceptions above)

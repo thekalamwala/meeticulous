@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   X, ExternalLink, LogOut, Headset, ChevronDown, Bell, LifeBuoy,
-  User, CreditCard, ShieldCheck, Check, Copy, BadgeCheck,
+  User, CreditCard, ShieldCheck, Check, Copy, ArrowLeftRight,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { isHost } from '../../utils/roleRoutes';
@@ -64,7 +64,7 @@ const useBodyScrollLock = (active) => {
 // side-drawer (`variant="drawer"`, the account menu). Both mobile shapes are
 // portaled to body so the topbar's backdrop-blur — which would otherwise become
 // the containing block for `fixed` — can't trap them.
-const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 'w-72', role = 'menu', variant = 'sheet', children }) => {
+const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 'w-72', role = 'menu', variant = 'sheet', placement = 'down', children }) => {
   // Right side-drawer: always mounted so the translate-x slide can animate both
   // ways; off-screen + inert while closed.
   if (isMobile && variant === 'drawer') {
@@ -121,7 +121,8 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
   return (
     <div
       className={cn(
-        'absolute top-full z-50 mt-2 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]',
+        'absolute z-50 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]',
+        placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2',
         align === 'right' ? 'right-0' : 'left-0',
         width,
       )}
@@ -281,6 +282,11 @@ export const ProfileMenu = ({
   triggerClassName = 'flex items-center gap-1.5 rounded-full p-0.5 transition-colors hover:bg-neutral-100',
   avatarClassName = 'bg-primary/10 text-primary',
   chevronClassName = 'h-4 w-4 text-neutral-400',
+  // Sidebar placement (Kept rail footer): the trigger shows name + email and the
+  // menu opens upward from the bottom-left. Defaults keep the topbar behaviour.
+  identity = false,
+  menuPlacement = 'down',
+  menuAlign = 'right',
 }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -310,12 +316,9 @@ export const ProfileMenu = ({
     getMyAccountManager().then((d) => setAcctMgr(d?.account_manager || null));
   }, [open]);
 
-  // Verification tick by the name: orange (brand) when verified, grey otherwise.
+  // Verification state (shown on its own row now, not as a tick by the name).
   const kyc = (user?.kyc_status || '').toLowerCase();
   const kycVerified = ['approved', 'verified'].includes(kyc);
-  const kycTitle = kycVerified
-    ? 'Verified host — view verification'
-    : 'Not verified — complete verification to get paid';
 
   // meeticulous.com is the canonical public domain (never .in).
   const publicUrl = user?.username ? `https://meeticulous.com/${user.username}` : null;
@@ -362,60 +365,42 @@ export const ProfileMenu = ({
         aria-haspopup="menu"
       >
         <Avatar size="h-9 w-9 text-sm" />
+        {identity && (
+          <span className="min-w-0 flex-1 text-left">
+            <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || 'Host'}</span>
+            <span className="block truncate text-[12px] text-faint">{user?.username ? `@${user.username}` : (user?.email || '')}</span>
+          </span>
+        )}
         <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />
       </button>
 
-      <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72" variant="drawer">
+      <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72" variant="drawer" placement={menuPlacement} align={menuAlign}>
         {/* Identity — a blush ground gives the menu a head instead of a first
             row; the two tone-on-tone arcs are the ee-thread brand motif, one per
             surface. Name + verify tick + plan badge, email beneath. */}
-        <div className="relative overflow-hidden bg-blush px-4 pb-4 pt-4">
+        <div className="relative overflow-hidden bg-blush px-4 pb-5 pt-5 text-center">
           <span aria-hidden="true" className="absolute -left-6 -top-8 h-20 w-20 rounded-full border-[3px] border-maroon/10" />
           <span aria-hidden="true" className="absolute -right-7 top-5 h-16 w-16 rounded-full border-[3px] border-maroon/10" />
-          <div className="relative flex items-center gap-3">
-            <Avatar size="h-12 w-12 text-base ring-[3px] ring-white" />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <p className="truncate text-sm font-bold text-neutral-900">{user?.name || 'Host'}</p>
-                <Link
-                  to="/dashboard/kyc"
-                  onClick={close}
-                  title={kycTitle}
-                  aria-label={kycVerified ? 'Verified host' : 'Not verified — complete verification'}
-                  className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  <BadgeCheck
-                    className={cn('h-4 w-4', kycVerified ? 'text-maroon' : 'text-neutral-400')}
-                    strokeWidth={2.2}
-                  />
-                </Link>
-              </div>
-              <p className="truncate text-xs font-medium text-maroon/60">{user?.username ? `@${user.username}` : category}</p>
-            </div>
+          {/* Centred identity (founder screenshot, 2026-11-25): avatar, name, then
+              @username or category. The email and plan badge stay out of this block
+              (earlier decision, pinned by DashboardSidebar.test). Verification has its
+              own row below. */}
+          <div className="relative flex flex-col items-center">
+            <Avatar size="h-16 w-16 text-lg ring-4 ring-white" />
+            <p className="mb-0 mt-2.5 max-w-full truncate text-[15px] font-bold text-ink">{user?.name || 'Host'}</p>
+            <p className="mb-0 mt-0.5 max-w-full truncate text-[13px] font-medium text-maroon/70">{user?.username ? `@${user.username}` : category}</p>
           </div>
         </div>
 
-        {/* Mode switch — Hosting / Guesting (dual-capability accounts only) */}
+        {/* Mode switch (dual-capability accounts only), as the founder's screenshot:
+            say which side you're on, then one row that takes you to the other. */}
         {isHost(user) && (
-          <div className="border-t border-neutral-200/50 px-4 py-3">
-            <div className="flex gap-1 rounded-full bg-neutral-100 p-0.5">
-              <button
-                type="button"
-                onClick={() => switchMode('hosting')}
-                className={cn('flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition',
-                  mode === 'hosting' ? 'bg-maroon text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-800')}
-              >
-                Hosting
-              </button>
-              <button
-                type="button"
-                onClick={() => switchMode('traveling')}
-                className={cn('flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition',
-                  mode === 'traveling' ? 'bg-maroon text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-800')}
-              >
-                Guesting
-              </button>
-            </div>
+          <div className="border-t border-neutral-200/50 pb-1.5 pt-2.5">
+            <p className="mb-1 px-4 text-[12px] text-muted">Viewing as: <b className="font-semibold text-ink">{mode === 'traveling' ? 'Guest' : 'Host'}</b></p>
+            <button type="button" onClick={() => switchMode(mode === 'traveling' ? 'hosting' : 'traveling')} className={MENU_ROW}>
+              <span className={ROW_TILE}><ArrowLeftRight className="h-4 w-4" strokeWidth={1.8} /></span>
+              <span className="flex-1">Switch to {mode === 'traveling' ? 'Host' : 'Guest'}</span>
+            </button>
           </div>
         )}
 
@@ -429,9 +414,14 @@ export const ProfileMenu = ({
             <span className={ROW_TILE}><CreditCard className="h-4 w-4" strokeWidth={1.8} /></span>
             <span className="flex-1">Plan &amp; billing</span>
           </Link>
-          <Link to="/dashboard/kyc" onClick={close} className={MENU_ROW}>
+          <Link to="/dashboard/kyc" onClick={close} className={MENU_ROW}
+            aria-label={kycVerified ? 'Verification, verified' : 'Verification, not verified yet'}>
             <span className={ROW_TILE}><ShieldCheck className="h-4 w-4" strokeWidth={1.8} /></span>
             <span className="flex-1">Verification</span>
+            {/* Status on the row (founder screenshot): a word beside the colour, always. */}
+            {kycVerified
+              ? <span className="flex shrink-0 items-center gap-1.5 text-[12px] font-semibold text-success-fg"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-success-fg" />Verified</span>
+              : <span className="shrink-0 text-[12px] font-semibold text-maroon">Verify</span>}
           </Link>
         </div>
 
