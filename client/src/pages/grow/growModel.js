@@ -1,27 +1,26 @@
 // Grow — pure helpers (tested in tests/growModel.test.js). No React, no API.
 //
 // Grow is one section with in-page tabs (Kept redesign, founder-approved
-// 2026-11-26): Overview · Your page · Reviews · Refer & earn · Community.
-// Every tab is a real URL. Reviews and Refer & earn keep their old routes
-// (/dashboard/testimonials, /dashboard/referrals) and Community keeps its four
-// (/dashboard/community/*), so bookmarks and email links still land.
+// 2026-11-26): Overview · Your page · Reviews · Refer & earn. Every tab is a real
+// URL; Reviews and Refer & earn keep their old routes (/dashboard/testimonials,
+// /dashboard/referrals), so bookmarks and email links still land. Community uses
+// the same shell as its own section, over its four old routes.
 
 export const GROW_HOME = '/dashboard/grow';
 export const GROW_PAGE = '/dashboard/grow/page';
 
-// `match` = every pathname prefix that lights the tab. Community covers its four
-// old pages; Mentions is now a filter inside Activity, not a tab of its own.
-export const growTabs = (flags = {}) => [
+// `match` = every pathname prefix that lights the tab. Community is its own
+// rail section again (founder, 2026-11-26), with its own tabs (GrowCommunity).
+export const growTabs = () => [
   { key: 'overview', to: GROW_HOME, label: 'Overview', match: [GROW_HOME], exact: true },
   { key: 'page', to: GROW_PAGE, label: 'Your page', match: [GROW_PAGE] },
   { key: 'reviews', to: '/dashboard/testimonials', label: 'Reviews', match: ['/dashboard/testimonials'] },
   { key: 'refer', to: '/dashboard/referrals', label: 'Refer & earn', match: ['/dashboard/referrals'] },
-  // Same gate as the four community routes (SectionsRoute): hidden while the
-  // dashboard_sections_v2 flag is off, exactly as the old rail section was.
-  flags.dashboard_sections_v2 && {
-    key: 'community', to: '/dashboard/community/activity', label: 'Community', match: ['/dashboard/community'],
-  },
-].filter(Boolean);
+];
+
+export const COMMUNITY_TABS = ['activity', 'mentions', 'answer', 'spaces'].map((k) => ({
+  key: k, to: `/dashboard/community/${k}`, label: k[0].toUpperCase() + k.slice(1), match: [`/dashboard/community/${k}`],
+}));
 
 export const activeGrowTab = (pathname, tabs) => {
   const p = String(pathname || '').replace(/\/+$/, '');

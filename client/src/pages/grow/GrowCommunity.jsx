@@ -1,7 +1,7 @@
-// Grow → Community — the host's view of /community, as one Grow tab with three
-// views over the old routes: Activity (/activity; Mentions is a filter inside it,
-// and /mentions opens it on that filter), Answer and Spaces. Same reads as the
-// four old pages (communityApi), same gate (the routes stay inside SectionsRoute).
+// Community — the host's view of /community, its own rail section (founder,
+// 2026-11-26: kept separate from Grow so it can be promoted, with a "New" badge).
+// Four tabs over the four old routes: Activity, Mentions, Answer, Spaces. Same
+// reads as the old pages (communityApi), same gate (routes stay in SectionsRoute).
 // Nothing here moderates or posts: rows open the thread on /community.
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -14,20 +14,14 @@ import { Avatar, Tile, cn, relDay } from '../../components/dashboard/ui/v2';
 import GrowShell, {
   Empty, PinnedBar, btnPrimary, btnSoft, card, ring, rowBase, tappable, useIsDesktop,
 } from './GrowShell';
+import { COMMUNITY_TABS } from './growModel';
 
-const VIEWS = [
-  { key: 'activity', to: '/dashboard/community/activity', label: 'Activity' },
-  { key: 'answer', to: '/dashboard/community/answer', label: 'Answer' },
-  { key: 'spaces', to: '/dashboard/community/spaces', label: 'Spaces' },
-];
 const snippet = (s, n = 160) => { const t = String(s || '').replace(/\s+/g, ' ').trim(); return t.length > n ? `${t.slice(0, n)}…` : t; };
 const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 export const isOpenQuestion = (it) => it.format === 'question' && !it.accepted_comment_id && it.status === 'visible' && !it.locked;
 
-// Activity filters. "Mentions" is the old Mentions page, folded in (founder, 2026-11-26).
 export const ACTIVITY_FILTERS = [
-  { key: 'all', label: 'All' }, { key: 'posts', label: 'Posts' },
-  { key: 'comments', label: 'Comments' }, { key: 'mentions', label: 'Mentions' },
+  { key: 'all', label: 'All' }, { key: 'posts', label: 'Posts' }, { key: 'comments', label: 'Comments' },
 ];
 
 // One list from the three sources, newest first. Pure, tested.
@@ -48,18 +42,6 @@ export const activityRows = ({ posts = [], comments = [], mentions = [] }, filte
   ];
   return rows.sort((a, b) => new Date(b.at) - new Date(a.at));
 };
-
-const ViewChips = ({ view }) => (
-  <div className="flex gap-2 overflow-x-auto dash-noscrollbar" role="navigation" aria-label="Community">
-    {VIEWS.map((v) => (
-      <Link key={v.key} to={v.to} aria-current={v.key === view ? 'page' : undefined}
-        className={cn('inline-flex h-10 shrink-0 items-center rounded-[12px] px-4 text-[13.5px] font-semibold transition-colors', ring, tappable,
-          v.key === view ? 'bg-ink text-white' : 'bg-white text-muted hover:bg-blush hover:text-maroon')}>
-        {v.label}
-      </Link>
-    ))}
-  </div>
-);
 
 const Row = ({ to, kind, title, body, meta, at }) => (
   <li>
@@ -88,16 +70,13 @@ const openCommunity = (label = 'Open the community') => (
   <Link to="/community" className={cn(btnSoft, tappable)}>{label} <ArrowUpRight className="h-4 w-4" strokeWidth={2.2} /></Link>
 );
 
-/* ── Activity (+ Mentions) ─────────────────────────────────────────────── */
-const Activity = ({ initialFilter }) => {
+/* ── Activity — what you posted and said ─────────────────────────────── */
+const Activity = () => {
   const { user } = useAuth();
-  const [filter, setFilter] = useState(initialFilter);
+  const [filter, setFilter] = useState('all');
   const [data, setData] = useState(undefined);
-  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
-  const load = useCallback(() => Promise.all([
-    getAuthorActivity(user.id),
-    getMentions().catch(() => null), // mentions failing must not hide your own activity
-  ]).then(([a, m]) => setData({ posts: a?.posts || [], comments: a?.comments || [], mentions: m?.items || [], mentionsFailed: m === null }))
+  const load = useCallback(() => getAuthorActivity(user.id)
+    .then((a) => setData({ posts: a?.posts || [], comments: a?.comments || [] }))
     .catch(() => setData(null)), [user?.id]);
   useEffect(() => { if (user?.id) load(); }, [load, user?.id]);
   useRegisterRefresh(load);
@@ -108,13 +87,12 @@ const Activity = ({ initialFilter }) => {
   const likes = data.posts.reduce((n, p) => n + (p.like_count || 0), 0) + data.comments.reduce((n, c) => n + (c.like_count || 0), 0);
   const replies = data.posts.reduce((n, p) => n + (p.comment_count || 0), 0);
   const rows = activityRows(data, filter);
-  const counts = { all: activityRows(data).length, posts: data.posts.length, comments: data.comments.length, mentions: data.mentions.length };
+  const counts = { all: data.posts.length + data.comments.length, posts: data.posts.length, comments: data.comments.length };
   const nothing = counts.all === 0;
   const EMPTY = {
-    all: ['No community activity yet', 'Posts and replies you write, and posts that name you, show here.'],
+    all: ['No community activity yet', 'Posts and replies you write show here.'],
     posts: ['No posts yet', 'Ask a question or share what worked for you.'],
     comments: ['No comments yet', 'A helpful reply is the fastest way to get known.'],
-    mentions: [data.mentionsFailed ? "Couldn't load your mentions" : 'No mentions yet', data.mentionsFailed ? 'Pull down to try again.' : 'When someone names you in a post, it shows here.'],
   };
 
   return (
@@ -127,7 +105,7 @@ const Activity = ({ initialFilter }) => {
         </div>
       )}
       <ListCard label="Your activity">
-        <div role="tablist" aria-label="Show" className="grid grid-cols-4 gap-1 border-b border-neutral-200 p-2">
+        <div role="tablist" aria-label="Show" className="grid grid-cols-3 gap-1 border-b border-neutral-200 p-2">
           {ACTIVITY_FILTERS.map((f) => {
             const on = filter === f.key;
             return (
@@ -135,7 +113,7 @@ const Activity = ({ initialFilter }) => {
                 className={cn('inline-flex h-10 min-w-0 items-center justify-center gap-1 rounded-[10px] px-1 text-[13px] font-semibold transition-colors', ring, tappable,
                   on ? 'bg-maroon text-white' : 'text-muted hover:bg-blush hover:text-maroon')}>
                 <span className="truncate">{f.label}</span>
-                <span className={cn('hidden rounded-[6px] px-1 text-[12px] tabular-nums sm:inline', on ? 'bg-white/20' : 'bg-cream')}>{counts[f.key]}</span>
+                <span className={cn('rounded-[6px] px-1 text-[12px] tabular-nums', on ? 'bg-white/20' : 'bg-cream')}>{counts[f.key]}</span>
               </button>
             );
           })}
@@ -145,6 +123,44 @@ const Activity = ({ initialFilter }) => {
           : <ul className="divide-y divide-neutral-200">{rows.map((r) => <Row key={r.id} {...r} />)}</ul>}
       </ListCard>
     </>
+  );
+};
+
+/* ── Mentions — posts that name you ────────────────────────────────────── */
+const Mentions = () => {
+  const [items, setItems] = useState(undefined);
+  const [cursor, setCursor] = useState(null);
+  const [more, setMore] = useState(false);
+  const [moreErr, setMoreErr] = useState(false);
+  const load = useCallback(() => getMentions()
+    .then((r) => { setItems(r?.items || []); setCursor(r?.next_cursor || null); })
+    .catch(() => setItems(null)), []);
+  useEffect(() => { load(); }, [load]);
+  useRegisterRefresh(load);
+  const loadMore = async () => {
+    setMore(true); setMoreErr(false);
+    try {
+      const r = await getMentions({ cursor });
+      setItems((prev) => [...(prev || []), ...(r?.items || [])]);
+      setCursor(r?.next_cursor || null);
+    } catch { setMoreErr(true); }
+    setMore(false);
+  };
+  if (items === undefined) return <Skeleton className="h-[260px] rounded-[24px]" />;
+  if (items === null) return <ErrorState message="Couldn't load your mentions." onRetry={load} />;
+  const rows = activityRows({ mentions: items }, 'mentions');
+  return (
+    <ListCard label="Mentions">
+      {rows.length === 0
+        ? <Empty compact title="No mentions yet" body="When someone names you in a post, it shows here. Jump in while the thread is live." action={openCommunity()} />
+        : <ul className="divide-y divide-neutral-200">{rows.map((r) => <Row key={r.id} {...r} kind={null} />)}</ul>}
+      {(cursor || moreErr) && (
+        <div className="flex items-center justify-center gap-3 border-t border-neutral-200 p-3">
+          {moreErr && <span className="text-[13px] text-muted">Couldn&apos;t load more.</span>}
+          <button type="button" onClick={loadMore} disabled={more} className={btnSoft}>{more ? 'Loading…' : 'Load older'}</button>
+        </div>
+      )}
+    </ListCard>
   );
 };
 
@@ -247,15 +263,13 @@ const Spaces = () => {
 
 export default function GrowCommunity({ view = 'activity' }) {
   const isDesktop = useIsDesktop();
-  // /dashboard/community/mentions keeps working: it opens Activity on Mentions.
-  const shown = view === 'mentions' ? 'activity' : view;
   return (
-    <GrowShell sub="Ask, answer and get known by other creators."
+    <GrowShell title="Community" tabs={COMMUNITY_TABS} sub="Ask, answer and get known by other creators."
       action={isDesktop ? <Link to="/community/new" className={cn(btnPrimary, tappable)}>Write a post</Link> : null}>
-      <ViewChips view={shown} />
-      {shown === 'activity' && <Activity initialFilter={view === 'mentions' ? 'mentions' : 'all'} />}
-      {shown === 'answer' && <Answer />}
-      {shown === 'spaces' && <Spaces />}
+      {view === 'activity' && <Activity />}
+      {view === 'mentions' && <Mentions />}
+      {view === 'answer' && <Answer />}
+      {view === 'spaces' && <Spaces />}
       {!isDesktop && (
         <>
           <PinnedBar><Link to="/community/new" className={cn(btnPrimary, tappable, 'w-full')}>Write a post</Link></PinnedBar>

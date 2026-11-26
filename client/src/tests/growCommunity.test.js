@@ -12,7 +12,7 @@ describe('activityRows', () => {
   it('merges posts, comments and mentions newest first', () => {
     expect(activityRows(data).map((r) => r.kind)).toEqual(['Comment', 'Mention', 'Post']);
   });
-  it('filters to one kind, Mentions included', () => {
+  it('filters to one kind; Mentions rows feed the Mentions tab', () => {
     expect(activityRows(data, 'mentions').map((r) => r.title)).toEqual(['M']);
     expect(activityRows(data, 'mentions')[0].meta).toBe('Ishita named you');
     expect(activityRows(data, 'posts')[0].meta).toBe('1 like · 2 replies');

@@ -6,12 +6,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Copy } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import useFeatureFlags from '../../hooks/useFeatureFlags';
 import {
   getAvailability, getMyKyc, getMyProfileViews, getMyReferrals, getMyServices,
   getMyTestimonials, getReceivedReviews,
 } from '../../services/api';
-import { getAuthorActivity } from '../../services/communityApi';
 import { buildSetupSteps } from '../../components/dashboard/SetupGuide';
 import { Skeleton } from '../../components/dashboard/ui';
 import { useRegisterRefresh } from '../../components/dashboard/ui/refreshContext';
@@ -23,9 +21,7 @@ const settle = (p, pick) => p.then((r) => pick(r)).catch(() => null);
 
 export default function GrowOverview() {
   const { user } = useAuth();
-  const { flags } = useFeatureFlags();
   const navigate = useNavigate();
-  const communityOn = !!flags.dashboard_sections_v2;
   const isDesktop = useIsDesktop();
   const [d, setD] = useState(null); // null = loading
   const [linkShared, setLinkShared] = useState(readShared);
@@ -35,13 +31,12 @@ export default function GrowOverview() {
     settle(getReceivedReviews('guest_to_host'), (r) => ({ count: Number(r?.data?.count) || 0, avg: Number(r?.data?.avg) || 0 })),
     settle(getMyTestimonials(), (r) => (Array.isArray(r?.data) ? r.data.length : 0)),
     settle(getMyReferrals(), (r) => r?.data?.stats || {}),
-    communityOn && user?.id ? settle(getAuthorActivity(user.id), (a) => a || {}) : Promise.resolve(undefined),
     settle(getMyServices(), (r) => (Array.isArray(r?.data) ? r.data.length > 0 : true)),
     getAvailability().then((r) => !!r?.data).catch(() => true), // failed read: don't nag
     settle(getMyKyc(), (r) => r?.data ?? null),
-  ]).then(([views, reviews, quotes, referrals, activity, hasService, availabilitySet, kyc]) => {
-    setD({ views, reviews, quotes, referrals, activity, hasService: hasService ?? true, availabilitySet, kyc });
-  }), [communityOn, user?.id]);
+  ]).then(([views, reviews, quotes, referrals, hasService, availabilitySet, kyc]) => {
+    setD({ views, reviews, quotes, referrals, hasService: hasService ?? true, availabilitySet, kyc });
+  }), []);
   useEffect(() => { load(); }, [load]);
   useRegisterRefresh(load);
 
@@ -53,8 +48,8 @@ export default function GrowOverview() {
     return (
       <GrowShell sub="More people to your page, and more proof on it.">
         <Skeleton className="h-[220px] rounded-[28px] sm:rounded-[32px]" />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[132px] rounded-[20px]" />)}
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
+          {[0, 1, 2].map((i) => <Skeleton key={i} className={`h-[132px] rounded-[20px] ${i === 2 ? 'col-span-2 lg:col-span-1' : ''}`} />)}
         </div>
       </GrowShell>
     );
@@ -67,8 +62,6 @@ export default function GrowOverview() {
   // One card per tab, each with its one real figure (or a sentence when there is none).
   const r = d.reviews;
   const ref = d.referrals;
-  const posts = d.activity?.posts?.length ?? 0;
-  const replies = (d.activity?.posts || []).reduce((n, p) => n + (p.comment_count || 0), 0);
   const cards = [
     { key: 'page', label: 'Your page', onClick: () => go(GROW_PAGE), more: 'Edit',
       ...(setupLeft
@@ -83,10 +76,6 @@ export default function GrowOverview() {
       ...(ref == null ? { value: null, note: 'Could not load referrals' }
         : (ref.total || 0) > 0 ? { value: inr(ref.earned || 0), hint: `Earned from ${ref.total} ${ref.total === 1 ? 'host' : 'hosts'}` }
           : { value: null, note: 'Invite a fellow creator', hint: 'Earn cash when they subscribe' }) },
-    communityOn && { key: 'community', label: 'Community', onClick: () => go('/dashboard/community/activity'), more: 'Open',
-      ...(d.activity == null ? { value: null, note: 'Could not load your activity' }
-        : posts ? { value: posts, hint: `${posts === 1 ? 'Post' : 'Posts'} · ${replies} ${replies === 1 ? 'reply' : 'replies'}` }
-          : { value: null, note: 'Say hello to other hosts', hint: 'Ask, answer, get known' }) },
   ].filter(Boolean);
 
   const actions = band.kind === 'setup' ? (
@@ -106,10 +95,15 @@ export default function GrowOverview() {
       <InsightBand mascot="green" compact className="sm:py-5" eyebrow="Grow"
         title={<>{band.title[0]} <em className={serif}>{band.title[1]}</em></>}
         sub={band.sub} actions={actions} />
-      <div className={`grid grid-cols-2 gap-3 lg:gap-4 ${cards.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
         {/* Phone tiles are half-width: the whole tile is the tap target, so the
             "Open →" word would only crowd out the hint. */}
-        {cards.map(({ key, more, ...c }) => <Tile key={key} {...c} more={isDesktop ? more : undefined} />)}
+        {/* Three cards: the last runs full width on a phone so the grid has no hole. */}
+        {cards.map(({ key, more, ...c }, i) => (
+          <div key={key} className={i === 2 ? 'col-span-2 grid lg:col-span-1' : 'grid'}>
+            <Tile {...c} more={isDesktop ? more : undefined} />
+          </div>
+        ))}
       </div>
     </GrowShell>
   );

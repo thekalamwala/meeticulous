@@ -1,33 +1,31 @@
 import { describe, it, expect } from 'vitest';
 import {
-  activeGrowTab, growBand, growTabs, pageFields, pagePayload, pageUrl, reviewsSentence, waShare,
+  COMMUNITY_TABS, activeGrowTab, growBand, growTabs, pageFields, pagePayload, pageUrl, reviewsSentence, waShare,
 } from '../pages/grow/growModel';
 
 const step = (key, done, title = key) => ({ key, done, title });
 
 describe('growTabs', () => {
-  it('lists Community only when dashboard_sections_v2 is on (same gate as its routes)', () => {
-    expect(growTabs({}).map((t) => t.key)).toEqual(['overview', 'page', 'reviews', 'refer']);
-    expect(growTabs({ dashboard_sections_v2: true }).map((t) => t.key)).toEqual(['overview', 'page', 'reviews', 'refer', 'community']);
+  it('is the four Grow tabs; Community is its own section', () => {
+    expect(growTabs().map((t) => t.key)).toEqual(['overview', 'page', 'reviews', 'refer']);
   });
-
   it('keeps the old routes as the Reviews and Refer & earn tabs', () => {
-    const tabs = growTabs({ dashboard_sections_v2: true });
+    const tabs = growTabs();
     expect(tabs.find((t) => t.key === 'reviews').to).toBe('/dashboard/testimonials');
     expect(tabs.find((t) => t.key === 'refer').to).toBe('/dashboard/referrals');
   });
 });
 
 describe('activeGrowTab', () => {
-  const tabs = growTabs({ dashboard_sections_v2: true });
+  const tabs = growTabs();
   it('matches Overview exactly and Your page by prefix', () => {
     expect(activeGrowTab('/dashboard/grow', tabs)).toBe('overview');
     expect(activeGrowTab('/dashboard/grow/', tabs)).toBe('overview');
     expect(activeGrowTab('/dashboard/grow/page', tabs)).toBe('page');
   });
-  it('lights Community for all four old community pages, Mentions included', () => {
-    for (const p of ['activity', 'mentions', 'answer', 'spaces']) {
-      expect(activeGrowTab(`/dashboard/community/${p}`, tabs)).toBe('community');
+  it('lights each of Community's four tabs on its own route', () => {
+    for (const k of ['activity', 'mentions', 'answer', 'spaces']) {
+      expect(activeGrowTab(`/dashboard/community/${k}`, COMMUNITY_TABS)).toBe(k);
     }
   });
   it('does not match a look-alike prefix', () => {

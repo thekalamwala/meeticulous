@@ -10,7 +10,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useDragControls, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
-import useFeatureFlags from '../../hooks/useFeatureFlags';
 import { markLinkShared } from '../../services/api';
 import { Drawer, PageHeading, cn } from '../../components/dashboard/ui/v2';
 import { activeGrowTab, growTabs, pageUrl } from './growModel';
@@ -49,7 +48,7 @@ export const BandGhost = ({ children, href, ...p }) => (href
   : <button type="button" className={cn(bandBtn, 'bg-maroon-700 text-white ring-2 ring-inset ring-white/35 hover:ring-white/60')} {...p}>{children}</button>);
 
 /* ── Tabs — real links over the old routes. ─────────────────────────────── */
-const GrowTabs = ({ tabs, active }) => {
+const GrowTabs = ({ tabs, active, label = 'Grow' }) => {
   const rowRef = useRef(null);
   // Phone: the chip row scrolls sideways; bring the current tab into view.
   useEffect(() => {
@@ -57,7 +56,7 @@ const GrowTabs = ({ tabs, active }) => {
     el?.scrollIntoView?.({ block: 'nearest', inline: 'center' });
   }, [active]);
   return (
-    <nav aria-label="Grow" ref={rowRef}
+    <nav aria-label={label} ref={rowRef}
       className="dash-noscrollbar flex max-w-full gap-1 overflow-x-auto rounded-[14px] bg-white p-1 lg:w-fit">
       {tabs.map((t) => {
         const on = t.key === active;
@@ -73,27 +72,27 @@ const GrowTabs = ({ tabs, active }) => {
   );
 };
 
-export default function GrowShell({ sub, action, children }) {
+// `title` + `tabs` let Community reuse the same shell as its own section.
+export default function GrowShell({ sub, action, children, title = 'Grow', tabs: ownTabs }) {
   const { pathname } = useLocation();
-  const { flags } = useFeatureFlags();
-  const tabs = growTabs(flags);
+  const tabs = ownTabs || growTabs();
   const active = activeGrowTab(pathname, tabs);
   return (
     <div className="flex flex-col gap-5 lg:gap-6">
       <div className="hidden lg:block">
-        <PageHeading title="Grow" sub={sub} action={action} />
+        <PageHeading title={title} sub={sub} action={action} />
       </div>
       {/* Phone: large title with the tab's one action beside it. */}
       <header className="flex items-center justify-between gap-3 lg:hidden">
         <div className="min-w-0">
-          <h1 className="mb-0 font-display text-[26px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon">Grow</h1>
+          <h1 className="mb-0 font-display text-[26px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon">{title}</h1>
           {sub && <p className="mb-0 mt-1 text-[13px] text-muted">{sub}</p>}
         </div>
         {action}
       </header>
       {/* Sticky under the 56px top bar on a phone, so switching tabs is always one tap. */}
       <div className="sticky top-14 z-20 -mx-4 bg-cream/95 px-4 py-1 backdrop-blur sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-        <GrowTabs tabs={tabs} active={active} />
+        <GrowTabs tabs={tabs} active={active} label={title} />
       </div>
       {children}
     </div>

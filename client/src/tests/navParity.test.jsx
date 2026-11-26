@@ -159,14 +159,18 @@ describe('the helpers still work against v2', () => {
   });
 
   it('hides Intelligence + Community until dashboard_sections_v2 is on, then shows them', () => {
-    // Community is a Grow tab now (Kept), not a rail section: its one row lives in Grow.
-    const growRoutes = (secs) => secs.find((s) => s.id === 'grow').items.map((i) => i.to);
-    const offSecs = visibleSections({ flags: { console_v2: true } });
-    expect(offSecs.map((s) => s.id)).not.toContain('intelligence');
-    expect(growRoutes(offSecs)).not.toContain('/dashboard/community/activity');
-    const onSecs = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } });
-    expect(onSecs.map((s) => s.id)).toContain('intelligence');
-    expect(onSecs.map((s) => s.id)).not.toContain('community');
-    expect(growRoutes(onSecs)).toContain('/dashboard/community/activity');
+    const off = visibleSections({ flags: { console_v2: true } }).map((s) => s.id);
+    expect(off).not.toContain('intelligence');
+    expect(off).not.toContain('community');
+    const on = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } }).map((s) => s.id);
+    expect(on).toContain('intelligence');
+    expect(on).toContain('community');
+  });
+
+  it('keeps Community its own section, marked new, with all four pages', () => {
+    const c = NAV_V2.find((s) => s.id === 'community');
+    expect(c.isNew).toBe(true);
+    expect(c.items.map((i) => i.to)).toEqual(['activity', 'mentions', 'answer', 'spaces'].map((k) => `/dashboard/community/${k}`));
+    expect(NAV_V2.find((s) => s.id === 'grow').items.some((i) => i.to.startsWith('/dashboard/community'))).toBe(false);
   });
 });
