@@ -205,6 +205,7 @@ const ChatPageV2     = lazy(() => import('./pages/ChatPageV2'));
 const AccountPane       = lazy(() => import('./pages/settings/AccountPane'));
 const NotificationsPane = lazy(() => import('./pages/settings/NotificationsPane'));
 const IntegrationsPane  = lazy(() => import('./pages/settings/IntegrationsPane'));
+const HelpHub           = lazy(() => import('./pages/help/HelpHub'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -505,7 +506,13 @@ function KycRoute() {
 }
 function ChatRoute() {
   const { flags } = useFeatureFlags();
-  return flags.dashboard_v2 ? <ChatPageV2 /> : <ChatPage />;
+  // Kept: the chat page IS Help (Tithi + answers + feedback). ChatPageV2 stays for reference.
+  return flags.dashboard_v2 ? <HelpHub /> : <ChatPage />;
+}
+// Kept: feedback is one option on Help now; the old URL opens Help with its sheet up.
+function FeedbackRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <Navigate to="/dashboard/chat?feedback=1" replace /> : <Feedback />;
 }
 
 function DashboardWrapper({ children }) {
@@ -814,7 +821,7 @@ function App() {
           <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferralsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/payments/transactions" element={<DashboardWrapper><TransactionsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/invoices" element={<DashboardWrapper><InvoicesRoute /></DashboardWrapper>} />
-          <Route path="/dashboard/feedback" element={<DashboardWrapper><Feedback /></DashboardWrapper>} />
+          <Route path="/dashboard/feedback" element={<DashboardWrapper><FeedbackRoute /></DashboardWrapper>} />
           <Route path="/dashboard/chat" element={<DashboardWrapper><ChatRoute /></DashboardWrapper>} />
 
           {/* Host Lab — redesign prototype of the host dashboard. Its own shell,

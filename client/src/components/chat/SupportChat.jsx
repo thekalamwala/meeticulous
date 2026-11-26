@@ -88,7 +88,9 @@ const Bubble = ({ m }) => {
   );
 };
 
-export default function SupportChat() {
+// `frame` (optional) replaces the outer box classes, so a host page can size and
+// style the chat for its own layout (Kept Help hub). Guests' /user/chat passes none.
+export default function SupportChat({ frame } = {}) {
   const [thread, setThread] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -312,7 +314,7 @@ export default function SupportChat() {
   const canEscalate = isBotPhase && botHasReplied && !intake;
 
   return (
-    <div className="flex h-[calc(100vh-9rem)] min-h-[440px] flex-col overflow-hidden rounded-2xl border border-maroon/10 bg-white shadow-sm">
+    <div className={frame || 'flex h-[calc(100vh-9rem)] min-h-[440px] flex-col overflow-hidden rounded-2xl border border-maroon/10 bg-white shadow-sm'}>
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-maroon/5 bg-blush/40 px-4 py-3">
         <img src={TITHI_PHOTO} alt="Tithi" className="h-9 w-9 shrink-0 rounded-full object-cover" />

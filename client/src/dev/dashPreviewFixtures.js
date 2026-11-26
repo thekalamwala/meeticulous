@@ -135,6 +135,16 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   ],
   '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] } },
   '/support/unread': { unread: 0 },
+  // Kept Settings/Help preview (dev-only, made-up): support chat, hours and feedback.
+  '/support/thread': { thread: { id: 'th-1', status: 'bot', reference: 'MT-1042' }, messages: [
+    { id: 'm1', sender: 'user', body: 'How long does a payout take after a booking?', created_at: at(-2, 11, 2) },
+    { id: 'm2', sender: 'bot', sender_name: 'Tithi', body: 'Payouts reach your bank 3 working days after the session, once your PAN and bank are verified. Yours are not verified yet, so the money waits until then.', created_at: at(-2, 11, 3) },
+  ] },
+  '/support/threads': { threads: [{ id: 'th-1', status: 'bot', reference: 'MT-1042', last_message_at: at(-2, 11, 3) }] },
+  '/support/hours': { open: true },
+  '/feedback/mine': { feedback: [
+    { id: 'fb-1', type: 'idea', subject: 'Let guests pick a time zone', body: 'Some of my clients are in Dubai and get confused by IST slots.', status: 'planned', admin_response: 'Good call. It is on the list for December.', created_at: at(-9) },
+  ] },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },
   '/vendor/intelligence/overview': OVERVIEW(pro),
   '/vendor/intelligence/money': MONEY,
