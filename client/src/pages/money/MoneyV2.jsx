@@ -161,7 +161,8 @@ const BalanceBand = ({ data, onVerify }) => {
         sub={c.sub}
         // On a phone the verify button is pinned in the thumb zone instead (PinnedAction).
         actions={c.verify ? <span className="hidden lg:contents"><BandPrimary onClick={onVerify}><ShieldCheck className="h-4 w-4" strokeWidth={2.4} />{VERIFY[c.verify]}</BandPrimary></span> : null} />
-      <BalanceCells buckets={buckets} verified={isVerified(data.kyc)} verifyLabel={c.verify && VERIFY[c.verify]} onVerify={onVerify} />
+      {/* Nothing in any bucket: the band already says so, three "nothing" rows would repeat it. */}
+      {buckets.total > 0 && <BalanceCells buckets={buckets} verified={isVerified(data.kyc)} verifyLabel={c.verify && VERIFY[c.verify]} onVerify={onVerify} />}
     </section>
   );
 };
@@ -236,7 +237,7 @@ const copy = (text, label) => {
   navigator.clipboard?.writeText(String(text)).then(() => toast.success(`${label} copied`)).catch(() => {});
 };
 const Line = ({ label, value, strong, mono, onCopy }) => (
-  <div className="flex items-start justify-between gap-4 py-2">
+  <div className="flex items-center justify-between gap-4 py-2">
     <span className={cn('shrink-0 text-[13.5px]', strong ? 'font-semibold text-ink' : 'text-muted')}>{label}</span>
     {onCopy ? (
       <button type="button" onClick={onCopy} className={cn('inline-flex min-w-0 items-center gap-1.5 break-all text-right font-mono text-[12.5px] text-ink hover:text-maroon', ring, 'rounded-[6px]')}>
@@ -302,10 +303,11 @@ const BankLead = () => (
   </span>
 );
 
-export const MoneyEmpty = ({ title, children, action }) => (
+// `art` off where the balance band above already carries the panda (one per screen).
+export const MoneyEmpty = ({ title, children, action, art = true }) => (
   <div className="flex flex-col items-center px-6 py-12 text-center">
-    <img src="/about/mascot-orange.png" alt="" className="h-24 w-24 object-contain" />
-    <p className="mb-0 mt-3 font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{title}</p>
+    {art && <img src="/about/mascot-orange.png" alt="" className="mb-3 h-24 w-24 object-contain" />}
+    <p className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{title}</p>
     <p className="mb-0 mt-1.5 max-w-[40ch] text-[13.5px] text-muted">{children}</p>
     {action}
   </div>
@@ -360,7 +362,7 @@ const PayoutsTab = ({ verified }) => {
   if (!split.onTheWay.length && !split.deposits.length && !split.problems.length) {
     return (
       <Panel>
-        <MoneyEmpty title="No payouts yet">When a guest pays for a booking, it shows up here and goes to your bank after the session.</MoneyEmpty>
+        <MoneyEmpty art={false} title="No payouts yet">When a guest pays for a booking, it shows up here and goes to your bank after the session.</MoneyEmpty>
       </Panel>
     );
   }
