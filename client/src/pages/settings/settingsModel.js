@@ -24,7 +24,7 @@ export const SETTINGS_GROUPS = [
     id: 'you',
     rows: [
       { id: 'account', to: '/dashboard/settings/account', label: 'Account', icon: UserRound,
-        value: () => 'Name, sign-in, booking rules' },
+        value: () => 'Name, sign-in, booking rules, search' },
       { id: 'notifications', to: '/dashboard/settings/notifications', label: 'Notifications', icon: Bell,
         value: () => 'Email and the bell' },
       { id: 'integrations', to: '/dashboard/settings/integrations', label: 'Integrations', icon: Plug,

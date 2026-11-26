@@ -1,6 +1,8 @@
 // Settings → Account (Kept). Account-only fields, founder call 2026-11-26:
-// name, birthday (private), how you sign in, your link, and the two booking rules
-// (guest reschedule fee, listed/hidden). How the PAGE looks (photo, cover, bio,
+// name, birthday (private), how you sign in, your link, the booking rules
+// (guest reschedule fee, Google Maps link for in-person) and discovery (listed /
+// hidden, search keywords). Search keywords and the Maps link have no home in
+// Grow's Your page (agreed with the Grow session), so they live here. How the PAGE looks (photo, cover, bio,
 // social, colours, categories) lives in Grow → Your page.
 //
 // Saves go through the same PUT /host/profile as before, sending ONLY the fields
@@ -24,7 +26,9 @@ const pick = (u) => ({
   name: u?.name || '',
   date_of_birth: u?.date_of_birth ? String(u.date_of_birth).slice(0, 10) : '',
   reschedule_fee: Number(u?.reschedule_fee ?? 0),
+  map_link: u?.map_link || '',
   is_indexable: u?.is_indexable !== false,
+  tagline: u?.tagline || '', // NOT a public tagline: "Search keywords" (discovery)
 });
 
 const Label = ({ htmlFor, children, hint }) => (
@@ -159,10 +163,25 @@ export default function AccountPane({ root = false }) {
               <option value={10}>₹10 from the second reschedule</option>
             </Select>
           </div>
+          <div>
+            <Label htmlFor="acct-map" hint="Shown to guests who book an in-person service.">Google Maps link</Label>
+            <div className="mt-input"><input id="acct-map" type="url" inputMode="url" autoComplete="url" autoCapitalize="none" spellCheck={false}
+              placeholder="https://maps.app.goo.gl/…" value={form.map_link} onChange={(e) => set('map_link')(e.target.value.trim())} /></div>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel title="Being found">
+        <div className="flex flex-col gap-5">
           <SwitchRow checked={form.is_indexable} onChange={set('is_indexable')} label="Show me in Explore and search"
             detail={form.is_indexable
               ? 'Guests can find you on Meeticulous and on Google.'
               : 'Hidden. Only people with your link can find and book you.'} />
+          <div>
+            <Label htmlFor="acct-keywords" hint="Words guests might search for. Not shown on your page.">Search keywords</Label>
+            <div className="mt-input"><input id="acct-keywords" type="text" maxLength={100} enterKeyHint="done"
+              placeholder="e.g. prenatal yoga, Hindi" value={form.tagline} onChange={(e) => set('tagline')(e.target.value)} /></div>
+          </div>
         </div>
       </Panel>
 
