@@ -122,6 +122,12 @@ const REGISTRY = [
   // Ships OFF + FAIL-CLOSED. Automation switch for the warm second-touch job
   // (a clicker who hasn't replied/converted gets one governed follow-up). Off =
   // the job no-ops. The actual send is still gated by crm_admin_sends above.
+  // Ships OFF + FAIL-CLOSED. Master switch for EVERY CRM background job (server.js
+  // crmOnly): attribution, lifecycle + guest engines, list engagement, second-touch,
+  // send queue, sequence steps, follow-up + cold-call reminders, cold-call recap.
+  // Founder turned CRM automation off on 2026-11-26 until 2027-01-01; the admin CRM
+  // pages and manual cold calling keep working with it off.
+  { key: 'crm_automation',       label: 'CRM Automation',       category: 'Sales CRM', scope: 'both', enabled: false, description: 'Runs all CRM background jobs (lead scoring/health, attribution, sequences, send queue, reminders). Ships OFF. Off = no CRM job runs; the CRM admin pages still work. Sends also require CRM Outbound Sends.' },
   { key: 'crm_second_touch',     label: 'CRM Auto Second-Touch', category: 'Sales CRM', scope: 'both', enabled: false, description: 'Automated warm follow-up to campaign clickers who have not replied/converted. Ships OFF. Off = no auto second-touch is queued. Sends still require CRM Outbound Sends.' },
 
   // ── Community (ships OFF + FAIL-CLOSED, services/featureFlags.js) ──
