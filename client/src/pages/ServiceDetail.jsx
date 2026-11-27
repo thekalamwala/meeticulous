@@ -247,7 +247,7 @@ const HostTab = ({ vendor, totalServices = 0, totalBookings = 0, rating = 0, rev
         {/* Avatar + verified seal */}
         <div className="relative w-20 h-20 flex-shrink-0">
           {vendor.profile_image
-            ? <img src={vendor.profile_image} alt={vendor.name} className="w-20 h-20 rounded-2xl object-cover"/>
+            ? <img src={vendor.profile_image} alt={[vendor.name, vendor.profession].filter(Boolean).join(', ')} className="w-20 h-20 rounded-2xl object-cover"/>
             : <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold" style={{ background: tint(12), color: accent }}>{vendor.name.charAt(0).toUpperCase()}</div>}
           {vendor.is_verified && (
             <span className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-full flex items-center justify-center border-[3px] border-white" style={{ background: accent }} aria-label="Verified host">
@@ -694,7 +694,7 @@ const ProfileCard = ({ vendor, rating, reviewCount, bookings }) => {
         <div className="flex justify-center mb-3">
           <div className="w-20 h-20 rounded-2xl border-[3px] border-white shadow-sm overflow-hidden bg-white">
             {vendor.profile_image
-              ? <img src={vendor.profile_image} alt={vendor.name} className="w-full h-full object-cover"/>
+              ? <img src={vendor.profile_image} alt={[vendor.name, vendor.profession].filter(Boolean).join(', ')} className="w-full h-full object-cover"/>
               : <div className="w-full h-full flex items-center justify-center text-2xl font-bold"
                   style={{ background: `color-mix(in srgb, ${accent} 12%, white)`, color: accent }}>
                   {vendor.name.charAt(0).toUpperCase()}
@@ -1031,7 +1031,7 @@ export default function ServiceDetail() {
                     <span className="flex items-center gap-1.5">
                       <span>Hosted by</span>
                       {vendor.profile_image && (
-                        <img src={vendor.profile_image} alt="" className="w-[23px] h-[23px] rounded-full object-cover ring-1 ring-primary" />
+                        <img src={vendor.profile_image} alt={vendor.name} className="w-[23px] h-[23px] rounded-full object-cover ring-1 ring-primary" />
                       )}
                       <Link to={`/${vendor.username}`} className="font-semibold text-white hover:text-pink transition-colors underline decoration-white/50 hover:decoration-white underline-offset-2">
                         {vendor.name}

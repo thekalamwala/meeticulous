@@ -11,7 +11,9 @@
  */
 const express = require('express');
 const router = express.Router();
-const { renderProfileMeta, renderServiceMeta, renderProfileTabMeta } = require('../controllers/prerenderController');
+const {
+  renderProfileMeta, renderServiceMeta, renderProfileTabMeta, renderCatalogMeta, renderLegacyCatalogRedirect,
+} = require('../controllers/prerenderController');
 
 // /prerender/community/... — MUST stay above /:username, or /community would resolve as a
 // host profile. Anything else under /community (search, saved, unknown) is a bot 404.
@@ -29,6 +31,14 @@ router.get('/:username', renderProfileMeta);
 // GET /prerender/:username/products|courses|membership — profile tab meta shell.
 // MUST stay above /:username/:serviceSlug (those words are reserved service slugs).
 router.get('/:username/:tab(products|courses|membership)', renderProfileTabMeta);
+
+// GET /prerender/:username/products|courses/:key — product / course page shell
+// (a non-canonical key — old id, legacy slug — answers a 301 to the slug URL).
+router.get('/:username/:kind(products|courses)/:key', renderCatalogMeta);
+
+// GET /prerender/:username/product|course/:key — the OLD singular URLs: always
+// a 301 to the canonical /:username/products|courses/<slug>.
+router.get('/:username/:kind(product|course)/:key', renderLegacyCatalogRedirect);
 
 // GET /prerender/:username/:serviceSlug — service page meta shell
 router.get('/:username/:serviceSlug', renderServiceMeta);
