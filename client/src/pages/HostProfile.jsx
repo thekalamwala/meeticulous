@@ -496,7 +496,33 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   // Build-time copy baked into the prerendered HTML → real profile on the first
   // frame; the fetch effect below refreshes it.
   const seed = isVanity ? null : bakedProfile(profileSlug);
-  const [host,        setHost]        = useState(seed?.host ?? null);
+  const [rawHost,     setHost]        = useState(seed?.host ?? null);
+
+  // ── Live preview hook (dashboard "Your page" iframe) ─────────────────────────
+  // Only inside a same-origin iframe with ?preview=1. The parent posts the host's
+  // unsaved edits as 'mt:profile-draft'; they override what is DISPLAYED only and
+  // are never saved. Messages from any other origin are ignored. A preview also
+  // skips view tracking (a host must not inflate their own views) and is noindex.
+  const isPreview = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('preview') === '1'
+    && window.parent !== window;
+  const [draft, setDraft] = useState(null);
+  useEffect(() => {
+    if (!isPreview) return undefined;
+    const onMessage = (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== 'mt:profile-draft' || !event.data.host) return;
+      const { name, bio, profession, location, profile_image, cover_image, theme_color, social_links } = event.data.host;
+      const next = { name, bio, profession, location, profile_image, cover_image, theme_color, social_links };
+      Object.keys(next).forEach((k) => next[k] === undefined && delete next[k]);
+      setDraft(next);
+    };
+    window.addEventListener('message', onMessage);
+    window.parent.postMessage({ type: 'mt:profile-preview-ready' }, window.location.origin);
+    return () => window.removeEventListener('message', onMessage);
+  }, [isPreview]);
+  const host = rawHost && draft ? { ...rawHost, ...draft } : rawHost;
+  // ── end live preview hook ────────────────────────────────────────────────────
   const [services,    setServices]    = useState(seed?.services ?? []);
   const [loading,     setLoading]     = useState(!seed);
   const [error,       setError]       = useState('');
@@ -557,8 +583,10 @@ const HostProfile = ({ tab = 'services' } = {}) => {
           setHost(data.host);
           setServices(data.services || []);
         }
-        analytics.track(EVENTS.PROFILE_VIEWED, { host_id: data.host?.id, slug: profileSlug });
-        recordProfileView(profileSlug); // v3.205 server-side view counter (fire-and-forget)
+        if (!isPreview) {
+          analytics.track(EVENTS.PROFILE_VIEWED, { host_id: data.host?.id, slug: profileSlug });
+          recordProfileView(profileSlug); // v3.205 server-side view counter (fire-and-forget)
+        }
         getHostReviews(profileSlug).then(r => setReviewData(r.data)).catch(() => {});
         Promise.allSettled([
           getHostProducts(profileSlug).then(r => setProducts(r.data || [])),
@@ -714,7 +742,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
 
   return (
     <>
-      {seo && <Seo {...seo} jsonLd={jsonLd} />}
+      {seo && <Seo {...seo} {...(isPreview ? { robots: 'noindex' } : {})} jsonLd={jsonLd} />}
       <BrandPreloader
         variant="profile"
         ready={!loading && !!host && !error}

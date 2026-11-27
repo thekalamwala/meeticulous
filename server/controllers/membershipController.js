@@ -18,9 +18,6 @@ const MAX_TIERS = 3;
 const publicTier = (t) => ({
   id: t.id, name: t.name, type: t.type, price_inr: t.price_inr,
   billing_period: t.billing_period, perks: Array.isArray(t.perks) ? t.perks : [],
-  // Tier cover image — read when the column exists (dashboard tier editor), else null.
-  cover_url: t.cover_url || null,
-  description: t.description || null,
 });
 
 // ponytail: schema-fallback — if v3.218 isn't applied yet, Supabase returns a

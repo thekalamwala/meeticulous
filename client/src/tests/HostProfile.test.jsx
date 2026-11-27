@@ -17,7 +17,7 @@ vi.mock('../services/api', () => ({
   recordProfileView: vi.fn(),
 }));
 
-import { getHostProfile, getHostProducts, getHostCourses, getMembershipSpace } from '../services/api';
+import { getHostProfile, getHostProducts, getHostCourses, getMembershipSpace, recordProfileView } from '../services/api';
 import HostProfile from '../pages/HostProfile';
 
 const HOST = {
@@ -329,5 +329,35 @@ describe('HostProfile — tabs', () => {
     renderTab('/jane-vendor/courses');
     await waitFor(() => expect(screen.getByText("This didn't load.")).toBeTruthy());
     expect(firstStat().label).toBe('Courses');
+  });
+});
+
+// ── Live preview hook (dashboard "Your page" iframe) ─────────────────────────────
+describe('HostProfile — preview mode', () => {
+  const realParent = window.parent;
+  let parent;
+  beforeEach(() => {
+    getHostProfile.mockResolvedValue({ data: { host: HOST, services: SERVICES, availability: null } });
+    parent = { postMessage: vi.fn() };
+    Object.defineProperty(window, 'parent', { value: parent, configurable: true });
+    window.history.replaceState(null, '', '/?preview=1');
+    recordProfileView.mockClear();
+  });
+  afterEach(() => {
+    Object.defineProperty(window, 'parent', { value: realParent, configurable: true });
+    window.history.replaceState(null, '', '/');
+  });
+
+  test('announces ready, applies a same-origin draft, ignores other origins, skips view tracking', async () => {
+    renderProfile();
+    await waitFor(() => expect(screen.getAllByText('Jane Vendor').length).toBeGreaterThan(0));
+    expect(parent.postMessage).toHaveBeenCalledWith({ type: 'mt:profile-preview-ready' }, window.location.origin);
+
+    window.dispatchEvent(new MessageEvent('message', { origin: 'https://evil.example', data: { type: 'mt:profile-draft', host: { name: 'Hacked' } } }));
+    window.dispatchEvent(new MessageEvent('message', { origin: window.location.origin, data: { type: 'mt:profile-draft', host: { name: 'Jane Draft' } } }));
+    await waitFor(() => expect(screen.getAllByText('Jane Draft').length).toBeGreaterThan(0));
+    expect(screen.queryByText('Hacked')).toBeNull();
+    expect(recordProfileView).not.toHaveBeenCalled();
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex');
   });
 });
