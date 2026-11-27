@@ -2,12 +2,11 @@ jest.mock('../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 
 const { FALLBACK_PLANS } = require('../services/planService');
 
-// Caps mirror the published pricing matrix (migration v3.165). Categories are a
-// discovery/SEO surface that costs us nothing, so they are uncapped on both
-// plans — the fallback must not re-introduce a limit the live DB doesn't enforce.
+// Caps mirror the pricing v2 matrix (migration v3.230): Starter gets 2 service
+// categories, Pro is unlimited. The fallback must match what the DB enforces.
 describe('plan category caps (fallback)', () => {
-  it('free (Starter) is unlimited (-1)', () => {
-    expect(FALLBACK_PLANS.free.limits.categories).toBe(-1);
+  it('free (Starter) is capped at 2', () => {
+    expect(FALLBACK_PLANS.free.limits.categories).toBe(2);
   });
   it('premium (Pro) is unlimited (-1)', () => {
     expect(FALLBACK_PLANS.premium.limits.categories).toBe(-1);
@@ -18,10 +17,11 @@ describe('plan category caps (fallback)', () => {
   });
 });
 
-// The two limits with real marginal cost stay countable on the free plan.
+// AI generations still cost model spend, so they stay capped on Starter. Digital
+// products are uncapped in pricing v2 — they earn 12% commission instead.
 describe('free plan keeps the cost-bearing caps', () => {
-  it('digital products capped at 3 (storage)', () => {
-    expect(FALLBACK_PLANS.free.limits.digital_products).toBe(3);
+  it('digital products are uncapped (-1)', () => {
+    expect(FALLBACK_PLANS.free.limits.digital_products).toBe(-1);
   });
   it('AI generations capped at 10 (model spend)', () => {
     expect(FALLBACK_PLANS.free.limits.ai_generations).toBe(10);
