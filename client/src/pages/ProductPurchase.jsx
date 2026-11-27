@@ -18,6 +18,7 @@ import { INDIAN_STATES } from "../lib/indianStates";
 import { useMinimalFooter } from "../context/ChromeContext";
 import loadRazorpay from "../utils/loadRazorpay";
 import Seo from "../components/common/Seo";
+import RenamedHostRedirect from "../components/common/RenamedHostRedirect";
 import { SITE_URL, productGraphJsonLd, productMeta, productPath, catalogRobots } from "../utils/seo";
 import { catalogFaqs, catalogSections, updatedLabel } from "../utils/profileFaqs";
 import { CatalogSections } from "../components/profile/ProfileTabs";
@@ -54,7 +55,9 @@ const ProductPurchase = () => {
   // and the page replaces the URL with it (below).
   const { profileSlug: username, productSlug: productKey } = useParams();
   const [searchParams] = useSearchParams();
-  const { search } = useLocation();
+  const { search, pathname } = useLocation();
+  // The old singular /:u/product/:key path renders this page too (App.jsx).
+  const legacyPath = !pathname.includes('/products/');
   const { user } = useAuth();
 
   const [product, setProduct] = useState(null);
@@ -314,11 +317,13 @@ const ProductPurchase = () => {
     return <div className="text-center py-20 text-gray-400">Loading...</div>;
   if (!product)
     return (
-      <div className="text-center py-20 text-gray-400">Product not found</div>
+      <RenamedHostRedirect username={username}>
+        <div className="text-center py-20 text-gray-400">Product not found</div>
+      </RenamedHostRedirect>
     );
 
   // An id or legacy slug in the URL → the canonical slug URL (keeps ?dl=…).
-  if (product.slug && product.slug !== productKey) {
+  if (product.slug && (product.slug !== productKey || legacyPath)) {
     return <Navigate to={`${productPath(username, product.slug)}${search}`} replace />;
   }
 

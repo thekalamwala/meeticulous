@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams, Link, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useSearchParams, useLocation, Link, useNavigate, Navigate } from "react-router-dom";
+import RenamedHostRedirect from "../components/common/RenamedHostRedirect";
 import {
   getCoursePublic, getCourseContent, createCourseOrder, verifyCoursePayment,
 } from "../services/api";
@@ -25,6 +26,9 @@ const CoursePage = () => {
   // page replaces the URL with it (below).
   const { username, slug } = useParams();
   const [searchParams] = useSearchParams();
+  const { pathname } = useLocation();
+  // The old singular /:u/course/:slug path renders this page too (App.jsx).
+  const legacyPath = !pathname.includes('/courses/');
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -99,10 +103,10 @@ const CoursePage = () => {
   };
 
   if (loading) return <div className="py-20 text-center text-gray-400">Loading…</div>;
-  if (!course) return <div className="py-20 text-center text-gray-400">Course not found</div>;
+  if (!course) return <RenamedHostRedirect username={username}><div className="py-20 text-center text-gray-400">Course not found</div></RenamedHostRedirect>;
 
   // An id or legacy slug in the URL → the canonical slug URL.
-  if (course.slug && course.slug !== slug) return <Navigate to={coursePath(username, course.slug)} replace />;
+  if (course.slug && (course.slug !== slug || legacyPath)) return <Navigate to={coursePath(username, course.slug)} replace />;
 
   const host = course.profiles;
   const lessons = content ? content.course_lessons : course.course_lessons || [];
