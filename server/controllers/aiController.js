@@ -9,11 +9,12 @@ const { safeError } = require('../utils/httpError');
 // Rolling-window (days) a plan must wait before its "generate" quota renews.
 // Shorter = more generous (resets sooner). Keys are the real DB plan slugs
 // (see server/services/planService.js FALLBACK_PLANS) — NOT the marketing
-// names ("Starter" / "Pro"). `free` inherits the old Starter window.
+// names ("Starter" / "Pro"). Pricing v2: the free tiers renew MONTHLY (30 days),
+// so Starter's 10 generations are "10 a month".
 // Any plan with ai_generations: -1 (premium, supreme, and the legacy paid
 // tiers since v3.165) short-circuits before the window is ever consulted.
-const WINDOW_DAYS = { free: 182, premium: 0, starter: 182, starter_legacy: 182, creator: 91, professional: 30, supreme: 0 };
-const DEFAULT_WINDOW_DAYS = 182;
+const WINDOW_DAYS = { free: 30, premium: 0, starter: 30, starter_legacy: 30, creator: 91, professional: 30, supreme: 0 };
+const DEFAULT_WINDOW_DAYS = 30; // unlisted slugs (e.g. `explorer`) read the free row → same monthly window
 const TABLE = 'ai_listing_generations';
 
 // Regenerate skips the generate quota by design (free within an owned

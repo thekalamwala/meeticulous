@@ -44,3 +44,20 @@ describe('crmService.listClients — free-plan cap (maxClients)', () => {
     expect(clients.map((c) => c.name).sort()).toEqual(['Mid', 'New', 'Old']);
   });
 });
+
+// Pricing v2 §4 item 2: on Starter the CRM shows only the last 4 digits; the full
+// number in the client list / export is Pro-only.
+describe('crmService.listClients — maskPhones', () => {
+  beforeEach(() => {
+    mockBookings = [paid('New', '+91 90000 00003', 5)];
+  });
+  test('masked to the last 4 digits when maskPhones is set', async () => {
+    const { clients } = await listClients('host1', { maxClients: 50, maskPhones: true });
+    expect(clients[0].phone).toBe('•••••• 0003');
+  });
+  test('full number otherwise (Pro)', async () => {
+    const { clients } = await listClients('host1', { maxClients: -1 });
+    expect(clients[0].phone).not.toMatch(/•/);
+    expect(clients[0].phone).toMatch(/0003$/);
+  });
+});

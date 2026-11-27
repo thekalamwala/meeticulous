@@ -28,19 +28,22 @@ const req = (body = {}, params = {}, user = { id: 'host-1' }) => ({ body, params
 
 beforeEach(() => jest.clearAllMocks());
 
-describe('createCourse — Pro gate', () => {
-  test('free-plan host is blocked with 403 + upgrade_required', async () => {
-    // callerIsFreePlan → profiles.select().eq().single() → { plan:'free' }
-    supabaseAdmin.from.mockReturnValue({
-      select: () => ({ eq: () => ({ single: () => ({ data: { plan: 'free' } }) }) }),
-    });
+describe('createCourse — open on every plan (pricing v2 §4 item 1)', () => {
+  test('a free-plan host is NOT blocked — the course is created', async () => {
     planService.isFreeSlug.mockReturnValue(true);
+    supabaseAdmin.from.mockImplementation((table) => {
+      if (table === 'courses') return {
+        select: () => ({ eq: () => ({ like: () => ({ data: [] }) }) }),
+        insert: (p) => ({ select: () => ({ single: () => ({ data: { id: 'c1', ...p }, error: null }) }) }),
+      };
+      if (table === 'course_lessons') return { delete: () => ({ eq: () => ({}) }), insert: () => ({}) };
+      return {};
+    });
 
     const r = res();
     await createCourse(req({ title: 'X', price: 100 }), r);
 
-    expect(r.status).toHaveBeenCalledWith(403);
-    expect(r.json).toHaveBeenCalledWith(expect.objectContaining({ upgrade_required: true }));
+    expect(r.status).toHaveBeenCalledWith(201);
   });
 
   test('paid-plan host passes the gate and inserts the course', async () => {

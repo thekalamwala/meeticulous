@@ -1550,6 +1550,17 @@ const rescheduleBooking = async (req, res) => {
         .status(403)
         .json({ message: "Not authorized to reschedule this booking" });
 
+    // Pricing v2 §4 item 7: a guest moving their OWN booking is a Pro perk of the
+    // host's plan. The host can always move a booking from the dashboard, on any
+    // plan, and the guest is emailed the new time either way.
+    if (req.user?.id !== booking.host_id
+      && planService.isFreeSlug(planService.resolveVendorPlan(hostOf(booking)))) {
+      return res.status(403).json({
+        message: "This host doesn't offer self-serve rescheduling. Please contact them to move your booking.",
+        code: "GUEST_RESCHEDULE_PRO_ONLY",
+      });
+    }
+
     const { data: avail } = await supabaseAdmin
       .from("availability")
       .select("*")
@@ -1783,11 +1794,11 @@ const rescheduleBooking = async (req, res) => {
 
     const s = booking.services;
     const host = hostOf(booking);
-    // Pro perk: reschedule alerts (WhatsApp + the host's email) fire for plans
-    // entitled to the full reminder set, and for free hosts inside their 60-day
-    // Pro taste (services/proTaste.js). Outside it the GUEST still gets a plain
-    // email — their booking moved, they must hear about it — and both sides get
-    // the in-app notice below.
+    // Pro perk: reschedule alerts (WhatsApp + the host's email) fire only for
+    // plans with unlimited reminder flows — strictly paid since pricing v2 (§4
+    // item 8: the 60-day Pro taste covers WhatsApp REMINDERS only). The GUEST
+    // always gets a plain email — their booking moved, they must hear about it —
+    // and both sides get the in-app notice below.
     const rescheduleNotify = await rescheduleAlertsAllowed(host, booking.host_id);
     const oldWhen = new Date(booking.scheduled_at).toLocaleString("en-IN", {
       timeZone: hostTimezone,
@@ -1977,11 +1988,11 @@ const reminderFlagFor = (windowHours) =>
 // while the email send is untouched. Applies to both the guest and the host reminder.
 const whatsappRemindersAllowed = (host, hostId) => proTaste.tasteActive(host, hostId);
 
-// Reschedule alerts (WhatsApp + host email): plans entitled to every reminder
-// window, or a free host inside their 60-day Pro taste.
-const rescheduleAlertsAllowed = async (host, hostId) =>
-  (await planService.rescheduleNotifyForPlan(planService.resolveVendorPlan(host)))
-  || proTaste.tasteActive(host, hostId);
+// Reschedule alerts (WhatsApp + host email): strictly paid (pricing v2 §4 item 8).
+// The 60-day Pro taste no longer extends to them — it covers WhatsApp reminders only.
+// `_hostId` kept so every caller's signature is unchanged.
+const rescheduleAlertsAllowed = async (host, _hostId) =>
+  planService.rescheduleNotifyForPlan(planService.resolveVendorPlan(host));
 
 const sendBookingReminder = async (b, host, tz) => {
   const s = b.services;

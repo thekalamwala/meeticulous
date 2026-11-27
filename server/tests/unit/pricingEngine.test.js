@@ -35,10 +35,19 @@ const {
 
 // ─── calculatePlatformFee ─────────────────────────────────────────────────────
 describe('calculatePlatformFee', () => {
-  test('flat ₹10 default for any paid service', () => {
-    expect(calculatePlatformFee(100)).toBe(10);
-    expect(calculatePlatformFee(1)).toBe(10);
+  test('flat ₹10 default for any paid service at or above the ₹300 floor', () => {
+    expect(calculatePlatformFee(300)).toBe(10);
     expect(calculatePlatformFee(5000)).toBe(10);
+  });
+  // Pricing v2 §4 item 3 / acceptance test 4: "nothing under ₹300".
+  test('no fee on a service priced under ₹300', () => {
+    expect(calculatePlatformFee(250)).toBe(0);
+    expect(calculatePlatformFee(299.99)).toBe(0);
+    expect(calculatePlatformFee(1)).toBe(0);
+  });
+  test('the floor is overridable, and fee-only mode bypasses it', () => {
+    expect(calculatePlatformFee(100, { feeFloorPrice: 0 })).toBe(10);
+    expect(calculatePlatformFee(100, { chargeFeeOnFree: true })).toBe(10);
   });
   test('₹0 for a free service', () => {
     expect(calculatePlatformFee(0)).toBe(0);
@@ -48,8 +57,8 @@ describe('calculatePlatformFee', () => {
     expect(calculatePlatformFee(0, { chargeFeeOnFree: true, platformFee: 12 })).toBe(12);
   });
   test('admin-configurable override is honoured', () => {
-    expect(calculatePlatformFee(100, { platformFee: 15 })).toBe(15);
-    expect(calculatePlatformFee(100, { platformFee: 0 })).toBe(0);
+    expect(calculatePlatformFee(500, { platformFee: 15 })).toBe(15);
+    expect(calculatePlatformFee(500, { platformFee: 0 })).toBe(0);
   });
   test('negative service price throws', () => {
     expect(() => calculatePlatformFee(-1)).toThrow('servicePrice cannot be negative');
@@ -233,14 +242,14 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
   });
 
   test('custom platform fee + GST rate flow through', () => {
-    const b = computeBreakdown({ servicePrice: 200, commissionPercentage: 5, platformFee: 20, gstRate: 0.18, razorpayFee: 4.72 });
+    const b = computeBreakdown({ servicePrice: 400, commissionPercentage: 5, platformFee: 20, gstRate: 0.18, razorpayFee: 4.72 });
     expect(b.platformFee).toBe(16.95);
     expect(b.gst).toBe(3.05);
-    expect(b.commission).toBe(10);
-    expect(b.customerTotal).toBe(220);
-    expect(b.tds).toBe(2);                       // 1% of 200
-    expect(b.tcs).toBe(2);
-    expect(b.vendorPayout).toBe(181.28);         // 200 − 10 − 4.72 − 2 − 2
+    expect(b.commission).toBe(20);
+    expect(b.customerTotal).toBe(420);
+    expect(b.tds).toBe(4);                       // 1% of 400
+    expect(b.tcs).toBe(4);
+    expect(b.vendorPayout).toBe(367.28);         // 400 − 20 − 4.72 − 4 − 4
   });
 
   test('configurable TDS rate override flows through (engine capability; prod uses flat 1%)', () => {
@@ -357,5 +366,12 @@ describe('computeBreakdown — inclusive fee acceptance (spec §7 tests 1–3)',
   test('fee set to ₹0 → no fee components at all', () => {
     const b = computeBreakdown({ servicePrice: 500, commissionPercentage: 9, platformFee: 0, gstRate: 0.18 });
     expect([b.platformFee, b.gst, b.platformFeeGross, b.customerTotal]).toEqual([0, 0, 0, 500]);
+  });
+});
+
+describe('computeBreakdown — fee floor (spec §7 test 4)', () => {
+  test('free host, ₹250 appointment → no platform fee, guest pays ₹250', () => {
+    const b = computeBreakdown({ servicePrice: 250, commissionPercentage: 9, platformFee: 10, gstRate: 0.18 });
+    expect([b.platformFee, b.gst, b.platformFeeGross, b.customerTotal]).toEqual([0, 0, 0, 250]);
   });
 });

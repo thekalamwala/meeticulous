@@ -8,7 +8,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
 const { setPublicCache } = require('../utils/httpCache');
 const { getConfig: getPlatformConfig } = require('../services/platformConfig');
-const { splitInclusiveFee } = require('../lib/pricingEngine');
+const { splitInclusiveFee, calculatePlatformFee } = require('../lib/pricingEngine');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 const { bustPublicReadCaches } = require('../services/publicCacheBust');
 const { sortHostOrder, makeReorderHandler } = require('../services/catalogOrder');
@@ -657,7 +657,10 @@ const buildPublicServiceByProfileAndSlug = async (profileSlug, serviceSlug) => {
   try {
     const { platformFee, gstRate, feeOnlyMode } = await getPlatformConfig();
     feeOnly = feeOnlyMode;
-    const split = splitInclusiveFee(Number(platformFee) || 0, { gstRate });
+    // Same ₹300 floor as checkout; a ₹0 service keeps the figure for fee-only mode.
+    const price = Number(service.price) || 0;
+    const split = splitInclusiveFee(
+      calculatePlatformFee(price, { platformFee: Number(platformFee) || 0, chargeFeeOnFree: price === 0 }), { gstRate });
     bookingFee = split.gross;
     bookingFeeBreakdown = { platformFee: split.taxable, tax: split.gst };
   } catch (_) { bookingFee = 0; bookingFeeBreakdown = { platformFee: 0, tax: 0 }; }

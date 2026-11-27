@@ -35,15 +35,6 @@ const uniqueHostSlug = async (hostId, title) => {
   return `${base}-${n}`;
 };
 
-// Pro gate — course creation is a paid-plan feature. isFreeSlug is the canonical
-// free-tier test (covers every free alias). Server-enforced; the client mirrors
-// it with a lock overlay.
-const callerIsFreePlan = async (hostId) => {
-  const { data: profile } = await supabaseAdmin
-    .from('profiles').select('plan, plan_expires_at').eq('id', hostId).single();
-  return planService.isFreeSlug(planService.resolveVendorPlan(profile || {}));
-};
-
 // Replace a course's lessons with the given array (ordered). Lean editor model:
 // the client always sends the full lesson list, we delete+reinsert. Skips rows
 // without a title+video_url. No-op on an undefined lessons payload.
@@ -64,9 +55,8 @@ const replaceLessons = async (courseId, lessons) => {
 // ── POST /api/courses ─────────────────────────────────────────
 const createCourse = async (req, res) => {
   try {
-    if (await callerIsFreePlan(req.user.id)) {
-      return res.status(403).json({ message: 'Video courses are a Pro feature. Upgrade to sell courses.', upgrade_required: true });
-    }
+    // Pricing v2 §4 item 1: courses are open on every plan — they earn the
+    // `courses` commission rate instead of being Pro-gated.
     const { title, description, price, thumbnail_url, is_active, lessons } = req.body;
     if (!title || price == null) return res.status(400).json({ message: 'title and price are required' });
 

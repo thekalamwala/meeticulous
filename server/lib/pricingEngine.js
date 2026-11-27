@@ -40,6 +40,7 @@
 
 const DEFAULTS = Object.freeze({
   platformFee: 10,   // ₹ flat, overridden by platform_settings.platform_fee
+  feeFloorPrice: 300, // pricing v2 §4 item 3: no platform fee on an appointment under ₹300
   gstRate: 0.18,     // 18% GST — applied to platform fee, commission, and subscriptions
   tdsRate: 0.01,     // 194-O income-tax TDS on host gross sale; flat 1% for all (CA 2026-11-11, no §206AA 5%)
   tcsRate: 0.01,     // Sec 52 GST TCS on host gross sale
@@ -73,11 +74,16 @@ const assertNonNegative = (value, label) => {
  *   chargeFeeOnFree — when true, a ₹0 service STILL carries the flat fee. Used by the
  *   interim fee-only mode (host prices forced to ₹0, no Route yet): Meeticulous collects
  *   only its own booking fee + GST and no host money moves. Default false (₹0 → no fee).
- * @returns {number} flat platform fee in ₹ (0 for a free service unless chargeFeeOnFree)
+ *   feeFloorPrice — pricing v2: a service priced under this (default ₹300) carries no
+ *   fee. Appointments are the only surface that charges a fee, so this is the
+ *   "nothing under ₹300" rule. Fee-only mode (chargeFeeOnFree) bypasses it: there
+ *   every price is ₹0 and the fee is the whole charge.
+ * @returns {number} flat platform fee in ₹ (0 under the floor unless chargeFeeOnFree)
  */
 function calculatePlatformFee(servicePrice, opts = {}) {
   assertNonNegative(servicePrice, 'servicePrice');
-  if (servicePrice === 0 && !opts.chargeFeeOnFree) return 0;
+  const floor = opts.feeFloorPrice != null ? Number(opts.feeFloorPrice) : DEFAULTS.feeFloorPrice;
+  if (!opts.chargeFeeOnFree && (servicePrice === 0 || servicePrice < floor)) return 0;
   const fee = opts.platformFee != null ? Number(opts.platformFee) : DEFAULTS.platformFee;
   assertNonNegative(fee, 'platformFee');
   return round2(fee);

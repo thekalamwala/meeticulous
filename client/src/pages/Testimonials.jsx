@@ -1,28 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { Quote, Plus, Pencil, Trash2, Lock } from "lucide-react";
+import { Quote, Plus, Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   getMyTestimonials, createTestimonial, updateTestimonial, deleteTestimonial,
 } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { isFreePlan } from "../utils/themeUtils";
 import {
   PageHeader, Card, Button, FormField, Input, Textarea,
-  EmptyState, ErrorState, ConfirmSheet, buttonClasses,
+  EmptyState, ErrorState, ConfirmSheet,
 } from "../components/dashboard/ui";
 import { PageHeading as PageHeadingV2, SubNav } from "../components/dashboard/ui/v2";
 import { GROW_NAV } from "./dashboardNav";
 import GrowShareButton from "../components/dashboard/GrowShareButton";
 
-// Keep in sync with testimonialController.FREE_CAP (server is the source of truth;
-// this is only for the UI gate — the 409 on create is the real enforcement).
-const FREE_CAP = 3;
 const emptyForm = { quote: "", author_name: "", author_role: "", author_image_url: "" };
 
 export default function Testimonials({ embedded = false } = {}) {
-  const { user } = useAuth();
-  const isFree = isFreePlan(user?.plan);
 
   const [items, setItems] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
@@ -46,7 +38,6 @@ export default function Testimonials({ embedded = false } = {}) {
 
   useEffect(() => { load(); }, [load]);
 
-  const atCap = isFree && (items?.length || 0) >= FREE_CAP;
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const openNew = () => { setEditing(null); setForm(emptyForm); setShowForm(true); };
@@ -97,7 +88,7 @@ export default function Testimonials({ embedded = false } = {}) {
     }
   };
 
-  const addBtn = !showForm && items?.length > 0 && !atCap ? (
+  const addBtn = !showForm && items?.length > 0 ? (
     <Button variant="primary" onClick={openNew}><Plus className="h-4 w-4" /> Add testimonial</Button>
   ) : null;
 
@@ -120,30 +111,6 @@ export default function Testimonials({ embedded = false } = {}) {
       )}
 
       {loadError === "error" && <ErrorState message="Couldn't load your testimonials." onRetry={load} />}
-
-      {/* Free-tier cap: Pro lock overlay (blur + upgrade CTA). */}
-      {atCap && !showForm && (
-        <Card padded={false} className="relative mb-5 overflow-hidden p-0">
-          <div aria-hidden className="pointer-events-none select-none p-4 blur-[3px]">
-            <div className="h-5 w-40 rounded-full bg-ink/10" />
-            <div className="mt-3 h-16 rounded-xl bg-ink/5" />
-          </div>
-          <div className="absolute inset-0 grid place-items-center bg-white/55 p-4 backdrop-blur-[2px]">
-            <div className="max-w-sm text-center">
-              <div className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full bg-maroon/10">
-                <Lock className="h-5 w-5 text-maroon" />
-              </div>
-              <h3 className="mb-1 font-display font-bold text-maroon">You've hit the free limit</h3>
-              <p className="mb-3 text-sm text-ink/70">
-                Free plan shows up to {FREE_CAP} testimonials. Upgrade to Pro for an unlimited proof wall.
-              </p>
-              <Link to="/dashboard/upgrade?src=testimonials" className={buttonClasses({ variant: "primary" })}>
-                Upgrade to Pro
-              </Link>
-            </div>
-          </div>
-        </Card>
-      )}
 
       {showForm && (
         <Card padded={false} className="mb-5 p-4">

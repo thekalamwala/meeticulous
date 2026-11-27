@@ -6,8 +6,6 @@ import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast';
 import { Plus, Trash2 } from 'lucide-react';
 import { getMyCourses, createCourse, updateCourse, deleteCourse } from '../../services/api';
-import { normalizePlan } from '../../utils/themeUtils';
-import { useAuth } from '../../context/AuthContext';
 import { useFeature } from '../../context/FeatureContext';
 import ThumbnailCropper from '../../components/common/ThumbnailCropper';
 import { FormField, Input, Textarea, ConfirmSheet } from '../../components/dashboard/ui';
@@ -25,12 +23,11 @@ const fromRow = (c) => ({
     : [emptyLesson()],
 });
 
-/** Creation is a paid-plan feature behind an admin kill-switch (fail-open); the
- *  server enforces the same via planService.isFreeSlug. */
+/** Creation is open on every plan (pricing v2 §4 item 1 — courses earn the
+ *  `courses` commission rate instead), behind an admin kill-switch (fail-open). */
 export function useCourseGate() {
-  const { user } = useAuth();
   const coursesOn = useFeature('course_purchase');
-  return { coursesOn, canCreate: normalizePlan(user?.plan) !== 'free' && coursesOn };
+  return { coursesOn, canCreate: coursesOn };
 }
 
 export default function CourseEditor() {
