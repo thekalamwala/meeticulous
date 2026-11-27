@@ -130,7 +130,7 @@ const deleteCourse = async (req, res) => {
 };
 
 const PUBLIC_COLS =
-  'id, title, description, price, thumbnail_url, slug, purchase_count, host_id, ' +
+  'id, title, description, price, thumbnail_url, slug, purchase_count, host_id, created_at, updated_at, ' +
   'profiles!courses_host_id_fkey(name, username, profile_image, tagline, theme_color, is_verified, profession, social_links), ' +
   'course_lessons(id, title, sort_order)';
 
@@ -176,11 +176,16 @@ const getHostCoursesPublic = async (req, res) => {
       .from('profiles').select('id').eq('username', req.params.username).maybeSingle();
     if (!host) return res.status(404).json({ message: 'Host not found' });
     const { data, error } = await supabaseAdmin.from('courses')
-      .select('id, title, description, price, thumbnail_url, slug, purchase_count, created_at, course_lessons(id)')
+      .select('id, title, description, price, thumbnail_url, slug, purchase_count, created_at, updated_at, course_lessons(id, title, sort_order)')
       .eq('host_id', host.id).eq('is_active', true);
     if (error && isMissingTable(error)) return res.json([]);
     if (error) return safeError(res, error);
-    const rows = (data || []).map(({ course_lessons: l, ...c }) => ({ ...c, lesson_count: (l || []).length }));
+    // Lesson TITLES are public (the course page lists them); never video_url.
+    const rows = (data || []).map(({ course_lessons: l, ...c }) => ({
+      ...c,
+      lesson_count: (l || []).length,
+      lessons: [...(l || [])].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((x) => x.title).filter(Boolean),
+    }));
     res.json(await applyHostOrder('courses', host.id, rows));
   } catch (error) { safeError(res, error); }
 };

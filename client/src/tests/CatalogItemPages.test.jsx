@@ -23,7 +23,7 @@ import CoursePage from '../pages/CoursePage';
 
 const UUID = '3f2b8c1e-9d4a-4e6b-8f1a-2c3d4e5f6a7b';
 const HOST = { name: 'Jane Doe', username: 'jane', profession: 'Designer', is_verified: true, social_links: { website: 'https://jane.design' } };
-const PRODUCT = { id: UUID, slug: 'brand-kit', title: 'Brand kit', type: 'template', price: 499, description: 'Fonts, colours and logo rules in one Figma file.', thumbnail_url: 'https://img/kit.webp', purchase_count: 3, profiles: HOST, platform_fee: 0, platform_fee_gst: 0, total: 499 };
+const PRODUCT = { id: UUID, slug: 'brand-kit', title: 'Brand kit', type: 'template', price: 499, description: 'Fonts, colours and logo rules in one Figma file.', thumbnail_url: 'https://img/kit.webp', purchase_count: 3, profiles: HOST, platform_fee: 0, platform_fee_gst: 0, total: 499, created_at: '2026-10-01T09:00:00Z', updated_at: '2026-11-20T09:00:00Z' };
 const COURSE = { id: 'c1', slug: 'ux-101', title: 'UX 101', price: 999, lesson_count: 2, purchase_count: 0, description: 'Learn UX basics.', course_lessons: [{ id: 'a', title: 'One' }, { id: 'b', title: 'Two' }], profiles: HOST, total: 999 };
 
 const Where = () => { const l = useLocation(); return <div data-testid="where">{l.pathname + l.search}</div>; };
@@ -58,6 +58,21 @@ describe('product page', () => {
     expect(screen.getByAltText('Brand kit cover')).toBeTruthy();
     expect(document.querySelectorAll('h1')).toHaveLength(1);
   });
+
+  test('headed sections, FAQ questions as h3, visible + JSON-LD freshness', async () => {
+    getProductPublic.mockResolvedValue({ data: PRODUCT });
+    renderAt('/jane/products/brand-kit');
+    await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: "What's included" })).toBeTruthy());
+    expect(screen.getByRole('heading', { level: 2, name: 'Who made it' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: 'How you get it' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 3, name: 'How do I get access after paying?' })).toBeTruthy();
+    expect(screen.getByText('Updated 20 Nov 2026')).toBeTruthy();
+    // <Seo> writes the JSON-LD in an effect, which can flush after the headings paint.
+    await waitFor(() => {
+      const graph = [JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)].flat()[0]['@graph'];
+      expect(graph.find((n) => n['@type'] === 'ItemPage')).toMatchObject({ datePublished: '2026-10-01T09:00:00Z', dateModified: '2026-11-20T09:00:00Z' });
+    });
+  });
 });
 
 describe('course page', () => {
@@ -75,5 +90,7 @@ describe('course page', () => {
     expect(ldTypes()).toEqual(expect.arrayContaining(['Course', 'BreadcrumbList', 'FAQPage']));
     expect(screen.getByText(/^2 video lessons by Jane Doe\./)).toBeTruthy();
     expect(screen.getByText("What's included in UX 101?")).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: "What you'll learn" })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: 'How access works' })).toBeTruthy();
   });
 });

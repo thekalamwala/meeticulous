@@ -14,8 +14,8 @@ import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
 import { isNotFoundError } from "../utils/fetchError";
 import { resolveProfileSeo, profileTabSeo, profileGraphJsonLd, profileTabGraphJsonLd, membershipGraphJsonLd, productPath, SITE_URL } from "../utils/seo";
-import { CourseCard, ProfileMembership, ProfileTabHeading, ProfileTabAnswer, ProfileTabFaq } from "../components/profile/ProfileTabs";
-import { profileFaqs, catalogFaqs } from "../utils/profileFaqs";
+import { CourseCard, ProfileMembership, ProfileTabHeading, ProfileTabAnswer, ProfileTabFaq, CatalogSections, UpdatedNote } from "../components/profile/ProfileTabs";
+import { profileFaqs, catalogFaqs, catalogSections, updatedLabel, latestUpdate } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import ItemCard from "../components/community/ItemCard";
 import { prerendered } from "../services/prerenderData";
@@ -199,9 +199,11 @@ const ServiceCard = ({ service: s, profileSlug }) => {
         )}
       </div>
 
-      {detailUrl
-        ? <Link to={detailUrl} className="font-display font-bold text-base leading-snug hover:opacity-60 transition-opacity line-clamp-2" style={{ color: C.text }}>{s.title}</Link>
-        : <span className="font-display font-bold text-base leading-snug line-clamp-2" style={{ color: C.text }}>{s.title}</span>}
+      <h3 className="m-0 font-display font-bold text-base leading-snug line-clamp-2">
+        {detailUrl
+          ? <Link to={detailUrl} className="hover:opacity-60 transition-opacity" style={{ color: C.text }}>{s.title}</Link>
+          : <span style={{ color: C.text }}>{s.title}</span>}
+      </h3>
 
       {desc && <p className="text-sm leading-relaxed line-clamp-2 mt-2" style={{ color: C.secondary }}>{desc}</p>}
 
@@ -280,11 +282,9 @@ const ProductCard = ({ product: p, profileSlug }) => {
       </Link>
 
       <div className="flex flex-col gap-1.5 p-4 flex-1 min-w-0">
-        <Link to={detailUrl}
-          className="font-display font-bold leading-snug line-clamp-2 hover:opacity-60 transition-opacity"
-          style={{ color: C.text, fontSize: 15 }}>
-          {p.title}
-        </Link>
+        <h3 className="m-0 font-display font-bold leading-snug line-clamp-2" style={{ fontSize: 15 }}>
+          <Link to={detailUrl} className="hover:opacity-60 transition-opacity" style={{ color: C.text }}>{p.title}</Link>
+        </h3>
         {proof && <div className="text-xs" style={{ color: C.muted }}>{proof}</div>}
         {p.description && (
           <p className="hidden sm:block text-sm leading-relaxed line-clamp-2" style={{ color: C.secondary }}>{p.description}</p>
@@ -683,6 +683,17 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   // MIRROR this gate in server prerenderController resolveProfileMeta.
   const faqs = host ? profileFaqs({ host, services }) : [];
   const faqsHostSpecific = host && (services.length > 0 || !!host.profession);
+  // Headed, self-contained sections (real data only) + visible freshness.
+  const sections = !host ? []
+    : tab === 'services'
+      ? catalogSections({ kind: 'profile', host: { ...host, product_count: products.length, course_count: courses.length }, services, rating })
+      : catalogSections({ kind: tab, host, items: tabItems });
+  // On a tab, the host's own About block (real stats) closes the page.
+  const hostAbout = host && tab !== 'services'
+    ? catalogSections({ kind: 'profile', host: { ...host, product_count: products.length, course_count: courses.length }, services, rating })
+    : [];
+  const tabUpdatedTs = tab === 'membership' ? membership?.program?.updated_at : latestUpdate(tabItems);
+  const tabUpdated = tab !== 'services' ? updatedLabel(tabUpdatedTs) : '';
   // A tab's own visible FAQ (and its FAQPage) only while the tab lists items.
   const tabFaqs = host && tab !== 'services' && tabItems.length
     ? catalogFaqs({ kind: tab, host, items: tabItems, program: tabProgram }) : [];
@@ -1088,21 +1099,32 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             ) : tab === 'products' ? (
               <>
                 <ProfileTabHeading eyebrow={`${firstName}'s`} title="Digital products" C={C} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UpdatedNote ts={tabUpdatedTs} label={tabUpdated} C={C} />
+                <CatalogSections sections={sections.filter((s) => s.key === 'intro')} C={C} />
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {products.map(p => <ProductCard key={p.id} product={p} profileSlug={profileSlug} />)}
                 </div>
+                <CatalogSections sections={sections.filter((s) => s.key !== 'intro')} C={C} />
               </>
             ) : tab === 'courses' ? (
               <>
                 <ProfileTabHeading eyebrow={`${firstName}'s`} title="Courses" C={C} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UpdatedNote ts={tabUpdatedTs} label={tabUpdated} C={C} />
+                <CatalogSections sections={sections.filter((s) => s.key === 'intro')} C={C} />
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {courses.map(c => <CourseCard key={c.id} course={c} profileSlug={profileSlug} C={C} />)}
                 </div>
+                <CatalogSections sections={sections.filter((s) => s.key !== 'intro')} C={C} />
               </>
             ) : tab === 'membership' ? (
-              membership && <ProfileMembership username={profileSlug} data={membership} onReload={reloadMembership} C={C} />
+              membership && (<>
+                <UpdatedNote ts={tabUpdatedTs} label={tabUpdated} C={C} />
+                <ProfileMembership username={profileSlug} data={membership} onReload={reloadMembership} C={C} />
+                <CatalogSections sections={sections} C={C} />
+              </>)
             ) : null}
 
+            {!onServices && tabHasItems && <CatalogSections sections={hostAbout} C={C} />}
             {!onServices && <ProfileTabFaq faqs={tabFaqs} C={C} />}
 
             {onServices && (filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
@@ -1150,9 +1172,11 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {showReviews && (
+                {/* The two newest reviews stay visible (real, quotable proof); the
+                    toggle reveals the rest. */}
+                {reviewData.reviews.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {reviewData.reviews.map(r => (
+                    {(showReviews ? reviewData.reviews : reviewData.reviews.slice(0, 2)).map(r => (
                       <div key={r.id} className="rounded-2xl p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
                         <div className="flex items-start gap-3">
                           <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
@@ -1164,7 +1188,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                               <span className="text-sm font-semibold" style={{ color: C.text }}>{r.profiles?.name || 'Anonymous'}</span>
                               <Stars avg={r.rating} count={0} />
                             </div>
-                            {r.comment && <p className="text-sm leading-relaxed" style={{ color: C.secondary }}>{r.comment}</p>}
+                            {r.comment && <blockquote className="m-0 text-sm leading-relaxed" style={{ color: C.secondary }}>“{r.comment}”</blockquote>}
                             <p className="text-xs mt-1" style={{ color: C.muted }}>
                               {new Date(r.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </p>
@@ -1212,6 +1236,9 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                 </div>
               </div>
             )}
+
+            {/* About — real stats (sessions booked, reviews, catalog, member since). */}
+            <CatalogSections sections={sections} C={C} />
 
             {/* FAQ — templated from real profile data; powers the FAQPage schema. */}
             {faqs.length > 0 && (

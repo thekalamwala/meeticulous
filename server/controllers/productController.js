@@ -165,7 +165,7 @@ const getHostProducts = async (req, res) => {
     if (!host) return res.status(404).json({ message: 'Host not found' });
 
     const { data, error } = await supabaseAdmin.from('products')
-      .select('id, title, description, type, price, thumbnail_url, slug, purchase_count')
+      .select('id, title, description, type, price, thumbnail_url, slug, purchase_count, created_at, updated_at')
       .eq('host_id', host.id).eq('is_active', true)
       .order('created_at', { ascending: false });
     if (error) return safeError(res, error);
@@ -294,7 +294,7 @@ const freeDownload = async (req, res) => {
 // Public detail columns + the host's theme_color (purchase page accent) and a
 // server-computed platform_fee so the client never hardcodes the fee.
 const PUBLIC_PRODUCT_COLS =
-  'id, title, description, type, price, thumbnail_url, slug, purchase_count, ' +
+  'id, title, description, type, price, thumbnail_url, slug, purchase_count, created_at, updated_at, ' +
   'profiles!products_host_id_fkey(name, username, profile_image, tagline, theme_color, is_verified, profession, social_links)';
 
 // ── GET /api/products/p/:username/:key ───────────────────────
