@@ -7,7 +7,7 @@ const { securityLog, auditLog } = require("../utils/logger");
 const sendEmail = require("../utils/sendEmail");
 const { adminAlert } = require("../utils/adminAlert");
 const NotificationEngine = require("../services/notificationEngine");
-const { computeBreakdown, calculateVendorPayout, calculatePlatformFee, calculateGst, computeSubscriptionBreakdown, round2 } = require("../lib/pricingEngine");
+const { computeBreakdown, calculateVendorPayout, calculatePlatformFee, computeSubscriptionBreakdown, round2 } = require("../lib/pricingEngine");
 const planService = require("../services/planService");
 const foundingSpots = require("../services/foundingSpots");
 const platformConfig = require("../services/platformConfig");
@@ -948,12 +948,15 @@ const createProductOrder = async (req, res) => {
     if (!product || !product.is_active) return res.status(404).json({ message: "Product not found" });
     if (product.price === 0) return res.status(400).json({ message: "This product is free" });
 
-    // Config-driven fee + GST-on-fee (mirrors bookings/services); customer pays
-    // price + fee + gst. buyer_state / buyer_gstin are optional place-of-supply.
+    // No platform fee on digital goods (pricing v2 §2.1 Change A) — the guest
+    // pays exactly the listed price. platform_fee / platform_fee_gst still go in
+    // the notes (as 0) so materializeProductPurchase, its amount check and the
+    // ledger read the same shape as before. buyer_state / buyer_gstin stay as
+    // optional place-of-supply.
     const cfg = await platformConfig.getConfig();
-    const productFee = calculatePlatformFee(product.price, { platformFee: cfg.platformFee });
-    const gstOnFee = calculateGst(productFee, { gstRate: cfg.gstRate });
-    const totalPaise = Math.round((product.price + productFee + gstOnFee) * 100);
+    const productFee = 0;
+    const gstOnFee = 0;
+    const totalPaise = Math.round(product.price * 100);
     // Normalize/validate buyer place-of-supply server-side (mirrors bookings &
     // subscriptions, which already call normalizeBilling) instead of trusting raw
     // req.body. Rejects a malformed GSTIN and rewrites state to the canonical

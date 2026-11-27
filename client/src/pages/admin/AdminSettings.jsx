@@ -51,7 +51,7 @@ const AdminSettings = () => {
 
         <div>
           <label className="block text-sm font-medium adm-t1 mb-1">
-            Platform Fee (₹ flat, added to each booking)
+            Platform fee (₹, inclusive of GST)
           </label>
           <input
             type="number"
@@ -67,7 +67,7 @@ const AdminSettings = () => {
             }
           />
           <p className="text-xs adm-t3 mt-1">
-            Percentage deducted from host earnings. Charged on top of the service price. Default: ₹10. Set 0 for no fee.
+            The guest pays exactly this on each paid appointment. GST is backed out of it, not added on top (₹10 = ₹8.47 + ₹1.53 GST). Products, courses and memberships carry no fee. Default: ₹10. Set 0 for no fee.
           </p>
         </div>
 

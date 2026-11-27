@@ -106,9 +106,11 @@ describe('createProductOrder — OTP gate + order notes', () => {
     expect(ordersCreate).toHaveBeenCalledTimes(1);
     const notes = ordersCreate.mock.calls[0][0].notes;
     expect(notes).toMatchObject({
-      product_id: 'prod_1', product_price: 199, platform_fee: 10,
+      product_id: 'prod_1', product_price: 199, platform_fee: 0, platform_fee_gst: 0,
       buyer_email: 'b@x.com', buyer_name: 'Bee', buyer_phone: '+91',
     });
+    // No platform fee on digital goods (pricing v2): the order is the listed price.
+    expect(ordersCreate.mock.calls[0][0].amount).toBe(19900);
     expect(r.json).toHaveBeenCalledWith(expect.objectContaining({ razorpay_order_id: 'order_1' }));
   });
 

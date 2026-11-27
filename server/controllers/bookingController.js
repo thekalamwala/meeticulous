@@ -634,9 +634,10 @@ const createBooking = async (req, res) => {
       meeting_link: meetingLink,
       google_event_id: googleEventId,
       vendor_amount:       vendorPayout,
-      platform_fee_amount: platformFee,
-      platform_fee_gst:    pricing.gst,           // GST on platform fee (v2.2)
-      customer_total:      pricing.customerTotal,  // service + fee + GST (v2.2)
+      platform_fee_amount: platformFee,           // fee TAXABLE value, ex-GST (v3.229: backed out of the gross)
+      platform_fee_gst:    pricing.gst,           // GST inside the fee = gross − taxable (v2.2; v3.229 inclusive)
+      platform_fee_gross:  pricing.platformFeeGross, // v3.229: what the guest paid for the fee (GST-inclusive)
+      customer_total:      pricing.customerTotal,  // service + fee gross (v2.2)
       gst_rate:            gstRate,                // snapshot of rate used (v2.2)
       razorpay_fee_actual: 0,                      // set at payment capture (v2.2)
       razorpay_tax_actual: 0,                      // set at payment capture (v2.8)
@@ -708,6 +709,7 @@ const createBooking = async (req, res) => {
         google_event_id: _gei, billing_details: _bd, grace_minutes: _gm,
         coupon_id: _cid, discount_amount: _da,   // v3.204 — stripped if the migration hasn't run
         cancellation_policy: _canp,              // v3.206 — stripped if the migration hasn't run
+        platform_fee_gross: _pfg,                // v3.229 — stripped if the migration hasn't run
         ...payloadCore
       } = bookingPayload;
       bookingResult = await supabaseAdmin

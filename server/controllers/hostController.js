@@ -9,6 +9,7 @@ const { sanitizeLikeTerm } = require("../utils/searchSanitize");
 // Server-side read-through cache TTL for the assembled public host profile.
 const HOST_PROFILE_CACHE_MS = Number(process.env.HOST_PROFILE_CACHE_MS) || 120_000;
 const { getConfig: getPlatformConfig } = require("../services/platformConfig");
+const { splitInclusiveFee } = require("../lib/pricingEngine");
 const usernameService = require("../services/usernameService");
 const { bustSitemapCache } = require("../utils/sitemapCache");
 const planService = require('../services/planService');
@@ -926,13 +927,16 @@ const getServiceBySlug = async (req, res) => {
       .eq("host_id", host.id)
       .single();
 
-    // Customer-facing booking charge = flat platform fee + GST (admin-editable).
-    // Single source of truth so the booking summary matches what Razorpay charges.
+    // Customer-facing booking charge = the flat, GST-INCLUSIVE platform fee
+    // (pricing v2). bookingFee is the gross the guest pays; platformFee is its
+    // taxable value, so "Platform Fee (₹8.47 + GST) ₹10" reads true. Same split
+    // as computeBreakdown, so the summary matches what Razorpay charges.
     let bookingFee = 0, platformFee = 0, gstRate = 0;
     try {
-      ({ platformFee, gstRate } = await getPlatformConfig());
-      bookingFee = Math.round(platformFee * (1 + gstRate) * 100) / 100;
-    } catch (_) { bookingFee = 0; }
+      let feeSetting;
+      ({ platformFee: feeSetting, gstRate } = await getPlatformConfig());
+      ({ gross: bookingFee, taxable: platformFee } = splitInclusiveFee(Number(feeSetting) || 0, { gstRate }));
+    } catch (_) { bookingFee = 0; platformFee = 0; }
 
     // P3-7: return feeOnly so the booking page's step list matches reality (the
     // client otherwise defaults it true, showing a "Pay" step for a free booking).

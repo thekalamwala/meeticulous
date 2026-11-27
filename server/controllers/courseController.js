@@ -10,7 +10,7 @@ const planService = require('../services/planService');
 const platformConfig = require('../services/platformConfig');
 const razorpayConfig = require('../services/razorpayConfig');
 const { verifySignature } = require('../utils/razorpaySignature');
-const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEngine');
+const { round2 } = require('../lib/pricingEngine');
 const { sortHostOrder, applyHostOrder } = require('../services/catalogOrder');
 const { withGuestPrices } = require('../services/guestPrice');
 const { auditLog, securityLog } = require('../utils/logger');
@@ -149,18 +149,17 @@ const getCoursePublic = async (req, res) => {
     if (error) return safeError(res, error);
     if (!data) return res.status(404).json({ message: 'Course not found' });
 
+    // No platform fee on digital goods (pricing v2 §2.1 Change A): the guest fee is a BOOKING fee, appointments only. The guest pays the listed price; fields stay in the payload at 0 so older clients render unchanged.
     const cfg = await platformConfig.getConfig();
     const price = Number(data.price) || 0;
-    const fee = calculatePlatformFee(price, { platformFee: cfg.platformFee });
-    const gst = calculateGst(fee, { gstRate: cfg.gstRate });
     // Sort lesson titles; strip any accidental video_url leak (select omits it).
     const lessons = (data.course_lessons || [])
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
       .map((l) => ({ id: l.id, title: l.title }));
     res.json({
       ...data, course_lessons: lessons, lesson_count: lessons.length,
-      platform_fee: fee, platform_fee_gst: gst, gst_rate: cfg.gstRate,
-      total: round2(price + fee + gst),
+      platform_fee: 0, platform_fee_gst: 0, gst_rate: cfg.gstRate,
+      total: round2(price),
     });
   } catch (error) { safeError(res, error); }
 };
@@ -233,7 +232,7 @@ const getPurchasedCourses = async (req, res) => {
 };
 
 // ── POST /api/courses/create-order ────────────────────────────
-// Razorpay one-time order. buyer identity = session (protect). Price + fee + GST
+// Razorpay one-time order. buyer identity = session (protect). Price snapshot
 // snapshot baked into order notes; verify trusts the order, not the body.
 const createCourseOrder = async (req, res) => {
   try {
@@ -249,11 +248,14 @@ const createCourseOrder = async (req, res) => {
       .select('id').eq('course_id', course_id).eq('buyer_id', req.user.id).eq('payment_status', 'paid').limit(1).maybeSingle();
     if (existing) return res.status(400).json({ message: 'You already own this course', already_owned: true });
 
+    // No platform fee on courses (pricing v2 §2.1 Change A) — the buyer pays
+    // exactly the listed price. fee/GST stay in notes + response as 0 so the
+    // verify path and materializeCoursePurchase read an unchanged shape.
     const cfg = await platformConfig.getConfig();
     const price = Number(course.price);
-    const fee = calculatePlatformFee(price, { platformFee: cfg.platformFee });
-    const gstOnFee = calculateGst(fee, { gstRate: cfg.gstRate });
-    const totalPaise = Math.round((price + fee + gstOnFee) * 100);
+    const fee = 0;
+    const gstOnFee = 0;
+    const totalPaise = Math.round(price * 100);
 
     const razorpay = await razorpayConfig.getClient();
     const order = await razorpay.orders.create({
