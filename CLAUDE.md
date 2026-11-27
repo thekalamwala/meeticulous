@@ -349,7 +349,8 @@ Items previously listed here as pending are now live:
   `bookings.platform_fee_amount` now means the TAXABLE (ex-GST) fee once the fee goes GST-inclusive;
   the applied commission rate keeps living in the existing `bookings.commission_percentage` snapshot.
 - **v3.230** (`v3.230_pricing_v2_values.sql`) — **PENDING, apply AT RELEASE MERGE of pricing v2**, never
-  before: new prices (168.64 / 1016.10 ex-GST = ₹199 / ₹1,199; founding 761.86 = ₹898.99), §3 limits,
+  before: new prices (168.64 / 1016.10 ex-GST = ₹199 / ₹1,199; founding 761.86 = ₹898.99), §3 limits
+  (Starter `categories: 1` — founder ruling 2026-11-27, the spec said 2),
   `commission_rates` on free + Pro rows, `insights:-1` on Pro + legacy paid. Live within 60s of apply;
   early apply mis-prices checkout and gives Starter the reschedule alert.
 - **v3.231** (`v3.231_purchase_commission.sql`) — applied 2026-11-27 on the Meeticulous DB

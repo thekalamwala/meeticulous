@@ -43,7 +43,7 @@ const PRO_RATES = { appointments: 0, products: 4, courses: 4, memberships: 4, ap
 const FALLBACK_PLANS = {
   free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, commission_rates: { ...STARTER_RATES }, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
-    limits: { services: -1, free_services: 2, bookings_per_year: -1, digital_products: -1, calendar_integrations: 1, profile_theme_colors: -1, reminder_flows: 2, followup_flows: 1, categories: 2, crm: 50, ai_generations: 10 },
+    limits: { services: -1, free_services: 2, bookings_per_year: -1, digital_products: -1, calendar_integrations: 1, profile_theme_colors: -1, reminder_flows: 2, followup_flows: 1, categories: 1, crm: 50, ai_generations: 10 },
     features: {}, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'standard', sort_order: 1 },
   premium:      { name: 'Pro', slug: 'premium', annual_price: 1016.10, monthly_price: 168.64, commission_percentage: 0, commission_rates: { ...PRO_RATES }, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,

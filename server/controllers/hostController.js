@@ -596,7 +596,12 @@ const updateCategories = async (req, res) => {
       activeSlugs,
       max,
     });
-    if (!result.ok) return res.status(result.status).json({ message: result.message });
+    if (!result.ok) {
+      // Over the plan's cap → an upgrade prompt (acceptance test 13); a 400 is bad input.
+      return res.status(result.status).json(result.status === 403
+        ? { message: result.message, upgrade_required: true, current_plan: plan }
+        : { message: result.message });
+    }
 
     // Prior profession — a change invalidates every categorised service (their
     // category slugs belong to the OLD profession's list).

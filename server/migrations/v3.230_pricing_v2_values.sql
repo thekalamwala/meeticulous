@@ -15,9 +15,11 @@
 
 -- 2) Starter (+ legacy free rows) ──────────────────────────────────────────
 --    jsonb || merges only the keys named, so any other limit key survives.
+--    categories = profile categories, primary included (hostController
+--    updateCategories). Founder ruling 2026-11-27: Starter is 1 (spec said 2).
 UPDATE subscription_plans SET
   limits = COALESCE(limits, '{}'::jsonb)
-        || '{"crm":50,"reminder_flows":2,"followup_flows":1,"categories":2,"free_services":2,"digital_products":-1}'::jsonb,
+        || '{"crm":50,"reminder_flows":2,"followup_flows":1,"categories":1,"free_services":2,"digital_products":-1}'::jsonb,
   commission_rates = '{"appointments":9,"products":12,"courses":12,"memberships":12,"appointment_band_inr":null,"appointment_rate_above_band":null}'::jsonb
 WHERE slug IN ('free', 'starter', 'starter_legacy');
 

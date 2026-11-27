@@ -167,7 +167,7 @@ Revisit only if exit interviews show hosts churning over commission *while havin
 | `limits.crm` | `10` → **`50`** | `-1` |
 | `limits.reminder_flows` | `1` → **`2`** | `-1` |
 | `limits.followup_flows` | `0` → **`1`** | `-1` |
-| `limits.categories` | `-1` → **`2`** | `-1` |
+| `limits.categories` | `-1` → **`1`** *(founder ruling 2026-11-27; was 2)* | `-1` |
 | `limits.insights` | absent (stays locked) | **add `-1`** |
 | `limits.free_services` | `2` | `-1` |
 | `limits.digital_products` | `3` → **`-1`** | `-1` |
@@ -232,7 +232,7 @@ Honesty rule from the file's own header: **never list what the server doesn't en
 | Booking page + custom URL · online & in-person · UPI/cards | ✓ | ✓ |
 | Paid services · bookings · digital products | Unlimited | Unlimited |
 | Free (₹0) services | 2 | Unlimited |
-| Service categories | 2 | Unlimited |
+| Service categories | 1 *(founder ruling 2026-11-27; was 2)* | Unlimited |
 | Video courses · memberships · coupons | ✓ | ✓ |
 | GST invoices · payouts · earnings history · commission tracker · TDS/TCS | ✓ | ✓ |
 | Confirmations (email + WhatsApp) · 24h reminder · 1h reminder · cancellation notices | ✓ | ✓ |
@@ -273,7 +273,7 @@ Honesty rule from the file's own header: **never list what the server doesn't en
 10. Free host: 51st client is not returned by `crmService.listClients` (list **and** CSV export), but the total count is in the payload.
 11. Free host gets 24h **and** 1h reminders. WhatsApp reminders stop 60 days after their first confirmed booking; email continues.
 12. Free host: guest reschedule link → 403/hidden. Host-initiated reschedule → works. Guest receives the new-time email in both cases.
-13. Free host: 3rd service category → 403 `upgrade_required`.
+13. Free host: 2nd category → 403 `upgrade_required` *(cap is 1 — founder ruling 2026-11-27; it caps the profile's categories, primary included, via `PUT /api/host/categories`)*.
 14. Free host saves `#E0506F` → allowed. Saves `#2563EB` → 403. Upgrades to Pro → `#E0506F` still allowed (**superset check**).
 15. Pro host: `GET /api/intelligence/...` returns forecast/win-back/benchmarks/audience/cohorts/moves, not `{locked:true}`. Free host still gets the teaser with the numbers **absent from the payload**.
 16. Pro host on `premium_founding` sees **no** upgrade ad in the community sidebar.

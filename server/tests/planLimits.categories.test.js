@@ -2,11 +2,12 @@ jest.mock('../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 
 const { FALLBACK_PLANS } = require('../services/planService');
 
-// Caps mirror the pricing v2 matrix (migration v3.230): Starter gets 2 service
-// categories, Pro is unlimited. The fallback must match what the DB enforces.
+// Caps mirror the pricing v2 matrix (migration v3.230): Starter is listed in 1
+// category (its primary — founder ruling 2026-11-27), Pro is unlimited. The
+// fallback must match what the DB enforces.
 describe('plan category caps (fallback)', () => {
-  it('free (Starter) is capped at 2', () => {
-    expect(FALLBACK_PLANS.free.limits.categories).toBe(2);
+  it('free (Starter) is capped at 1', () => {
+    expect(FALLBACK_PLANS.free.limits.categories).toBe(1);
   });
   it('premium (Pro) is unlimited (-1)', () => {
     expect(FALLBACK_PLANS.premium.limits.categories).toBe(-1);
