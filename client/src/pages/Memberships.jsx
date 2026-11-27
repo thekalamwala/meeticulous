@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getMyMembership, saveMembership, publishMembership,
@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import {
   PageHeader, Card, Button, FormField, Input, Textarea,
   Badge, StatusBadge, EmptyState, ErrorState, ConfirmSheet,
-  FieldStyle, cn,
+  FieldStyle,
 } from "../components/dashboard/ui";
 import useFeatureFlags from "../hooks/useFeatureFlags";
 import {
@@ -24,6 +24,19 @@ import { MAX_TIERS, tierSlots } from "./catalog/TierEditor";
 const ADD_TIER = "/dashboard/memberships/tier/add-new";
 const editTierPath = (t) => `/dashboard/memberships/tier/edit/${t.id}`;
 
+// After Go live / Move to draft succeeds, further publish clicks are ignored this
+// long: a double-click used to land its 2nd click on the flipped button and undo
+// the change (prod log 2026-11-27: live → draft → live, 2s apart, all 200).
+export const PUBLISH_COOLDOWN_MS = 1000;
+
+/** "just now" / "2 min ago" / "1 h ago" for the inline Saved note. */
+const savedAgo = (at) => {
+  const s = Math.round((Date.now() - at) / 1000);
+  if (s < 45) return "just now";
+  const m = Math.round(s / 60);
+  return m < 60 ? `${m} min ago` : `${Math.round(m / 60)} h ago`;
+};
+
 export default function Memberships() {
   const on = useFeature("community_memberships");
   const navigate = useNavigate();
@@ -33,6 +46,12 @@ export default function Memberships() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const publishLock = useRef(false); // sync guard: state updates too late for a double-click
+  const cooldownUntil = useRef(0);
+  const [confirmDraft, setConfirmDraft] = useState(false);
+  const [savedAt, setSavedAt] = useState(null); // inline "Saved ✓" until the next edit
+  const [cardError, setCardError] = useState(""); // inline save/publish error on the card
+  const [, tick] = useState(0);
   const [members, setMembers] = useState(null);
   const [fetched, setFetched] = useState(false); // first load finished (Kept skeleton)
   // Kept look (dashboard_v2). Same state and handlers; only the shell differs.
@@ -52,6 +71,12 @@ export default function Memberships() {
     finally { setFetched(true); }
   };
   useEffect(() => { if (on) fetchProgram(); }, [on]);
+  // Keep the "Saved … ago" note honest while it is on screen.
+  useEffect(() => {
+    if (!savedAt) return undefined;
+    const t = setInterval(() => tick((n) => n + 1), 30000);
+    return () => clearInterval(t);
+  }, [savedAt]);
 
   if (!on && kept) return (
     <KeptPage pinned={false}>
@@ -75,27 +100,49 @@ export default function Memberships() {
   const openAddTier = () => navigate(ADD_TIER);
   const openEditTier = (t) => navigate(editTierPath(t));
 
+  const editForm = (patch) => { setForm((f) => ({ ...f, ...patch })); setSavedAt(null); setCardError(""); };
+
   const saveProgram = async () => {
-    if (!form.name.trim()) return toast.error("Give your membership a name");
+    if (!form.name.trim()) { setCardError("Give your membership a name."); return; }
     setSaving(true);
+    setCardError("");
     try {
       const { data } = await saveMembership(form);
       setProgram(data.program);
+      setSavedAt(Date.now());
       toast.success("Saved");
-    } catch (e) { toast.error(e?.response?.data?.message || "Save failed"); }
-    finally { setSaving(false); }
+    } catch (e) {
+      const msg = e?.response?.data?.message || "Save failed. Try again.";
+      setCardError(msg);
+      toast.error(msg);
+    } finally { setSaving(false); }
   };
 
-  const togglePublish = async () => {
-    const goLive = program?.status !== "live";
+  // One publish call at a time, and none for PUBLISH_COOLDOWN_MS after one lands.
+  // The ref guards synchronously — a double-click fires both clicks before React
+  // re-renders the button as disabled.
+  const setPublished = async (goLive) => {
+    if (publishLock.current || Date.now() < cooldownUntil.current) return;
+    publishLock.current = true;
     setPublishing(true);
+    setCardError("");
     try {
       const { data } = await publishMembership(goLive);
       setProgram((p) => ({ ...p, status: data.program.status }));
+      cooldownUntil.current = Date.now() + PUBLISH_COOLDOWN_MS;
       toast.success(goLive ? "Membership is live" : "Moved to draft");
-    } catch (e) { toast.error(e?.response?.data?.message || "Could not update"); }
-    finally { setPublishing(false); }
+    } catch (e) {
+      const msg = e?.response?.data?.message || "Could not update. Try again.";
+      setCardError(msg);
+      toast.error(msg);
+    } finally {
+      publishLock.current = false;
+      setPublishing(false);
+    }
   };
+  const togglePublish = () => setPublished(program?.status !== "live"); // legacy look
+  // Moving to draft closes the door on new members, so it is confirmed first.
+  const askMoveToDraft = () => { if (Date.now() >= cooldownUntil.current) setConfirmDraft(true); };
 
   const toggleTierLive = async (t) => {
     try { await updateMembershipTier(t.id, { status: t.status === "live" ? "draft" : "live" }); await fetchProgram(); }
@@ -121,31 +168,51 @@ export default function Memberships() {
           <>
             <KeptCard title={program ? "Your program" : "Start your program"}
               sub={program ? null : "Name it first. You add tiers and go live after."}
-              action={program ? (
-                <span className={cn("rounded-[8px] px-2.5 py-1 text-[12.5px] font-semibold", isLive ? "bg-pink-50 text-maroon" : "bg-cream text-muted")}>
-                  {isLive ? "Live" : "Draft"}
-                </span>
+              action={program && !isLive ? (
+                <span className="rounded-[8px] bg-cream px-2.5 py-1 text-[12.5px] font-semibold text-muted">Draft</span>
               ) : null}>
+              {/* Live is a status, not a button: the reversing action never sits
+                  where Go live was (a double-click used to undo going live). */}
+              {program && isLive && (
+                <div className="-mt-1 mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[16px] bg-pink-50 px-4 py-3">
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-maroon" />
+                  <p className="mb-0 mr-auto text-[14px] font-semibold text-maroon">Live · members can join</p>
+                  <button type="button" onClick={askMoveToDraft} disabled={publishing}
+                    className="h-10 rounded-[10px] px-2 text-[13.5px] font-semibold text-muted underline-offset-2 hover:text-maroon hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose disabled:opacity-50">
+                    Move to draft
+                  </button>
+                </div>
+              )}
               <FieldStyle.Provider value="filled">
                 <div className="space-y-1">
                   <FormField label="Program name">
-                    <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Inner Circle" />
+                    <Input value={form.name} onChange={(e) => editForm({ name: e.target.value })} placeholder="e.g. Inner Circle" />
                   </FormField>
                   <FormField label="Blurb" hint="What members get, in a sentence.">
-                    <Textarea value={form.blurb} onChange={(e) => setForm((f) => ({ ...f, blurb: e.target.value }))} rows={2} />
+                    <Textarea value={form.blurb} onChange={(e) => editForm({ blurb: e.target.value })} rows={2} />
                   </FormField>
                 </div>
               </FieldStyle.Provider>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <button type="button" onClick={saveProgram} disabled={saving} className={primaryBtn}>{saving ? "Saving…" : program ? "Save program" : "Create program"}</button>
-                {program && (
-                  <button type="button" onClick={togglePublish} disabled={publishing} className={quietBtn}>{isLive ? "Move to draft" : "Go live"}</button>
+                {program && !isLive && (
+                  <button type="button" onClick={() => setPublished(true)} disabled={publishing} className={quietBtn}>{publishing ? "Going live…" : "Go live"}</button>
+                )}
+                {savedAt && (
+                  <span role="status" className="inline-flex items-center gap-1 text-[13.5px] font-semibold text-muted">
+                    <Check className="h-4 w-4 text-maroon" strokeWidth={2.6} /> Saved {savedAgo(savedAt)}
+                  </span>
                 )}
               </div>
+              {cardError && <p role="alert" className="mb-0 mt-3 text-[13.5px] font-semibold text-rose-700">{cardError}</p>}
               {program && !isLive && liveTiers === 0 && (
                 <p className="mb-0 mt-3 text-[13.5px] text-muted">Turn on at least one tier, then go live.</p>
               )}
             </KeptCard>
+            <ConfirmSheet open={confirmDraft} danger title="Move to draft?"
+              message="Members can't join while it's in draft. You can go live again any time."
+              confirmLabel="Move to draft" onConfirm={async () => { setConfirmDraft(false); await setPublished(false); }}
+              onClose={() => setConfirmDraft(false)} />
 
             {program && (
               tiers.length === 0 ? (
