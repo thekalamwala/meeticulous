@@ -77,10 +77,11 @@ async function resolve(slug) {
   };
 }
 
-// Generate a unique auto username ({email-handle}-{4 random}) for a new account.
-// Idempotent-ish: callers use this once at account creation. No email → "user-xxxx".
-async function createInitialUsername(email) {
-  return generateUnique(usernameExists, email);
+// Generate a unique, readable auto username for a new account: from the person's
+// name (mohini-daf), else the email handle, else "user"; clashes take -2, -3 …
+// (never random characters). Callers use this once at account creation.
+async function createInitialUsername(email, name) {
+  return generateUnique(usernameExists, { name, email });
 }
 
 // Record an initial/auto alias in history. Safe to call repeatedly — the global
