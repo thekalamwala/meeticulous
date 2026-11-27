@@ -11,8 +11,8 @@ const platformConfig = require('../services/platformConfig');
 const { sendProductDownloadEmail } = require('../utils/productEmail');
 const { runInBackground } = require('../utils/background');
 const { canActivateMore } = require('../middleware/planMiddleware');
+const { resolveCatalogItem } = require('../services/catalogSlug');
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const PRODUCTS_BUCKET = 'products';
 const SIGNED_URL_TTL_SECONDS = 60; // short-lived: link is single-use-ish, expires fast
@@ -295,12 +295,13 @@ const freeDownload = async (req, res) => {
 // server-computed platform_fee so the client never hardcodes the fee.
 const PUBLIC_PRODUCT_COLS =
   'id, title, description, type, price, thumbnail_url, slug, purchase_count, ' +
-  'profiles!products_host_id_fkey(name, username, profile_image, tagline, theme_color)';
+  'profiles!products_host_id_fkey(name, username, profile_image, tagline, theme_color, is_verified, profession, social_links)';
 
 // ── GET /api/products/p/:username/:key ───────────────────────
-// Public — resolve a product by host username + slug, falling back to id so
-// existing /:profileSlug/product/:id links (and emailed ?dl deep links) keep
-// working through the slug migration.
+// Public — resolve a product by host username + slug, then id (old
+// /:profileSlug/product/:id links and emailed ?dl deep links), then a legacy
+// slug (v3.229). The payload's `slug` is the canonical one: the page redirects
+// to /:username/products/<slug> when the key differs.
 const getProductPublic = async (req, res) => {
   try {
     const { username, key } = req.params;
@@ -308,15 +309,7 @@ const getProductPublic = async (req, res) => {
       .from('profiles').select('id').eq('username', username).single();
     if (!host) return res.status(404).json({ message: 'Product not found' });
 
-    let { data } = await supabaseAdmin.from('products')
-      .select(PUBLIC_PRODUCT_COLS)
-      .eq('host_id', host.id).eq('slug', key).eq('is_active', true).maybeSingle();
-
-    if (!data && UUID_RE.test(key)) {
-      ({ data } = await supabaseAdmin.from('products')
-        .select(PUBLIC_PRODUCT_COLS)
-        .eq('id', key).eq('host_id', host.id).eq('is_active', true).maybeSingle());
-    }
+    const { data } = await resolveCatalogItem('products', host.id, key, PUBLIC_PRODUCT_COLS);
     if (!data) return res.status(404).json({ message: 'Product not found' });
 
     // Config-driven fee + GST so the client never hardcodes money math (mirrors

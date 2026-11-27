@@ -15,15 +15,15 @@
 
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
-const { profileFaqs, serviceFaqs, sameAsFrom } = require('../services/seo/pageContentModel');
+const { profileFaqs, serviceFaqs, catalogFaqs, sameAsFrom } = require('../services/seo/pageContentModel');
+const {
+  cityForSeo, profileMeta, serviceDescription, profileTabMeta, productMeta, courseMeta,
+  tierAnchors, catalogRobots, productPath, coursePath, productType, capFirst,
+} = require('../services/seo/catalogSeo');
 const { cloudinaryHostCard, cloudinaryServiceCard } = require('../services/seo/hostOgCard');
 
 const trimSlash = (s) => String(s || '').replace(/\/+$/, '');
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const truncate = (s, n = 160) => {
-  const str = String(s || '').trim();
-  return str.length <= n ? str : str.slice(0, n - 1).trimEnd() + '…';
-};
 
 /**
  * Google profile photos come back as `=s96-c` — 96px. Facebook's minimum for a
@@ -116,11 +116,13 @@ function reviewSection(reviews, heading) {
   }</section>`;
 }
 
-function hostBody(payload) {
+function hostBody(payload, summary) {
   const { host = {}, services = [], reviews = [] } = payload || {};
   const site = trimSlash(SITE_URL);
   const name = host.name || 'Host';
   const out = [`<h1>${esc(name)}</h1>`];
+  // Answer-first summary (the data-built profile description), mirroring the SPA.
+  if (summary) out.push(`<p>${esc(summary)}</p>`);
   if (host.profession) out.push(`<p>${esc(host.profession)}${host.location ? ` · ${esc(host.location)}` : ''}</p>`);
   if (host.bio) out.push(`<p>${esc(host.bio)}</p>`);
 
@@ -183,15 +185,9 @@ function serviceBody(payload) {
 // Returns { status: 200, buildHtmlArgs } | { status: 404 } | { status: 301, redirectTo }.
 // FAQPage node from [{q,a}]. Kept here (not imported from client utils/seo) so the
 // server prerender shell has no client dependency; shape matches faqJsonLd there.
-// City for a local-SEO <title>/meta from free-text profiles.location. Mirrors
-// client utils/seo.js cityForSeo VERBATIM — keep in sync. Only used for OFFLINE
-// (in-person) pages; online pages carry no local intent so never get a city.
-const JUNK_LOC = /^(wfh|remote|online|virtual|anywhere|india|worldwide|global|n\/?a|-|\.)$/i;
-function cityForSeo(loc) {
-  const first = String(loc || '').split(',')[0].trim();
-  if (!first || first.length > 24 || JUNK_LOC.test(first)) return null;
-  return first.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-}
+// cityForSeo (local-SEO city from free-text profiles.location) lives in
+// services/seo/catalogSeo.js with the other meta templates; it mirrors client
+// utils/seo.js cityForSeo VERBATIM.
 
 // ── Host entity graph (bot-shell mirror of client/src/utils/seo.js) ───────────
 //
@@ -237,6 +233,13 @@ const faqGraphNode = (faqs, id) => ({
   mainEntity: (faqs || []).filter((f) => f && f.q && f.a)
     .map((f) => ({ '@type': 'Question', name: String(f.q), acceptedAnswer: { '@type': 'Answer', text: String(f.a) } })),
 });
+// Host Person stub (same @id as the profile's full Person) + sameAs from
+// social_links. Mirrors client personStubNode.
+const personStubNode = ({ host = {}, site } = {}) => {
+  const url = host.username ? `${site}/${host.username}` : site;
+  const sameAs = sameAsFrom(host);
+  return { '@type': 'Person', '@id': `${url}#person`, name: host.name || 'Host', url, ...(sameAs.length ? { sameAs } : {}) };
+};
 
 // host: profiles row; services: public service rows; rating: {avg,count}; faqs: [{q,a}].
 function buildProfileGraph({ host = {}, services = [], rating = null, faqs = [], site, name } = {}) {
@@ -330,7 +333,7 @@ function buildServiceGraph({ service = {}, vendor = {}, avgRating, reviewCount, 
     websiteNode(site),
     orgNode(site),
     serviceNode,
-    { '@type': 'Person', '@id': `${hostUrl}#person`, name: vendor.name || 'Host', url: hostUrl },
+    personStubNode({ host: vendor, site }),
     breadcrumbNode([
       { name: 'Home', path: '/' },
       { name: vendor.name || vendor.username, path: `/${vendor.username}` },
@@ -359,21 +362,12 @@ async function resolveProfileMeta(username) {
   const site = trimSlash(SITE_URL);
   const name = host.name || 'Host';
 
-  // Local-SEO city only when the host offers an in-person (offline) service —
-  // mirrors client resolveProfileSeo (utils/seo.js). Online-only host = no city.
-  const hasOffline = (services || []).some((s) => s && s.meeting_mode === 'offline');
-  const city = hasOffline ? cityForSeo(host.location) : null;
-  const composeTitle = () => {
-    const base = `${name}${host.profession ? ` — ${host.profession}` : ''}`;
-    const withCity = city ? `${base} in ${city}` : base;
-    const full = `${withCity} | Meeticulous`;
-    if (full.length <= 60) return full;
-    if (withCity.length <= 60) return withCity;
-    return base;
-  };
-  const title = host.seo_title || composeTitle();
-  const description = host.seo_description
-    || truncate(host.bio || `Book sessions with ${name}${city ? ` in ${city}` : ''} on Meeticulous.`);
+  // Answer-first title + description from real data (profileMeta — mirrors client
+  // resolveProfileSeo); admin seo_* overrides still win. The rating clause appears
+  // only with real reviews of this host.
+  const meta = profileMeta({ host, services, rating: { avg: avgRating, count: reviewCount } });
+  const title = host.seo_title || meta.title;
+  const description = host.seo_description || meta.description;
   const canonical = `${site}/${host.username}`;
   // og:image is a SHARE CARD, not the avatar. A square Google photo letterboxes
   // inside a summary_large_image card, so we serve a 1200x630 host card instead.
@@ -432,7 +426,7 @@ async function resolveProfileMeta(username) {
 
   // payload is passed through (additive) so the SEO crawler can build a DB-derived
   // content model for this bodiless page — see services/seo/pageContentModel.js.
-  return { status: 200, buildHtmlArgs, payload: outcome.payload };
+  return { status: 200, buildHtmlArgs, payload: outcome.payload, summary: meta.description };
 }
 
 const renderProfileMeta = async (req, res) => {
@@ -441,7 +435,7 @@ const renderProfileMeta = async (req, res) => {
     if (m.status === 404) return res.status(404).send('Not found');
     if (m.status === 301) return res.redirect(301, m.redirectTo);
 
-    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload) });
+    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload, m.summary) });
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
     res.send(html);
@@ -451,53 +445,253 @@ const renderProfileMeta = async (req, res) => {
   }
 };
 
-// ── Profile tabs (/:username/products|courses|membership) ───────────────────
-// Title/description per tab. MIRRORS client profileTabSeo (utils/seo.js).
-const PROFILE_TAB_COPY = {
-  products:   { label: 'Digital products', desc: (n) => `Browse digital products by ${n} on Meeticulous.` },
-  courses:    { label: 'Courses',          desc: (n) => `Browse video courses by ${n} on Meeticulous.` },
-  membership: { label: 'Membership',       desc: (n) => `Join ${n}'s membership on Meeticulous.` },
-};
-const profileTabTitle = (tab, name) => {
-  const full = `${PROFILE_TAB_COPY[tab].label} by ${name} | Meeticulous`;
-  return full.length <= 60 ? full : `${PROFILE_TAB_COPY[tab].label} by ${name}`;
+// ── Catalog graphs (mirror client utils/seo.js) ─────────────────────────────
+// Product, course, profile tabs, membership: ONE @graph each — WebSite, Org, the
+// page entity, the host Person stub, BreadcrumbList (Home › {Name} › {Tab} ›
+// {Item}) and a FAQPage only when the page renders that FAQ. Slug-only URLs.
+// Deep-equal to the client builders (parity fixture); change one, change both.
+const TAB_CRUMB = { products: 'Products', courses: 'Courses', membership: 'Membership' };
+const IN_STOCK = 'https://schema.org/InStock';
+
+const catalogCrumbs = (host, tab, item) => [
+  { name: 'Home', path: '/' },
+  { name: host.name || host.username, path: `/${host.username}` },
+  { name: TAB_CRUMB[tab], path: `/${host.username}/${tab}` },
+  ...(item ? [{ name: item.name, path: item.path }] : []),
+];
+
+const withFaq = (graph, faqs, url) => {
+  if (faqs && faqs.length) graph.push(faqGraphNode(faqs, `${url}#faq`));
+  return { '@context': 'https://schema.org', '@graph': graph };
 };
 
-// Does the host have >=1 published item for this tab? (Same rule that shows the tab.)
-async function hostHasTab(hostId, tab) {
-  const { supabaseAdmin } = require('../config/supabase');
-  if (tab === 'membership') {
-    const { isFeatureEnabled } = require('../services/featureFlags');
-    if (!(await isFeatureEnabled('community_memberships').catch(() => false))) return false;
-    const { data } = await supabaseAdmin.from('community_membership_programs')
-      .select('id, tiers:community_membership_tiers!inner(id)')
-      .eq('host_id', hostId).eq('status', 'live').eq('tiers.status', 'live').limit(1);
-    return !!(data && data.length);
-  }
-  const { count } = await supabaseAdmin.from(tab).select('id', { count: 'exact', head: true })
-    .eq('host_id', hostId).eq('is_active', true);
-  return (count || 0) > 0;
+function buildProductGraph({ product = {}, username, site, faqs = [] } = {}) {
+  const host = { ...(product.profiles || {}), username: username || (product.profiles || {}).username };
+  const hostUrl = `${site}/${host.username}`;
+  const url = product.slug ? `${site}${productPath(host.username, product.slug)}` : `${hostUrl}/products`;
+  const productNode = {
+    '@type': 'Product',
+    '@id': `${url}#product`,
+    name: product.title || 'Digital product',
+    url,
+    description: product.description || undefined,
+    category: capFirst(productType(product.type)),
+    ...(product.thumbnail_url ? { image: product.thumbnail_url } : {}),
+    offers: {
+      '@type': 'Offer',
+      price: String(product.price ?? 0),
+      priceCurrency: product.currency || 'INR',
+      availability: IN_STOCK,
+      url,
+      seller: { '@id': `${hostUrl}#person` },
+    },
+  };
+  return withFaq([
+    websiteNode(site), orgNode(site), productNode, personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, 'products', product.slug && { name: productNode.name, path: productPath(host.username, product.slug) }), site, `${url}#breadcrumb`),
+  ], faqs, url);
 }
 
-// The profile shell with the tab's own title/description/canonical. A tab the host
+function buildCourseGraph({ course = {}, username, site, faqs = [] } = {}) {
+  const host = { ...(course.profiles || {}), username: username || (course.profiles || {}).username };
+  const hostUrl = `${site}/${host.username}`;
+  const url = course.slug ? `${site}${coursePath(host.username, course.slug)}` : `${hostUrl}/courses`;
+  const name = course.title || 'Course';
+  const price = Number(course.price ?? 0);
+  const courseNode = {
+    '@type': 'Course',
+    '@id': `${url}#course`,
+    name,
+    url,
+    description: course.description || `${name} — an online course by ${host.name || 'the host'}.`,
+    ...(course.thumbnail_url ? { image: course.thumbnail_url } : {}),
+    provider: { '@id': `${hostUrl}#person` },
+    inLanguage: 'en',
+    hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online' },
+    offers: {
+      '@type': 'Offer',
+      category: price > 0 ? 'Paid' : 'Free',
+      price: String(price),
+      priceCurrency: course.currency || 'INR',
+      availability: IN_STOCK,
+      url,
+    },
+  };
+  return withFaq([
+    websiteNode(site), orgNode(site), courseNode, personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, 'courses', course.slug && { name, path: coursePath(host.username, course.slug) }), site, `${url}#breadcrumb`),
+  ], faqs, url);
+}
+
+function buildProfileTabGraph({ tab, host = {}, items = [], site, name, description, faqs = [] } = {}) {
+  const hostUrl = `${site}/${host.username}`;
+  const url = `${hostUrl}/${tab}`;
+  const toPath = tab === 'courses' ? coursePath : productPath;
+  const listed = (items || []).filter((i) => i && i.slug && i.title);
+  return withFaq([
+    websiteNode(site), orgNode(site),
+    {
+      '@type': 'CollectionPage', '@id': url, url,
+      ...(name ? { name } : {}),
+      ...(description ? { description } : {}),
+      inLanguage: 'en-IN',
+      isPartOf: { '@id': `${site}/#website` },
+      about: { '@id': `${hostUrl}#person` },
+      mainEntity: { '@id': `${url}#list` },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+    },
+    {
+      '@type': 'ItemList', '@id': `${url}#list`, numberOfItems: listed.length,
+      itemListElement: listed.map((i, n) => ({ '@type': 'ListItem', position: n + 1, url: `${site}${toPath(host.username, i.slug)}`, name: i.title })),
+    },
+    personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, tab), site, `${url}#breadcrumb`),
+  ], faqs, url);
+}
+
+function buildMembershipGraph({ host = {}, program = {}, tiers = [], site, name, description, faqs = [] } = {}) {
+  const hostUrl = `${site}/${host.username}`;
+  const url = `${hostUrl}/membership`;
+  const live = (tiers || []).filter((t) => t && t.name);
+  const anchors = tierAnchors(live);
+  const prog = (program && program.name) || 'Membership';
+  return withFaq([
+    websiteNode(site), orgNode(site),
+    {
+      '@type': 'CollectionPage', '@id': url, url,
+      ...(name ? { name } : {}),
+      ...(description ? { description } : {}),
+      inLanguage: 'en-IN',
+      isPartOf: { '@id': `${site}/#website` },
+      about: { '@id': `${hostUrl}#person` },
+      mainEntity: { '@id': `${url}#list` },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+    },
+    {
+      '@type': 'ItemList', '@id': `${url}#list`, numberOfItems: live.length,
+      itemListElement: live.map((t, i) => {
+        const tierUrl = `${url}#${anchors[i]}`;
+        const price = t.type === 'free' ? 0 : Number(t.price_inr) || 0;
+        const perks = (Array.isArray(t.perks) ? t.perks : []).filter(Boolean);
+        return {
+          '@type': 'ListItem', position: i + 1,
+          item: {
+            '@type': 'Product', '@id': tierUrl, name: `${prog} — ${t.name}`, url: tierUrl,
+            ...(t.description || perks.length ? { description: t.description || perks.join('; ') } : {}),
+            ...(t.cover_url ? { image: t.cover_url } : {}),
+            offers: {
+              '@type': 'Offer', price: String(price), priceCurrency: 'INR', availability: IN_STOCK, url: tierUrl,
+              seller: { '@id': `${hostUrl}#person` },
+              ...(price > 0 ? {
+                priceSpecification: {
+                  '@type': 'UnitPriceSpecification', price: String(price), priceCurrency: 'INR',
+                  billingDuration: 'P1M', unitCode: 'MON',
+                },
+              } : {}),
+            },
+          },
+        };
+      }),
+    },
+    personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, 'membership'), site, `${url}#breadcrumb`),
+  ], faqs, url);
+}
+
+// ── Profile tabs (/:username/products|courses|membership) ───────────────────
+
+// The tab's published items, in the host's own order — the same rows the SPA
+// lists (GET /products|courses/host/:username, /memberships/space/:username).
+// Membership only while `community_memberships` is on. Never throws.
+async function loadTabItems(hostId, tab) {
+  const { supabaseAdmin } = require('../config/supabase');
+  try {
+    if (tab === 'membership') {
+      const { isFeatureEnabled } = require('../services/featureFlags');
+      if (!(await isFeatureEnabled('community_memberships').catch(() => false))) return { items: [] };
+      // select('*') like getPublicSpace: tier cover_url/description (v3.228) may not exist yet.
+      const { data } = await supabaseAdmin.from('community_membership_programs')
+        .select('*, tiers:community_membership_tiers(*)')
+        .eq('host_id', hostId).eq('status', 'live').maybeSingle();
+      if (!data) return { items: [] };
+      const tiers = (data.tiers || []).filter((t) => t.status === 'live').sort((a, b) => (a.position || 0) - (b.position || 0));
+      return { items: tiers, program: { name: data.name, blurb: data.blurb, cover_url: data.cover_url } };
+    }
+    const { applyHostOrder } = require('../services/catalogOrder');
+    const cols = tab === 'courses'
+      ? 'id, title, description, price, thumbnail_url, slug, course_lessons(id)'
+      : 'id, title, description, type, price, thumbnail_url, slug';
+    const { data, error } = await supabaseAdmin.from(tab).select(cols).eq('host_id', hostId).eq('is_active', true);
+    if (error || !data) return { items: [] };
+    const rows = tab === 'courses'
+      ? data.map(({ course_lessons: l, ...c }) => ({ ...c, lesson_count: (l || []).length }))
+      : data;
+    return { items: await applyHostOrder(tab, hostId, rows) };
+  } catch (_) {
+    return { items: [] };
+  }
+}
+
+// The profile shell with the tab's own title/description/canonical, a
+// CollectionPage + ItemList graph and a body listing the items. A tab the host
 // does not have answers a 301 to the profile (the SPA redirects there too).
 async function resolveProfileTabMeta(username, tab) {
   const m = await resolveProfileMeta(username);
+  if (m.status === 301) return { status: 301, redirectTo: `${m.redirectTo}/${tab}` };
   if (m.status !== 200) return m;
   const { host } = m.payload;
   const site = trimSlash(SITE_URL);
-  if (!(await hostHasTab(host.id, tab))) return { status: 301, redirectTo: `${site}/${host.username}` };
-  const name = host.name || 'Host';
-  const title = profileTabTitle(tab, name);
-  const description = PROFILE_TAB_COPY[tab].desc(name);
+  const { items, program = null } = await loadTabItems(host.id, tab);
+  if (!items.length) return { status: 301, redirectTo: `${site}/${host.username}` };
+  const { title, description } = profileTabMeta({ tab, host, items, program });
+  const faqs = catalogFaqs({ kind: tab, host, items, program });
+  const jsonLd = tab === 'membership'
+    ? buildMembershipGraph({ host, program: program || {}, tiers: items, site, name: title, description, faqs })
+    : buildProfileTabGraph({ tab, host, items, site, name: title, description, faqs });
   return {
     ...m,
+    tab, items, program, faqs, summary: description,
     buildHtmlArgs: {
       ...m.buildHtmlArgs,
       title, description, ogTitle: title, ogDescription: description,
       canonical: `${site}/${host.username}/${tab}`,
+      jsonLd,
     },
   };
+}
+
+// Visible bot-shell body for a tab: h1, answer-first summary, the items (linked
+// to their slug URLs), the FAQ, a link back to the profile.
+function tabBody(m) {
+  const { host = {} } = m.payload || {};
+  const site = trimSlash(SITE_URL);
+  const name = host.name || 'Host';
+  const u = esc(host.username);
+  const out = [];
+  if (m.tab === 'membership') {
+    const prog = (m.program && m.program.name) || '';
+    out.push(`<h1>${esc(prog ? `${prog} — membership by ${name}` : `Membership by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`);
+    const anchors = tierAnchors(m.items);
+    m.items.forEach((t, i) => {
+      const price = t.type === 'free' || !(Number(t.price_inr) > 0) ? 'Free' : `${inr(t.price_inr)}/month`;
+      const perks = (Array.isArray(t.perks) ? t.perks : []).filter(Boolean);
+      out.push(`<section id="${esc(anchors[i])}"><h2>${esc(t.name)}</h2><p>${esc(price)}</p>${t.description ? `<p>${esc(t.description)}</p>` : ''}${perks.length ? `<ul>${perks.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</section>`);
+    });
+  } else {
+    const label = m.tab === 'courses' ? 'Online courses' : 'Digital products';
+    out.push(`<h1>${esc(`${label} by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`, '<ul>');
+    for (const i of m.items) {
+      if (!i.slug || !i.title) continue;
+      const path = (m.tab === 'courses' ? coursePath : productPath)(host.username, i.slug);
+      const price = Number(i.price) > 0 ? inr(i.price) : 'Free';
+      const extra = m.tab === 'courses' ? ` · ${i.lesson_count || 0} lessons` : '';
+      out.push(`<li><a href="${site}${esc(path)}">${esc(i.title)}</a> — ${esc(price)}${esc(extra)}${i.description ? `: ${esc(i.description)}` : ''}</li>`);
+    }
+    out.push('</ul>');
+  }
+  out.push(faqSection(m.faqs));
+  out.push(`<p><a href="${site}/${u}">See everything ${esc(name)} offers</a></p>`);
+  return out.filter(Boolean).join('\n');
 }
 
 const renderProfileTabMeta = async (req, res) => {
@@ -505,12 +699,112 @@ const renderProfileTabMeta = async (req, res) => {
     const m = await resolveProfileTabMeta(req.params.username, req.params.tab);
     if (m.status === 404) return res.status(404).send('Not found');
     if (m.status === 301) return res.redirect(301, m.redirectTo);
-    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload) });
+    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: tabBody(m) });
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
     res.send(html);
   } catch (err) {
     console.error('[prerender] profile tab error:', err.message);
+    res.status(500).send('Error');
+  }
+};
+
+// ── Catalog items (/:username/products|courses/:slug) ────────────────────────
+
+const CATALOG_COLS = {
+  products: 'id, title, description, type, price, thumbnail_url, slug',
+  courses: 'id, title, description, price, thumbnail_url, slug, course_lessons(id, title, sort_order)',
+};
+
+// kind: 'products' | 'courses'. key: slug, old id or legacy slug. Returns
+// { status: 200, buildHtmlArgs, ... } | { status: 404 } | { status: 301, redirectTo }
+// — a 301 whenever the key is not the canonical slug, so an id / old slug never
+// stays the public URL.
+async function resolveCatalogMeta(kind, username, key) {
+  const m = await resolveProfileMeta(username);
+  if (m.status === 404) return m;
+  if (m.status === 301) return { status: 301, redirectTo: `${m.redirectTo}/${kind}/${encodeURIComponent(key)}` };
+  const { host } = m.payload;
+  const site = trimSlash(SITE_URL);
+  const { resolveCatalogItem } = require('../services/catalogSlug');
+  const { data: row } = await resolveCatalogItem(kind, host.id, key, CATALOG_COLS[kind]);
+  if (!row || !row.slug) return { status: 404 };
+  const path = (kind === 'courses' ? coursePath : productPath)(host.username, row.slug);
+  if (row.slug !== key) return { status: 301, redirectTo: `${site}${path}` };
+
+  const item = kind === 'courses'
+    ? {
+      ...row,
+      course_lessons: (row.course_lessons || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((l) => ({ id: l.id, title: l.title })),
+      lesson_count: (row.course_lessons || []).length,
+    }
+    : row;
+  const withHost = { ...item, profiles: host };
+  const meta = kind === 'courses' ? courseMeta({ course: item, host }) : productMeta({ product: item, host });
+  const faqs = catalogFaqs({ kind: kind === 'courses' ? 'course' : 'product', host, item });
+  const jsonLd = kind === 'courses'
+    ? buildCourseGraph({ course: withHost, username: host.username, site, faqs })
+    : buildProductGraph({ product: withHost, username: host.username, site, faqs });
+  return {
+    status: 200, kind, item, faqs, summary: meta.description, payload: m.payload,
+    buildHtmlArgs: {
+      title: meta.title,
+      description: meta.description,
+      canonical: `${site}${path}`,
+      ogTitle: meta.title,
+      ogDescription: meta.description,
+      // The item's own cover, else the host's 1200x630 share card (profile shell).
+      image: item.thumbnail_url || m.buildHtmlArgs.image,
+      cardImage: !item.thumbnail_url,
+      robots: catalogRobots(host),
+      jsonLd,
+    },
+  };
+}
+
+function itemBody(m) {
+  const { host = {} } = m.payload || {};
+  const site = trimSlash(SITE_URL);
+  const { item } = m;
+  const name = host.name || 'Host';
+  const out = [`<h1>${esc(item.title)}</h1>`, `<p>${esc(m.summary)}</p>`];
+  out.push(`<p>By <a href="${site}/${esc(host.username)}">${esc(name)}</a>${host.profession ? `, ${esc(host.profession)}` : ''}</p>`);
+  const price = Number(item.price) > 0 ? inr(item.price) : 'Free';
+  out.push(`<p>${esc(m.kind === 'courses' ? `${price} · ${item.lesson_count} lessons · lifetime access` : `${price} · ${capFirst(productType(item.type))} · instant download`)}</p>`);
+  if (item.description) out.push(`<p>${esc(item.description)}</p>`);
+  if (m.kind === 'courses' && item.course_lessons.length) {
+    out.push(`<section><h2>Lessons</h2><ol>${item.course_lessons.map((l) => `<li>${esc(l.title)}</li>`).join('')}</ol></section>`);
+  }
+  out.push(faqSection(m.faqs));
+  out.push(`<p><a href="${site}/${esc(host.username)}/${m.kind}">More ${m.kind === 'courses' ? 'courses' : 'digital products'} by ${esc(name)}</a></p>`);
+  return out.filter(Boolean).join('\n');
+}
+
+const renderCatalogMeta = async (req, res) => {
+  try {
+    const { username, kind, key } = req.params;
+    const m = await resolveCatalogMeta(kind, username, key);
+    if (m.status === 404) return res.status(404).send('Not found');
+    if (m.status === 301) return res.redirect(301, m.redirectTo);
+    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: itemBody(m) });
+    res.set('Content-Type', 'text/html');
+    res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
+    res.send(html);
+  } catch (err) {
+    console.error('[prerender] catalog item error:', err.message);
+    res.status(500).send('Error');
+  }
+};
+
+// Old /:username/product|course/:key → 301 straight to the canonical slug URL.
+const renderLegacyCatalogRedirect = async (req, res) => {
+  try {
+    const kind = req.params.kind === 'course' ? 'courses' : 'products';
+    const m = await resolveCatalogMeta(kind, req.params.username, req.params.key);
+    if (m.status === 404) return res.status(404).send('Not found');
+    return res.redirect(301, m.status === 301 ? m.redirectTo : m.buildHtmlArgs.canonical);
+  } catch (err) {
+    console.error('[prerender] legacy catalog error:', err.message);
     res.status(500).send('Error');
   }
 };
@@ -549,9 +843,8 @@ async function resolveServiceMeta(username, serviceSlug) {
     return baseTitle;
   };
   const title = service.seo_title || composeTitle();
-  const description = service.seo_description
-    || truncate(service.short_description || service.description
-      || `Book ${baseTitle}${city ? ` in ${city}` : ''} on Meeticulous.`);
+  // Answer-first template unless the admin set one (mirrors client resolveServiceSeo).
+  const description = service.seo_description || serviceDescription({ service, vendor });
   const canonical = vendor.username && service.slug
     ? `${site}/${vendor.username}/${service.slug}`
     : site;
@@ -588,7 +881,8 @@ async function resolveServiceMeta(username, serviceSlug) {
     title,
     description,
     canonical,
-    ogTitle: service.og_title || service.seo_title || baseTitle,
+    // Share title carries the host name (mirrors client resolveServiceSeo).
+    ogTitle: service.og_title || service.seo_title || (vendor.name ? `${baseTitle} with ${vendor.name}` : baseTitle),
     ogDescription: service.og_description || description,
     image: svcCard || hostImage || `${site}/service-og-default.png`,
     cardImage: Boolean(svcCard) || !hostImage,
@@ -625,9 +919,10 @@ const renderServiceMeta = async (req, res) => {
 
 module.exports = {
   renderProfileMeta, renderServiceMeta, resolveProfileMeta, resolveServiceMeta,
-  renderProfileTabMeta, resolveProfileTabMeta, profileTabTitle,
+  renderProfileTabMeta, resolveProfileTabMeta,
+  renderCatalogMeta, resolveCatalogMeta, renderLegacyCatalogRedirect,
   // shared with prerenderCommunity.js
   buildHtml, esc, SITE_URL,
   // pure graph builders — mirror client seo.js; exercised by the parity test
-  buildProfileGraph, buildServiceGraph,
+  buildProfileGraph, buildServiceGraph, buildProductGraph, buildCourseGraph, buildProfileTabGraph, buildMembershipGraph,
 };

@@ -65,10 +65,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Parent commit too, so the wait step can diff this push against it.
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      # DEPLOY RACE: the remote build's prerender reads the API's sitemap and
+      # pages. When a merge changes server/ too, Render redeploys the API in
+      # parallel; if Vercel builds first it bakes against the OLD API (the new
+      # profile tab URLs shipped as bare SPA shells on 2026-11-27 that way). So
+      # when this commit touches server/, wait until Render's /health reports
+      # this commit (RENDER_GIT_COMMIT, prefix match) before deploying. Bounded
+      # at ~25 min; on timeout deploy anyway with a warning. No secrets needed.
+      - name: Wait for Render to serve this commit (only when server/ changed)
+        run: |
+          if git rev-parse -q --verify HEAD^1 >/dev/null && git diff --quiet HEAD^1 HEAD -- server/; then
+            echo "No server/ change in ${GITHUB_SHA:0:7}; not waiting for Render."
+            exit 0
+          fi
+          deadline=$(( $(date +%s) + 1500 ))
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            live=$(curl -fsS --max-time 20 https://meeticulous-api.onrender.com/health \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(String(JSON.parse(s).commit||""))}catch{}})' \
+              || true)
+            if [ -n "$live" ]; then
+              case "$GITHUB_SHA" in "$live"*) echo "Render serves ${live:0:7}; deploying."; exit 0 ;; esac
+            fi
+            echo "Render reports '${live:-unknown}', waiting for ${GITHUB_SHA:0:7}..."
+            sleep 30
+          done
+          echo "::warning::Render did not report ${GITHUB_SHA:0:7} within 25 min; deploying anyway, the prerender may bake against the previous API."
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest

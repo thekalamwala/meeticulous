@@ -663,9 +663,12 @@ async function prerender() {
       // .host-profile at all, so it cannot trip here. Checked on the raw page
       // content (pre-inlineCritical, which only rewrites CSS). Still written — the
       // page is otherwise fine; the build decides below whether to hard-fail.
-      if (/class="[^"]*\bhost-profile\b/.test(html) && !html.includes('ProfilePage')) {
+      // Profile TABS (/:username/products|courses|membership) render the same
+      // .host-profile chrome but emit a CollectionPage graph instead — either
+      // entity type counts as present.
+      if (/class="[^"]*\bhost-profile\b/.test(html) && !html.includes('ProfilePage') && !html.includes('CollectionPage')) {
         schemaMissing.push(route);
-        console.error(`[prerender] SCHEMA-MISS ${route}: .host-profile rendered but ProfilePage JSON-LD absent`);
+        console.error(`[prerender] SCHEMA-MISS ${route}: .host-profile rendered but ProfilePage/CollectionPage JSON-LD absent`);
       }
 
       // Write to dist/<route>/index.html (or dist/index.html for /)

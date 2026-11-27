@@ -26,10 +26,12 @@ const esc = (s) =>
   ));
 
 // Build the deep link to the purchase page's download step. productId (not slug)
-// keeps the link stable regardless of slug routing/renames.
+// keeps the link stable regardless of slug renames; the page resolves the id and
+// replaces it with the canonical /:username/products/<slug> URL (keeping ?dl).
+// A private, emailed link — never a public/crawlable URL.
 const buildDownloadLink = (username, productId, token) => {
   const base = (process.env.CLIENT_URL || 'https://meeticulous.com').replace(/\/+$/, '');
-  return `${base}/${encodeURIComponent(username || '')}/product/${encodeURIComponent(productId)}?dl=${encodeURIComponent(token)}`;
+  return `${base}/${encodeURIComponent(username || '')}/products/${encodeURIComponent(productId)}?dl=${encodeURIComponent(token)}`;
 };
 
 // Fire-and-forget: never throws (callers run it in the background and must not
