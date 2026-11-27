@@ -169,7 +169,6 @@ const MyMemberships = lazy(() => import('./pages/MyMemberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
-const Membership  = lazy(() => import('./pages/Membership'));
 const Testimonials = lazy(() => import('./pages/Testimonials'));
 const UpgradePlan = lazy(() => import('./pages/UpgradePlan'));
 const Payouts     = lazy(() => import('./pages/Payouts'));
@@ -853,7 +852,8 @@ function App() {
           <Route path="/dashboard/memberships/tier/add-new" element={<DashboardWrapper><TierEditor /></DashboardWrapper>} />
           <Route path="/dashboard/memberships/tier/edit/:id" element={<DashboardWrapper><TierEditor /></DashboardWrapper>} />
           <Route path="/dashboard/coupon/add-new" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
-          <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
+          {/* Retired "coming soon" teaser (2026-11-27): the singular URL lands on the real page. */}
+          <Route path="/dashboard/membership" element={<Navigate to="/dashboard/memberships" replace />} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/grow" element={<DashboardWrapper><GrowHomeRoute /></DashboardWrapper>} />
           <Route path="/dashboard/grow/page" element={<DashboardWrapper><GrowPageRoute /></DashboardWrapper>} />
