@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { resolveServiceSeo, resolveProfileSeo, resolveBlogSeo, serviceGraphJsonLd, profileGraphJsonLd, productGraphJsonLd, articleGraphJsonLd, professionGraphJsonLd, comparisonGraphJsonLd, toolAppJsonLd, definedTermSetJsonLd, glossaryTermJsonLd, cityForSeo } from '../seo';
+import { resolveServiceSeo, resolveProfileSeo, profileTabSeo, resolveBlogSeo, serviceGraphJsonLd, profileGraphJsonLd, productGraphJsonLd, articleGraphJsonLd, professionGraphJsonLd, comparisonGraphJsonLd, toolAppJsonLd, definedTermSetJsonLd, glossaryTermJsonLd, cityForSeo } from '../seo';
 
 // Pull a graph member by @type (the graph order is an implementation detail).
 const node = (ld, type) => ld['@graph'].find((n) => n['@type'] === type);
@@ -549,5 +549,16 @@ describe('glossaryTermJsonLd — single term page', () => {
     expect(term.inDefinedTermSet['@id']).toBe('https://meeticulous.com/glossary#termset');
     const bc = g['@graph'].find((n) => n['@type'] === 'BreadcrumbList');
     expect(bc.itemListElement.map((i) => i.name)).toEqual(['Home', 'Glossary', 'No-show']);
+  });
+});
+
+describe('profileTabSeo (mirrors server profileTabTitle)', () => {
+  test('own title + canonical per tab', () => {
+    const t = profileTabSeo({ tab: 'courses', host: { name: 'Jane', username: 'jane' }, siteUrl: 'https://meeticulous.com' });
+    expect(t.title).toBe('Courses by Jane | Meeticulous');
+    expect(t.canonical).toBe('https://meeticulous.com/jane/courses');
+  });
+  test('unknown tab adds nothing', () => {
+    expect(profileTabSeo({ tab: 'services', host: { name: 'Jane', username: 'jane' } })).toEqual({});
   });
 });
