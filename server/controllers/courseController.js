@@ -11,7 +11,7 @@ const platformConfig = require('../services/platformConfig');
 const razorpayConfig = require('../services/razorpayConfig');
 const { verifySignature } = require('../utils/razorpaySignature');
 const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEngine');
-const { sortHostOrder } = require('../services/catalogOrder');
+const { sortHostOrder, applyHostOrder } = require('../services/catalogOrder');
 const { withGuestPrices } = require('../services/guestPrice');
 const { auditLog, securityLog } = require('../utils/logger');
 
@@ -162,6 +162,26 @@ const getCoursePublic = async (req, res) => {
       platform_fee: fee, platform_fee_gst: gst, gst_rate: cfg.gstRate,
       total: round2(price + fee + gst),
     });
+  } catch (error) { safeError(res, error); }
+};
+
+// ── GET /api/courses/host/:username ───────────────────────────
+// Public list for the profile's Courses tab: published courses in the host's own
+// order, with a lesson COUNT only (no titles, never video_url). Mirrors the
+// products list (GET /products/host/:username). No duration: lessons carry no
+// length today, so the card shows only what we track.
+const getHostCoursesPublic = async (req, res) => {
+  try {
+    const { data: host } = await supabaseAdmin
+      .from('profiles').select('id').eq('username', req.params.username).maybeSingle();
+    if (!host) return res.status(404).json({ message: 'Host not found' });
+    const { data, error } = await supabaseAdmin.from('courses')
+      .select('id, title, description, price, thumbnail_url, slug, purchase_count, created_at, course_lessons(id)')
+      .eq('host_id', host.id).eq('is_active', true);
+    if (error && isMissingTable(error)) return res.json([]);
+    if (error) return safeError(res, error);
+    const rows = (data || []).map(({ course_lessons: l, ...c }) => ({ ...c, lesson_count: (l || []).length }));
+    res.json(await applyHostOrder('courses', host.id, rows));
   } catch (error) { safeError(res, error); }
 };
 
@@ -322,6 +342,6 @@ const verifyCoursePayment = async (req, res) => {
 
 module.exports = {
   createCourse, getMyCourses, updateCourse, deleteCourse,
-  getCoursePublic, getCourseContent, getPurchasedCourses,
+  getCoursePublic, getHostCoursesPublic, getCourseContent, getPurchasedCourses,
   createCourseOrder, verifyCoursePayment, materializeCoursePurchase,
 };

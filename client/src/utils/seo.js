@@ -150,6 +150,27 @@ export const resolveProfileSeo = ({ host = {}, services = [], siteUrl = SITE_URL
   };
 };
 
+// Profile tab pages (/:username/products|courses|membership): their own title,
+// description and canonical on top of resolveProfileSeo (robots/image unchanged).
+// MIRRORS server prerenderController PROFILE_TAB_COPY / profileTabTitle.
+const PROFILE_TAB_COPY = {
+  products:   { label: 'Digital products', desc: (n) => `Browse digital products by ${n} on Meeticulous.` },
+  courses:    { label: 'Courses',          desc: (n) => `Browse video courses by ${n} on Meeticulous.` },
+  membership: { label: 'Membership',       desc: (n) => `Join ${n}'s membership on Meeticulous.` },
+};
+export const profileTabSeo = ({ tab, host = {}, siteUrl = SITE_URL } = {}) => {
+  const copy = PROFILE_TAB_COPY[tab];
+  if (!copy) return {};
+  const name = host.name || 'Host';
+  const full = `${copy.label} by ${name} | Meeticulous`;
+  const title = full.length <= 60 ? full : `${copy.label} by ${name}`;
+  const description = copy.desc(name);
+  return {
+    title, description, ogTitle: title, ogDescription: description,
+    canonical: `${trimSlash(siteUrl)}/${host.username}/${tab}`,
+  };
+};
+
 // Identity links backing schema.org sameAs — mirrors server sameAsFrom()
 // (server/services/seo/pageContentModel.js). Reads host.social_links (JSONB),
 // keeping only real http(s) identity URLs (drops email/whatsapp + blanks).

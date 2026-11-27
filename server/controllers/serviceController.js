@@ -65,10 +65,17 @@ const randomSuffix = () => {
   return l[Math.floor(Math.random() * 26)] + d[Math.floor(Math.random() * 10)] + l[Math.floor(Math.random() * 26)];
 };
 
+// Words that are public profile routes (/:username/<word>), so a service slug can
+// never take them — /:username/:slug is the service detail route and would be
+// shadowed. products/courses/membership are the profile tabs; badges + booking
+// were already routes. Keep in sync with the /:profileSlug/* block in App.jsx.
+const RESERVED_SERVICE_SLUGS = new Set(['products', 'courses', 'membership', 'badges', 'booking']);
+
 // Per-host unique slug: same title on different hosts can share slug;
-// same host can't have duplicates — fallback adds letter-digit-letter suffix
+// same host can't have duplicates — fallback adds letter-digit-letter suffix.
+// A reserved word is treated as taken, so it gets the suffix too ("products-a3b").
 const uniqueSlug = async (baseSlug, hostId, excludeId = null) => {
-  let slug = baseSlug;
+  let slug = RESERVED_SERVICE_SLUGS.has(baseSlug) ? `${baseSlug}-${randomSuffix()}` : baseSlug;
   let attempts = 0;
   while (true) {
     let q = supabaseAdmin.from('services').select('id').eq('slug', slug).eq('host_id', hostId);
@@ -761,4 +768,5 @@ module.exports = {
   getPublicServiceByProfileAndSlug,
   buildPublicServiceByProfileAndSlug, // used by prerenderController for bot-traffic meta shells
   getPriceBenchmark,
+  uniqueSlug, // exported for the reserved-slug test
 };

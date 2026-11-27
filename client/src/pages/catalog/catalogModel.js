@@ -53,36 +53,38 @@ export const TYPE_BLURB = {
   coupon: 'A code that takes money off. For a launch, a festival, or a returning client.',
 };
 
-// Where a row goes when clicked. Only services have a per-item editor route;
-// the rest edit inline on their own page, so a row lands there instead.
-// Stated rather than hidden: this is the seam a later step closes by unifying
-// the editors, and pretending otherwise would mean a dead link.
+// Where a row goes when clicked: each type's own editor route. Services,
+// products and courses have add-new + edit/:id pages; a membership row is a
+// tier (a host has ONE program) and opens that tier's editor; discounts still
+// edit on their page.
 export const HOME_OF = {
   service: '/dashboard/services',
   product: '/dashboard/products',
   course: '/dashboard/courses',
   coupon: '/dashboard/coupons',
-  // A host has ONE membership program; its tiers are managed on that one page.
   membership: '/dashboard/memberships',
 };
 
-// Where "add a new one of this type" lands. Every type that creates items has an
-// add-new route (2026-11-26): services their own editor, products / courses /
-// coupons their page with the create form open (useAddNewRoute). Membership has
-// no per-item create — tiers are added on the program page, so it points there.
+// Where "add a new one of this type" lands. Membership adds a tier; the tier
+// editor sends a host with no program yet back to the program page first.
 export const ADD_ROUTE = {
   service: '/dashboard/service/add-new',
   product: '/dashboard/product/add-new',
   course: '/dashboard/course/add-new',
   coupon: '/dashboard/coupon/add-new',
-  membership: '/dashboard/memberships',
+  membership: '/dashboard/memberships/tier/add-new',
+};
+
+const EDIT_ROUTE = {
+  service: (id) => `/dashboard/service/edit/${id}`,
+  product: (id) => `/dashboard/product/edit/${id}`,
+  course: (id) => `/dashboard/course/edit/${id}`,
+  membership: (id) => `/dashboard/memberships/tier/edit/${id}`,
 };
 
 export const editHref = (item) => {
-  if (item.kind === 'service') return `/dashboard/service/edit/${item.id}`;
-  // Products and courses edit inline on their own page; ?edit= opens that one.
-  if (item.kind === 'product' || item.kind === 'course') return `${HOME_OF[item.kind]}?edit=${encodeURIComponent(item.id)}`;
-  return HOME_OF[item.kind];
+  const to = EDIT_ROUTE[item.kind];
+  return to ? to(encodeURIComponent(item.id)) : HOME_OF[item.kind];
 };
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
@@ -133,7 +135,7 @@ export function normalise(row, kind) {
       price,
       active: row.status === 'live',
       meta: free ? 'Free' : (price ? `₹${price.toLocaleString('en-IN')}/mo` : null),
-      image: null,
+      image: row.cover_url || null, // v3.228; absent until applied
       // A tier is billed at its own price — no booking fee on top (v3.225 note).
       guestTotal: null,
       sortOrder: Number.isFinite(Number(row.position)) ? Number(row.position) : null,
@@ -155,6 +157,9 @@ export function normalise(row, kind) {
     // on the host list endpoints). Never computed here: null when the server did
     // not send it, and the card then shows the listed price alone.
     guestTotal: Number.isFinite(Number(row.guest_total)) && row.guest_total !== null ? Number(row.guest_total) : null,
+    // Services: what the host gets — price less commission at their plan rate,
+    // worked out by the SERVER (host_earnings). Null when not sent.
+    hostEarnings: Number.isFinite(Number(row.host_earnings)) && row.host_earnings !== null && row.host_earnings !== undefined ? Number(row.host_earnings) : null,
     priceOnRequest: row.price_on_request === true,
     sortOrder: Number.isFinite(Number(row.sort_order)) && row.sort_order !== null ? Number(row.sort_order) : null,
     createdAt: row.created_at || null,

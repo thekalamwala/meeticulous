@@ -160,12 +160,14 @@ const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
 const Courses     = lazy(() => import('./pages/Courses'));
 const Memberships = lazy(() => import('./pages/Memberships'));
-const MembershipSpace = lazy(() => import('./pages/MembershipSpace'));
+// Catalog item editors on their own routes (add-new + edit/:id), like services.
+const ProductEditor = lazy(() => import('./pages/catalog/ProductEditor'));
+const CourseEditor  = lazy(() => import('./pages/catalog/CourseEditor'));
+const TierEditor    = lazy(() => import('./pages/catalog/TierEditor'));
 const MyMemberships = lazy(() => import('./pages/MyMemberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
-const Membership  = lazy(() => import('./pages/Membership'));
 const Testimonials = lazy(() => import('./pages/Testimonials'));
 const UpgradePlan = lazy(() => import('./pages/UpgradePlan'));
 const Payouts     = lazy(() => import('./pages/Payouts'));
@@ -839,12 +841,18 @@ function App() {
           <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
           <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
-          {/* "Add new" routes for each catalog type, like /dashboard/service/add-new:
-              the type's own page with its create form open (useAddNewRoute). */}
-          <Route path="/dashboard/product/add-new" element={<DashboardWrapper><Products /></DashboardWrapper>} />
-          <Route path="/dashboard/course/add-new" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
+          {/* Catalog item editors: real add + edit pages per type, like
+              /dashboard/service/add-new + /dashboard/service/edit/:id. Coupons
+              still open their page's create form (useAddNewRoute). */}
+          <Route path="/dashboard/product/add-new" element={<DashboardWrapper><ProductEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/product/edit/:id" element={<DashboardWrapper><ProductEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/course/add-new" element={<DashboardWrapper><CourseEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/course/edit/:id" element={<DashboardWrapper><CourseEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/memberships/tier/add-new" element={<DashboardWrapper><TierEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/memberships/tier/edit/:id" element={<DashboardWrapper><TierEditor /></DashboardWrapper>} />
           <Route path="/dashboard/coupon/add-new" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
-          <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
+          {/* Retired "coming soon" teaser (2026-11-27): the singular URL lands on the real page. */}
+          <Route path="/dashboard/membership" element={<Navigate to="/dashboard/memberships" replace />} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/grow" element={<DashboardWrapper><GrowHomeRoute /></DashboardWrapper>} />
           <Route path="/dashboard/grow/page" element={<DashboardWrapper><GrowPageRoute /></DashboardWrapper>} />
@@ -1096,7 +1104,12 @@ function App() {
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />
           <Route path="/:profileSlug/product/:productId" element={<ProductPurchase />} />
           <Route path="/:username/course/:slug" element={<CoursePage />} />
-          <Route path="/:username/membership" element={<MembershipSpace />} />
+          {/* Profile tabs — each its own URL on the same HostProfile (left card stays).
+              These words are reserved service slugs server-side (serviceController
+              RESERVED_SERVICE_SLUGS); /membership was the standalone MembershipSpace. */}
+          <Route path="/:profileSlug/products" element={<HostProfile tab="products" />} />
+          <Route path="/:profileSlug/courses" element={<HostProfile tab="courses" />} />
+          <Route path="/:profileSlug/membership" element={<HostProfile tab="membership" />} />
           <Route path="/:profileSlug/booking" element={<BookingRedirect />} />
           <Route path="/:profileSlug/booking/:serviceSlug" element={<ServiceBooking />} />
           <Route path="/:profileSlug/:serviceSlug" element={<ServiceDetail />} />

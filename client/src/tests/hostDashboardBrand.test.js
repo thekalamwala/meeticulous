@@ -44,7 +44,12 @@ const PAGES = [
   'pages/CatalogV2.jsx',
   'pages/catalog/KeptKit.jsx',
   'pages/catalog/BottomSheet.jsx',
-  'pages/catalog/ServicePreviewCard.jsx',
+  // Catalog upgrade (2026-11-27): editor routes + tier cards
+  'pages/catalog/ProductEditor.jsx',
+  'pages/catalog/CourseEditor.jsx',
+  'pages/catalog/TierEditor.jsx',
+  'pages/Memberships.jsx',
+  'pages/Courses.jsx',
 ];
 
 const GRAY = /\b(?:text|bg|border|ring|from|to|via|divide|placeholder|fill|stroke)-gray-\d/g;

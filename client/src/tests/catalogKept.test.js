@@ -17,6 +17,9 @@ describe('Kept catalog model', () => {
     expect(normalise({ id: 's', title: 'A', price: 1000, guest_total: 1059 }, 'service').guestTotal).toBe(1059);
     expect(normalise({ id: 's', title: 'A', price: 1000 }, 'service').guestTotal).toBeNull();
     expect(normalise({ id: 's', title: 'A', price: 1000, guest_total: null }, 'service').guestTotal).toBeNull();
+    // host_earnings ("You'll get") is the server's figure too, never derived here.
+    expect(normalise({ id: 's', title: 'A', price: 1000, host_earnings: 950 }, 'service').hostEarnings).toBe(950);
+    expect(normalise({ id: 's', title: 'A', price: 1000 }, 'service').hostEarnings).toBeNull();
     // A discount or a membership tier has no booking fee on top.
     expect(normalise({ id: 'c', code: 'X', discount_type: 'percent', discount_value: 5, active: true }, 'coupon').guestTotal).toBeNull();
     expect(normalise({ id: 'm', name: 'T', type: 'paid', price_inr: 99, status: 'live' }, 'membership').guestTotal).toBeNull();

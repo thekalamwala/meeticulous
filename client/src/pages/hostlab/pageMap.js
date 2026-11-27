@@ -20,7 +20,7 @@ export const LIVE_PAGE_MAP = [
   ['/dashboard/service/view/:id', 'Catalog › Services › Edit'],
   ['/dashboard/products', 'Catalog › Products'],
   ['/dashboard/courses', 'Catalog › Courses'],
-  ['/dashboard/membership', 'Catalog › Memberships'],
+  ['/dashboard/memberships', 'Catalog › Memberships'],
   ['/dashboard/coupons', 'Catalog › Offers'],
   ['/dashboard/earnings', 'Money › Earnings'],
   ['/dashboard/payments/payouts', 'Money › Payouts'],

@@ -49,6 +49,7 @@ const {
   getServiceById,
   getPublicServiceBySlug,
   getPublicServiceByProfileAndSlug,
+  uniqueSlug,
 } = require('../../controllers/serviceController');
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -298,5 +299,20 @@ describe('getPublicServiceByProfileAndSlug', () => {
     await getPublicServiceByProfileAndSlug(req({ profileSlug: 'jane-v', serviceSlug: 'ghost' }), r);
     expect(r.status).toHaveBeenCalledWith(404);
     expect(r.json.mock.calls[0][0].message).toMatch(/service/i);
+  });
+});
+
+// ── reserved slugs (public profile tab routes) ──────────────────────────────────
+describe('uniqueSlug never hands out a profile tab route', () => {
+  beforeEach(() => mockFrom(null)); // no existing service holds any slug
+
+  test.each(['products', 'courses', 'membership', 'badges', 'booking'])('%s gets a suffix', async (word) => {
+    const slug = await uniqueSlug(word, 'vendor-uuid');
+    expect(slug).not.toBe(word);
+    expect(slug).toMatch(new RegExp(`^${word}-[a-z0-9]+$`));
+  });
+
+  test('a normal slug is kept as-is', async () => {
+    expect(await uniqueSlug('product-shoot', 'vendor-uuid')).toBe('product-shoot');
   });
 });

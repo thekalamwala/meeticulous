@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
 import {
-  Camera, Check, ChevronRight, Copy, Download, ExternalLink, Eye, Lock, MapPin, QrCode, Share2,
+  Camera, Check, ChevronRight, Copy, Download, ExternalLink, Eye, Lock, QrCode, Share2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
@@ -23,7 +23,7 @@ import UsernameField from '../../components/dashboard/UsernameField';
 import CategoriesSection from '../../components/dashboard/CategoriesSection';
 import SetupGuide, { buildSetupSteps } from '../../components/dashboard/SetupGuide';
 import { Skeleton } from '../../components/dashboard/ui';
-import { WhatsAppIcon, cn, inr } from '../../components/dashboard/ui/v2';
+import { WhatsAppIcon, cn } from '../../components/dashboard/ui/v2';
 import { fieldError } from '../../utils/apiError';
 import {
   CREATOR_COLORS, DEFAULT_COVER_IMAGE, DEFAULT_THEME_COLOR, canUseCustomHex, getColorsForPlan,
@@ -32,62 +32,61 @@ import {
 import {
   COVER_ASPECT, SOCIAL_PLATFORMS, handleFromUrl, sanitizeSocialLinks, urlFromHandle,
 } from '../ProfileSetup';
+import { DRAFT_MSG, READY_MSG } from '../../utils/profilePreview';
 import GrowShell, {
   CardHead, Field, PinnedBar, Sheet, btnPrimary, btnSoft, card, input, press, readShared, ring, rowBase, tappable,
   useCopyPageLink, useIsDesktop,
 } from './GrowShell';
 import { pageFields, pagePayload, pageUrl, waShare } from './growModel';
 
-/* ── Live preview — a phone-sized copy of the public page, from the form. ─ */
-export const PagePreview = ({ form, services, username, className = '' }) => {
-  const tc = isValidHex(form.theme_color) ? form.theme_color : DEFAULT_THEME_COLOR;
-  const onTc = getContrastColor(tc);
-  const socials = SOCIAL_PLATFORMS.filter((p) => String(form.social_links?.[p.key] || '').trim());
-  const list = (services || []).filter((s) => s.is_active !== false).slice(0, 4);
+/* ── Live preview — the REAL public page, fed the unsaved draft. ──────────
+ * The page itself (/<username>?preview=1) runs in a same-origin iframe, so it is
+ * exactly what guests get, services and all; the form is posted in on every edit
+ * (utils/profilePreview.js). Phone layout: the iframe is never narrower than a
+ * phone (PHONE_W); where the frame is, it is drawn at PHONE_W and scaled down. */
+const PHONE_W = 390;
+
+export const PagePreview = ({ form, username, frameClassName = 'h-[560px]' }) => {
+  const frame = useRef(null);
+  const box = useRef(null);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const draft = useMemo(() => pagePayload({ ...form, social_links: sanitizeSocialLinks(form.social_links) }), [form]);
+  const post = useCallback(() => {
+    frame.current?.contentWindow?.postMessage({ type: DRAFT_MSG, host: draft }, window.location.origin);
+  }, [draft]);
+
+  useEffect(() => { post(); }, [post]);
+  // The page asks once it is listening (its first load, or a reload inside the frame).
+  useEffect(() => {
+    const onMessage = (e) => {
+      if (e.origin === window.location.origin && e.source === frame.current?.contentWindow && e.data?.type === READY_MSG) post();
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [post]);
+  useEffect(() => {
+    const el = box.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(([e]) => setSize({ w: e.contentRect.width, h: e.contentRect.height }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [username]);
+
+  const scale = size.w && size.w < PHONE_W ? size.w / PHONE_W : 1;
   return (
-    <div className={cn('mx-auto w-full max-w-[320px] select-none rounded-[44px] bg-ink p-2.5', className)} aria-label="Preview of your booking page">
-      <div className="relative h-[600px] overflow-hidden rounded-[36px] bg-cream">
-        <div className="h-full overflow-y-auto dash-noscrollbar">
-          <div className="aspect-[3/1] w-full overflow-hidden bg-blush">
-            <img src={form.cover_image || DEFAULT_COVER_IMAGE} alt="" className="h-full w-full object-cover" />
+    <div className="mx-auto w-full max-w-[440px] select-none rounded-[44px] bg-ink p-2.5">
+      {/* The mask, not just overflow-hidden: the page's blurred (backdrop-filter)
+          header escapes a plain rounded clip and leaves square corners. */}
+      <div ref={box} className={cn('relative overflow-hidden rounded-[36px] bg-cream [mask-image:linear-gradient(#000,#000)]', frameClassName)}>
+        {username ? (
+          <iframe ref={frame} src={`/${username}?preview=1`} title="Live preview of your booking page" onLoad={post}
+            className="absolute left-0 top-0 origin-top-left border-0 bg-cream"
+            style={{ width: scale < 1 ? PHONE_W : '100%', height: scale < 1 ? size.h / scale : '100%', transform: scale < 1 ? `scale(${scale})` : undefined }} />
+        ) : (
+          <div className="grid h-full place-items-center p-6 text-center">
+            <p className="mb-0 max-w-[24ch] text-[13.5px] text-muted">Pick your link in <span className="font-semibold text-ink">Link and category</span> to see your page here.</p>
           </div>
-          <div className="px-4 pb-6">
-            <div className="-mt-8 h-16 w-16 overflow-hidden rounded-[18px] border-[3px] border-white bg-white">
-              {form.profile_image
-                ? <img src={form.profile_image} alt="" className="h-full w-full object-cover" />
-                : <span className="grid h-full w-full place-items-center bg-blush font-display text-[22px] font-extrabold text-maroon">{(form.name || '?').charAt(0).toUpperCase()}</span>}
-            </div>
-            <p className="mb-0 mt-2 line-clamp-2 break-words font-display text-[19px] font-extrabold leading-tight tracking-[-0.02em] text-ink">{form.name || 'Your name'}</p>
-            {form.profession && <p className="mb-0 mt-0.5 truncate text-[12.5px] font-semibold" style={{ color: tc }}>{form.profession}</p>}
-            {form.location && (
-              <p className="mb-0 mt-1 flex items-center gap-1 truncate text-[12px] text-muted"><MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />{form.location}</p>
-            )}
-            {form.bio
-              ? <p className="mb-0 mt-2.5 line-clamp-4 whitespace-pre-line break-words text-[12.5px] leading-relaxed text-ink/75">{form.bio}</p>
-              : <p className="mb-0 mt-2.5 text-[12.5px] italic text-faint">Your bio shows here.</p>}
-            {socials.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {socials.slice(0, 6).map((p) => (
-                  <span key={p.key} className="rounded-[8px] bg-white px-2 py-1 text-[12px] font-medium text-ink/70">{p.label.replace(/ \(.*\)$/, '')}</span>
-                ))}
-                {socials.length > 6 && <span className="rounded-[8px] bg-white px-2 py-1 text-[12px] font-medium text-muted">+{socials.length - 6}</span>}
-              </div>
-            )}
-            <div className="mt-4 flex flex-col gap-2">
-              {list.length === 0 && <p className="mb-0 rounded-[16px] bg-white p-3 text-[12px] text-muted">What you sell shows here once you add it.</p>}
-              {list.map((s) => (
-                <div key={s.id} className="rounded-[16px] bg-white p-3">
-                  <p className="mb-0 truncate text-[13px] font-semibold text-ink">{s.title}</p>
-                  <p className="mb-0 mt-0.5 truncate text-[12px] text-muted">
-                    {s.duration ? `${s.duration} min · ` : ''}{Number(s.price) > 0 ? inr(s.price) : 'Free'}
-                  </p>
-                  <span className="mt-2 block rounded-[10px] py-1.5 text-center text-[12px] font-semibold" style={{ background: tc, color: onTc }}>Book</span>
-                </div>
-              ))}
-            </div>
-            <p className="mb-0 mt-5 text-center text-[12px] text-faint">{username ? `meeticulous.com/${username}` : 'Set your link below'}</p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -227,12 +226,15 @@ const SocialCard = ({ form, setSocial, isPro }) => {
                 <input id="yp-social-input" type={p.type} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={p.ph}
                   autoCapitalize="off" autoCorrect="off" spellCheck={false} autoFocus className={cn(input, 'h-12')} />
               ) : (
-                <div className="flex h-12 items-center overflow-hidden rounded-[16px] border border-neutral-200 bg-white transition focus-within:border-maroon focus-within:ring-[3px] focus-within:ring-rose/40">
-                  <span className="shrink-0 pl-3.5 text-[15px] text-faint">{p.prefix}</span>
+                // ONE field: the wrapper owns the border and the focus ring; the prefix is
+                // quiet inline text and the inner input draws nothing. focus:shadow-none
+                // beats index.css's global `input:focus` ring, which drew a second box.
+                <label htmlFor="yp-social-input" className="flex h-12 cursor-text items-center rounded-[16px] border border-neutral-200 bg-white px-3.5 transition focus-within:border-maroon focus-within:ring-[3px] focus-within:ring-rose/40">
+                  <span className="shrink-0 select-none text-[16px] text-muted lg:text-[15px]">{p.prefix}</span>
                   <input id="yp-social-input" type="text" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={p.ph}
                     autoCapitalize="off" autoCorrect="off" spellCheck={false} autoFocus
-                    className="h-full min-w-0 flex-1 border-0 bg-transparent px-1 pr-3.5 text-[16px] text-ink outline-none placeholder:text-faint lg:text-[15px]" />
-                </div>
+                    className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-[16px] text-ink outline-none placeholder:text-faint focus:shadow-none lg:text-[15px]" />
+                </label>
               )}
             </Field>
           </form>
@@ -308,7 +310,6 @@ export default function YourPage() {
   const [saving, setSaving] = useState(false);
   const [cropper, setCropper] = useState(null);
   const [setup, setSetup] = useState(null); // null = loading
-  const [services, setServices] = useState([]);
   const [sheet, setSheet] = useState(null); // 'preview' | 'share' | 'qr'
   const [linkShared, setLinkShared] = useState(readShared);
   const editorRef = useRef(null);
@@ -322,7 +323,6 @@ export default function YourPage() {
       getAvailability().then((r) => !!r?.data).catch(() => true),
       getMyKyc().then((r) => r?.data ?? null).catch(() => null),
     ]).then(([svcs, availabilitySet, kyc]) => {
-      setServices(svcs || []);
       setSetup({ hasService: svcs ? svcs.length > 0 : true, availabilitySet, kyc });
     });
   }, []);
@@ -471,7 +471,9 @@ export default function YourPage() {
             <p className="mb-0 flex items-center gap-1.5 text-[13px] font-semibold text-muted"><Eye className="h-4 w-4" strokeWidth={2.2} /> Live preview</p>
             {dirty && <span className="rounded-[8px] bg-warning-bg px-2 py-0.5 text-[12px] font-semibold text-warning-fg">Not saved yet</span>}
           </div>
-          <PagePreview form={form} services={services} username={user?.username} />
+          {/* Desktop only: on a phone this aside is hidden, and a hidden iframe would
+              still load a whole second copy of the app. */}
+          {isDesktop && <PagePreview form={form} username={user?.username} />}
           <ShareKitCard url={url} username={user?.username} onCopy={copy} onQr={() => setSheet('qr')} />
         </aside>
       </div>
@@ -492,7 +494,7 @@ export default function YourPage() {
       <div aria-hidden="true" className="h-14 lg:hidden" />
 
       <Sheet open={sheet === 'preview'} onClose={() => setSheet(null)} title="Preview" bodyClassName="bg-cream pt-2">
-        <PagePreview form={form} services={services} username={user?.username} />
+        <PagePreview form={form} username={user?.username} frameClassName="h-[min(640px,68dvh)]" />
         {dirty && <p className="mb-0 mt-3 text-center text-[12.5px] text-muted">Showing your unsaved changes.</p>}
       </Sheet>
       <Sheet open={sheet === 'share'} onClose={() => setSheet(null)} title="Share your page">

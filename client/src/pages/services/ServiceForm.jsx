@@ -5,7 +5,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { ChevronLeft, Plus, MapPin, AlertTriangle, Eye } from 'lucide-react';
+import { ChevronLeft, Plus, MapPin, AlertTriangle } from 'lucide-react';
 import { svcCreate, svcUpdate, uploadImage, hostGetCategories, listServiceCategories, hostSuggestServiceCategory, aiGenerateListing, updateProfile, getPriceBenchmark } from '../../services/api';
 import toast from 'react-hot-toast';
 import { TrendingUp } from 'lucide-react';
@@ -18,8 +18,6 @@ import { normalizePlan } from '../../utils/themeUtils';
 import CancellationPolicyField from '../../components/services/CancellationPolicyField';
 import { fieldError } from '../../utils/apiError';
 import useFeatureFlags from '../../hooks/useFeatureFlags';
-import ServicePreviewCard from '../catalog/ServicePreviewCard';
-import BottomSheet from '../catalog/BottomSheet';
 
 // Card shells. Kept (dashboard_v2): a borderless white 24px card on cream; the
 // legacy look keeps the bordered Card. Module-level so a re-render never swaps
@@ -352,7 +350,6 @@ export default function ServiceForm({ initialData, serviceId }) {
   // Where Back / Save return: the screen the host came from (Catalog passes it),
   // else the services list as before.
   const backTo = (kept && location.state?.from) || '/dashboard/services';
-  const [previewOpen, setPreviewOpen] = useState(false);
   const { user, updateUser } = useAuth() || {};
   // Offline (in-person) services need a venue. map_link is a profile-level field
   // (shared across all the host's offline services), so it's edited inline here
@@ -543,6 +540,13 @@ export default function ServiceForm({ initialData, serviceId }) {
                 {isEdit ? 'Changes show on your page as soon as you save.' : 'Guests can book it as soon as you publish.'}
               </p>
             </div>
+            {/* Desktop: Save + Cancel in the header (the form runs full width). */}
+            <div className="hidden shrink-0 items-center gap-2 lg:flex">
+              <Button type="button" variant="secondary" onClick={() => navigate(backTo)}>Cancel</Button>
+              <Button type="submit" disabled={saving} className="min-w-[140px]">
+                {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Publish service'}
+              </Button>
+            </div>
           </div>
         </header>
       ) : (
@@ -557,10 +561,6 @@ export default function ServiceForm({ initialData, serviceId }) {
           />
         </>
       )}
-
-      {/* Kept desktop: the form beside a sticky live preview of the guest's card. */}
-      <div className={cn(kept && 'lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6')}>
-      <div className="min-w-0">
 
       {/* ── ABOVE THE FOLD: Basic info ── */}
       <Box className="mb-6 p-6">
@@ -818,19 +818,6 @@ export default function ServiceForm({ initialData, serviceId }) {
         </div>
       </div>
 
-      </div>
-      {kept && (
-        <aside className="hidden lg:sticky lg:top-6 lg:flex lg:flex-col lg:gap-3">
-          <p className="mb-0 text-[13px] font-semibold text-faint">How guests see it</p>
-          <ServicePreviewCard form={form} feeOnly={feeOnly} hostName={user?.name} />
-          <Button type="submit" disabled={saving} className="w-full">
-            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Publish service'}
-          </Button>
-          <Button type="button" variant="secondary" className="w-full" onClick={() => navigate(backTo)}>Cancel</Button>
-        </aside>
-      )}
-      </div>
-
       {/* Submit bar */}
       {!kept && (
         <div className="sticky bottom-0 z-20 -mx-4 flex items-center justify-between gap-4 border-t border-neutral-200 bg-white/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6">
@@ -842,27 +829,17 @@ export default function ServiceForm({ initialData, serviceId }) {
       )}
 
       {/* Kept phone + tablet: Save pinned in the thumb zone above the tab bar,
-          clear of its raised centre button, with the card preview one tap away
-          in a sheet. Portalled, since transformed shell wrappers would otherwise
+          clear of its raised centre button. Portalled, since transformed shell wrappers would otherwise
           pin it to themselves; the form attribute keeps the button submitting
           this form from outside it. */}
       {kept && createPortal(
         <div className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] z-30 flex gap-2 bg-cream/90 px-4 pb-9 pt-2 backdrop-blur-md lg:hidden">
-          <button type="button" onClick={() => setPreviewOpen(true)}
-            className={cn('inline-flex h-12 shrink-0 items-center gap-2 rounded-[12px] bg-white px-4 text-[15px] font-semibold text-maroon active:bg-blush', KEPT_PRESS)}>
-            <Eye className="h-4 w-4" strokeWidth={2.4} /> Preview
-          </button>
           <button type="submit" form="service-form" disabled={saving}
             className={cn('flex h-12 flex-1 items-center justify-center rounded-[12px] bg-maroon text-[15px] font-semibold text-white active:bg-maroon-dark disabled:opacity-60', KEPT_PRESS)}>
             {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Publish service'}
           </button>
         </div>,
         document.body,
-      )}
-      {kept && (
-        <BottomSheet open={previewOpen} onClose={() => setPreviewOpen(false)} title="How guests see it">
-          <div className="px-2 pb-2"><ServicePreviewCard form={form} feeOnly={feeOnly} hostName={user?.name} className="bg-cream" /></div>
-        </BottomSheet>
       )}
 
       {suggestOpen && <SuggestSubcategoryModal primary={primaryCat} onClose={() => setSuggestOpen(false)} />}

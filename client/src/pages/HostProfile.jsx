@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import { isVanitySlug, VANITY_TARGET } from "../config/vanityRedirects";
-import { getHostProfile, getHostReviews, getHostProducts, getHostTestimonials, getVendorBadges, subscribeNewsletter, recordProfileView } from "../services/api";
+import { getHostProfile, getHostReviews, getHostProducts, getHostCourses, getMembershipSpace, getHostTestimonials, getVendorBadges, subscribeNewsletter, recordProfileView } from "../services/api";
 import { getAuthorActivity } from "../services/communityApi";
 import { DEMO_PERSONAS, DEMO_USERNAME, personaView } from "../data/demoPersonas";
 import { analytics, EVENTS } from "../services/analytics";
@@ -13,7 +13,8 @@ import Seo from "../components/common/Seo";
 import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
 import { isNotFoundError } from "../utils/fetchError";
-import { resolveProfileSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
+import { resolveProfileSeo, profileTabSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
+import { CourseCard, ProfileMembership, ProfileTabHeading } from "../components/profile/ProfileTabs";
 import { profileFaqs } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import ItemCard from "../components/community/ItemCard";
@@ -479,7 +480,9 @@ const OfferingEmpty = ({ type, hostName, profileSlug, tc, C }) => {
 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
-const HostProfile = () => {
+// `tab` = which profile tab this URL shows: services (/:username, the default and
+// unchanged) · products · courses · membership (/:username/<tab>, App.jsx).
+const HostProfile = ({ tab = 'services' } = {}) => {
   const { profileSlug } = useParams();
   const navigate = useNavigate();
   // This page owns a host-branded navbar + its own footer, so drop the global
@@ -493,7 +496,33 @@ const HostProfile = () => {
   // Build-time copy baked into the prerendered HTML → real profile on the first
   // frame; the fetch effect below refreshes it.
   const seed = isVanity ? null : bakedProfile(profileSlug);
-  const [host,        setHost]        = useState(seed?.host ?? null);
+  const [rawHost,     setHost]        = useState(seed?.host ?? null);
+
+  // ── Live preview hook (dashboard "Your page" iframe) ─────────────────────────
+  // Only inside a same-origin iframe with ?preview=1. The parent posts the host's
+  // unsaved edits as 'mt:profile-draft'; they override what is DISPLAYED only and
+  // are never saved. Messages from any other origin are ignored. A preview also
+  // skips view tracking (a host must not inflate their own views) and is noindex.
+  const isPreview = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('preview') === '1'
+    && window.parent !== window;
+  const [draft, setDraft] = useState(null);
+  useEffect(() => {
+    if (!isPreview) return undefined;
+    const onMessage = (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== 'mt:profile-draft' || !event.data.host) return;
+      const { name, bio, profession, location, profile_image, cover_image, theme_color, social_links } = event.data.host;
+      const next = { name, bio, profession, location, profile_image, cover_image, theme_color, social_links };
+      Object.keys(next).forEach((k) => next[k] === undefined && delete next[k]);
+      setDraft(next);
+    };
+    window.addEventListener('message', onMessage);
+    window.parent.postMessage({ type: 'mt:profile-preview-ready' }, window.location.origin);
+    return () => window.removeEventListener('message', onMessage);
+  }, [isPreview]);
+  const host = rawHost && draft ? { ...rawHost, ...draft } : rawHost;
+  // ── end live preview hook ────────────────────────────────────────────────────
   const [services,    setServices]    = useState(seed?.services ?? []);
   const [loading,     setLoading]     = useState(!seed);
   const [error,       setError]       = useState('');
@@ -501,12 +530,21 @@ const HostProfile = () => {
   const [isDemo,      setIsDemo]      = useState(false);
   const [personaKey,  setPersonaKey]  = useState(null);
   const demoBase = useRef(null);
-  const [filter,      setFilter]      = useState('all'); // all | service | product
+  const [filter,      setFilter]      = useState('all'); // services tab: all | feed
   const [navOpen,     setNavOpen]     = useState(false); // mobile profile-nav drawer
   const [memberOpen,  setMemberOpen]  = useState(false); // membership early-access modal
   const [reviewData,  setReviewData]  = useState(() => (seed && prerendered(`/reviews/${profileSlug}`)) || { reviews: [], count: 0, avg: 0 });
   const [showReviews, setShowReviews] = useState(false);
   const [products,    setProducts]    = useState(() => (seed && prerendered(`/products/host/${profileSlug}`)) || []);
+  const [courses,     setCourses]     = useState(() => (seed && prerendered(`/courses/host/${profileSlug}`)) || []);
+  // Live membership space payload, or null (none / community_memberships off -> 404).
+  const [membership,  setMembership]  = useState(() => (seed && prerendered(`/memberships/space/${profileSlug}`)) || null);
+  // True once products/courses/membership have answered, so a tab URL with nothing
+  // to show can redirect to the profile instead of flashing an empty tab.
+  const [tabsSettled, setTabsSettled] = useState(false);
+  // Which of those fetches failed (network/5xx/429 — not a membership 404). A failed
+  // tab never redirects: the visitor gets a retry note instead of losing the URL.
+  const [tabFailed,   setTabFailed]   = useState({});
   const [testimonials, setTestimonials] = useState(() => (seed && prerendered(`/host/${profileSlug}/testimonials`)) || []);
   const [badgeList,   setBadgeList]   = useState(() => (seed && prerendered(`/vendors/${profileSlug}/badges`)?.badges) || []);
   const [badgeInfo,   setBadgeInfo]   = useState(null); // clicked badge → bottom-right info popup
@@ -517,6 +555,7 @@ const HostProfile = () => {
     if (isVanity) return; // vanity slug → redirected in render; skip the 404 lookup
     let alive = true;
     setError('');
+    setTabsSettled(false);
     const baked = bakedProfile(profileSlug);
     if (baked) { setHost(baked.host); setServices(baked.services); setLoading(false); } else setLoading(true);
     // Only a real 404 means the host is gone → the noindex ErrorPage is correct.
@@ -544,10 +583,23 @@ const HostProfile = () => {
           setHost(data.host);
           setServices(data.services || []);
         }
-        analytics.track(EVENTS.PROFILE_VIEWED, { host_id: data.host?.id, slug: profileSlug });
-        recordProfileView(profileSlug); // v3.205 server-side view counter (fire-and-forget)
+        if (!isPreview) {
+          analytics.track(EVENTS.PROFILE_VIEWED, { host_id: data.host?.id, slug: profileSlug });
+          recordProfileView(profileSlug); // v3.205 server-side view counter (fire-and-forget)
+        }
         getHostReviews(profileSlug).then(r => setReviewData(r.data)).catch(() => {});
-        getHostProducts(profileSlug).then(r => setProducts(r.data || [])).catch(() => {});
+        Promise.allSettled([
+          getHostProducts(profileSlug).then(r => setProducts(r.data || [])),
+          getHostCourses(profileSlug).then(r => setCourses(r.data || [])),
+          getMembershipSpace(profileSlug).then(r => setMembership(r.data || null), (e) => {
+            setMembership(null);
+            if (!isNotFoundError(e)) throw e; // 404 = no live program (or flag off)
+          }),
+        ]).then(([p, c, m]) => {
+          if (!alive) return;
+          setTabFailed({ products: p.status === 'rejected', courses: c.status === 'rejected', membership: m.status === 'rejected' });
+          setTabsSettled(true);
+        });
         getHostTestimonials(profileSlug).then(r => setTestimonials(r.data || [])).catch(() => {});
         getVendorBadges(profileSlug).then(r => setBadgeList(r.data?.badges || [])).catch(() => {});
         setLoading(false);
@@ -602,6 +654,10 @@ const HostProfile = () => {
   const websiteUrl = safeUrl(social.website);
 
   const hasProducts = products.length > 0;
+  const hasCourses = courses.length > 0;
+  const hasMembership = (membership?.tiers?.length || 0) > 0;
+  const tabHasItems = { services: true, products: hasProducts, courses: hasCourses, membership: hasMembership }[tab] ?? true;
+  const reloadMembership = () => getMembershipSpace(profileSlug).then(r => setMembership(r.data || null)).catch(() => {});
   // Offering types the host actually has drive the icon filters + nav (Memberships
   // and Updates are omitted until there's a data source — no empty doorway tabs).
   const showServices = filter === 'all' || filter === 'service';
@@ -611,7 +667,10 @@ const HostProfile = () => {
   const nothingShown = gridServices.length === 0 && !showProducts;
 
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
-  const seo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
+  // A tab keeps the profile's robots/image but gets its own title, description and
+  // canonical (profileTabSeo; MIRRORS the server profile-tab meta shell).
+  const baseSeo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
+  const seo = baseSeo && tab !== 'services' ? { ...baseSeo, ...profileTabSeo({ tab, host, siteUrl: SEO_SITE }) } : baseSeo;
   // Template FAQs are emitted as FAQPage ONLY when the host has host-specific facts
   // (services or a profession) — otherwise they're generic and thin (guide §5.3).
   // MIRROR this gate in server prerenderController resolveProfileMeta.
@@ -620,7 +679,8 @@ const HostProfile = () => {
   const jsonLd = host ? [profileGraphJsonLd({
     host, siteUrl: SEO_SITE, services, name: seo?.title,
     rating: { avg: reviewData.avg, count: reviewData.count },
-    faqs: faqsHostSpecific ? faqs : [],
+    // FAQs render (and are marked up) on the services page only, not repeated per tab.
+    faqs: faqsHostSpecific && tab === 'services' ? faqs : [],
   })] : null;
 
   if (isVanity) return <Navigate to={`/${VANITY_TARGET}`} replace />;
@@ -630,30 +690,59 @@ const HostProfile = () => {
   // transient failure uses TransientError (no noindex) so a live page isn't dropped.
   if (error === 'notfound') return <ErrorPage code={404} />;
   if (error === 'transient') return <TransientError message="This profile didn’t load. Please try again." />;
+  // A tab only exists while the host has >=1 published item of that type.
+  if (host && tabsSettled && !tabHasItems && !tabFailed[tab]) return <Navigate to={`/${profileSlug}`} replace />;
 
-  const goOfferings = (f) => {
+  // Bring the content back into view only when the visitor has scrolled past its
+  // top. Never nudge a page that is already there (the old always-scrollIntoView
+  // moved the desktop page a few px on every Services click).
+  const toContentTop = () => {
+    const el = document.getElementById('offerings');
+    if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  // Services + Community are views of /:username; the other tabs are their own URLs.
+  const goServicesView = (f) => {
     setFilter(f);
     setNavOpen(false);
-    document.getElementById('offerings')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (tab !== 'services') navigate(`/${profileSlug}`);
+    else toContentTop();
+  };
+  const goTab = (key) => {
+    setNavOpen(false);
+    if (key !== tab) navigate(`/${profileSlug}/${key}`);
+    else toContentTop();
   };
 
-  // Profile sections. Each drives the in-page offering filter, except Membership
-  // which navigates to the membership space. `show` hides a section the host does
-  // not have, so a host with only services shows just Services + Community. Active
-  // is derived from `filter` (never hardcoded). `icon` is used only by the mobile
-  // bottom tab-bar; the desktop rail is text-only. Courses has no profile listing
-  // surface yet (only per-course pages), so it stays hidden until one ships.
+  // Profile tabs. A tab shows only when the host has >=1 published item of that
+  // type (`show`), so a services-only host sees Services + Community. Active is
+  // derived from the URL tab + the services-page filter (never hardcoded). `icon`
+  // is used only by the mobile bottom tab-bar; the desktop rail is text-only.
+  const onServices = tab === 'services';
   const SECTIONS = [
-    { key: 'service',    label: 'Services',    icon: LayoutGrid,   show: true,        active: filter === 'all' || filter === 'service', onClick: () => goOfferings('service') },
-    { key: 'product',    label: 'Products',    icon: Package,      show: true,        active: filter === 'product',                      onClick: () => goOfferings('product') },
-    { key: 'course',     label: 'Courses',     icon: PlayCircle,   show: true,        active: filter === 'course',                       onClick: () => goOfferings('course') },
-    { key: 'membership', label: 'Memberships', icon: Crown,        show: true,        active: false,                                     onClick: () => { setNavOpen(false); navigate(`/${profileSlug}/membership`); } },
-    { key: 'feed',       label: 'Community',   icon: MessageCircle, show: true,        active: filter === 'feed',                         onClick: () => goOfferings('feed') },
+    { key: 'service',    label: 'Services',   icon: LayoutGrid,    show: true,          active: onServices && filter !== 'feed', onClick: () => goServicesView('all') },
+    { key: 'product',    label: 'Products',   icon: Package,       show: hasProducts || tab === 'products',     active: tab === 'products',              onClick: () => goTab('products') },
+    { key: 'course',     label: 'Courses',    icon: PlayCircle,    show: hasCourses || tab === 'courses',       active: tab === 'courses',               onClick: () => goTab('courses') },
+    { key: 'membership', label: 'Membership', icon: Crown,         show: hasMembership || tab === 'membership', active: tab === 'membership',            onClick: () => goTab('membership') },
+    { key: 'feed',       label: 'Community',  icon: MessageCircle, show: true,          active: onServices && filter === 'feed', onClick: () => goServicesView('feed') },
   ].filter((s) => s.show);
+
+  // Profile-card stats: the first cell counts what this tab lists (the ACTUAL
+  // member count on Membership); Bookings + Rating stay on every tab.
+  const firstStat = {
+    services:   { n: services.length,               l: 'Services' },
+    products:   { n: products.length,               l: 'Products' },
+    courses:    { n: courses.length,                l: 'Courses' },
+    membership: { n: membership?.member_count || 0, l: 'Members' },
+  }[tab] || { n: services.length, l: 'Services' };
+  const STATS = [
+    firstStat,
+    { n: host?.booking_count || 0, l: 'Bookings' },
+    { n: reviewData?.avg > 0 ? Number(reviewData.avg).toFixed(1) : '—', l: 'Rating', star: reviewData?.avg > 0 },
+  ];
 
   return (
     <>
-      {seo && <Seo {...seo} jsonLd={jsonLd} />}
+      {seo && <Seo {...seo} {...(isPreview ? { robots: 'noindex' } : {})} jsonLd={jsonLd} />}
       <BrandPreloader
         variant="profile"
         ready={!loading && !!host && !error}
@@ -797,11 +886,7 @@ const HostProfile = () => {
 
             {/* Stats — inset dividers + uppercase labels */}
             <div className="flex items-center w-full text-center" style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-              {[
-                { n: services.length,       l: 'Services' },
-                { n: host.booking_count || 0, l: 'Bookings' },
-                { n: reviewData?.avg > 0 ? Number(reviewData.avg).toFixed(1) : '—', l: 'Rating', star: reviewData?.avg > 0 },
-              ].map((s, i) => (
+              {STATS.map((s, i) => (
                 <div key={s.l} className="relative flex-1 px-1">
                   {i > 0 && <span aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-7" style={{ background: C.border }} />}
                   <div className="font-display font-extrabold text-[17px] leading-none flex items-center justify-center gap-0.5" style={{ color: C.text }}>
@@ -838,7 +923,7 @@ const HostProfile = () => {
               </div>
             )}
 
-            <button type="button" onClick={() => { setNavOpen(false); goOfferings('service'); }}
+            <button type="button" onClick={() => goServicesView('all')}
               className="w-full flex items-center justify-center rounded-full font-semibold text-sm transition-opacity hover:opacity-90"
               style={{ height: 46, background: tc, color: '#fff', marginTop: 18 }}>
               Book a session
@@ -924,11 +1009,7 @@ const HostProfile = () => {
 
                 {/* Stats — three cells with inset dividers + uppercase labels */}
                 <div className="flex items-center mt-4 pt-4 text-center" style={{ borderTop: `1px solid ${C.border}` }}>
-                  {[
-                    { n: services.length,       l: 'Services' },
-                    { n: host.booking_count || 0, l: 'Bookings' },
-                    { n: reviewData.avg > 0 ? reviewData.avg.toFixed(1) : '—', l: 'Rating', star: reviewData.avg > 0 },
-                  ].map((s, i) => (
+                  {STATS.map((s, i) => (
                     <div key={s.l} className="relative flex-1 px-1">
                       {i > 0 && <span aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-7" style={{ background: C.border }} />}
                       <div className="font-display font-extrabold text-[17px] leading-none flex items-center justify-center gap-0.5" style={{ color: C.text }}>
@@ -976,10 +1057,33 @@ const HostProfile = () => {
           {/* ── RIGHT — offerings ──────────────────────── */}
           <section className="w-full lg:flex-1 min-w-0">
 
-            {filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
-
             {/* Anchor for the profile nav's scroll-to (header/intro/featured removed) */}
             <div id="offerings" style={{ scrollMarginTop: 82 }} />
+
+            {!onServices && !tabHasItems ? (
+              tabFailed[tab] ? (
+                <div className="rounded-2xl py-16 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
+                  <p className="font-semibold" style={{ color: C.text }}>This didn't load.</p>
+                  <button type="button" onClick={() => window.location.reload()} className="mt-3 text-sm font-semibold underline underline-offset-2" style={{ color: tc }}>Try again</button>
+                </div>
+              ) : null
+            ) : tab === 'products' ? (
+              <>
+                <ProfileTabHeading eyebrow={`${firstName}'s`} title="Digital products" C={C} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {products.map(p => <ProductCard key={p.id} product={p} profileSlug={profileSlug} />)}
+                </div>
+              </>
+            ) : tab === 'courses' ? (
+              <>
+                <ProfileTabHeading eyebrow={`${firstName}'s`} title="Courses" C={C} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {courses.map(c => <CourseCard key={c.id} course={c} profileSlug={profileSlug} C={C} />)}
+                </div>
+              </>
+            ) : tab === 'membership' ? (
+              membership && <ProfileMembership username={profileSlug} data={membership} onReload={reloadMembership} C={C} />
+            ) : filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
 
             {/* Services grid */}
             {showServices && gridServices.length > 0 && (
@@ -1005,12 +1109,14 @@ const HostProfile = () => {
             {/* Empty state — message + request form (services/products/courses) */}
             {nothingShown && (
               <OfferingEmpty
-                type={filter === 'product' ? 'product' : filter === 'course' ? 'course' : 'service'}
+                type="service"
                 hostName={host.name} profileSlug={profileSlug} tc={tc} C={C} />
             )}
 
             </>)}
 
+            {/* Reviews / testimonials / FAQ belong to the services page, not every tab. */}
+            {onServices && (<>
             {/* Reviews */}
             {reviewData.count > 0 && (
               <div className="mt-10">
@@ -1092,6 +1198,7 @@ const HostProfile = () => {
                 <FaqAccordion faqs={faqs} colors={C} />
               </div>
             )}
+            </>)}
           </section>
         </div>
       </div>

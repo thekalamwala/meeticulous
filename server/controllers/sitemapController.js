@@ -19,8 +19,8 @@
 const { buildUrlset, buildSitemapIndex, paginate } = require('../utils/sitemapXml');
 const { sitemapCache } = require('../utils/sitemapCache');
 const {
-  trimSlash, staticEntries, hostEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
-  fetchHosts, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
+  trimSlash, staticEntries, hostEntries, hostTabEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
+  fetchHosts, fetchHostTabs, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
 } = require('../services/sitemapService');
 const { logger } = require('../utils/logger');
 
@@ -36,15 +36,17 @@ const loadEntries = async () => {
   if (cached) return cached;
 
   const site = getSiteUrl();
-  const [hosts, services, professions, blogs, community] = await Promise.all([
-    fetchHosts(), fetchServices(), fetchProfessions(), fetchBlogs(), fetchCommunity(),
+  const [hosts, services, professions, blogs, community, tabs] = await Promise.all([
+    fetchHosts(), fetchServices(), fetchProfessions(), fetchBlogs(), fetchCommunity(), fetchHostTabs(),
   ]);
   const listedHosts = new Set(services.map((s) => s.profiles && s.profiles.username).filter(Boolean));
+  const listed = hosts.filter((h) => listedHosts.has(h.username));
   const value = {
     pages: staticEntries(site),
     // Only hosts with >=1 listed service: a profile with nothing bookable is
     // noindexed (prerender + client), so it must not be in the sitemap either.
-    hosts: hostEntries(hosts.filter((h) => listedHosts.has(h.username)), site),
+    // Their tab pages (/:username/products|courses|membership) follow the profile.
+    hosts: [...hostEntries(listed, site), ...hostTabEntries(listed, tabs, site)],
     services: serviceEntries(services, site),
     professions: professionEntries(professions, site),
     blog: blogEntries(blogs, site),

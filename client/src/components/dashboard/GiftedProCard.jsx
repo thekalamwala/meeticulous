@@ -9,6 +9,7 @@ import { useAuth } from "../../context/AuthContext";
 import { submitGiftShare } from "../../services/api";
 import { Card, Button, Input, cn } from "./ui";
 import { GIFTED_PRO_LABEL } from "../../utils/themeUtils";
+import { LinkedInIcon, WhatsAppIcon, XIcon } from "./ui/v2";
 
 const fmtDay = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 
@@ -17,24 +18,26 @@ const copy = async (text, what) => {
   catch { toast.error("Couldn't copy — select and copy it manually"); }
 };
 
+// Branded share pills: the network's own coloured mark + its name on a white pill,
+// all one height; Copy link is the same pill with a maroon copy glyph.
+const pill = "inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-ink ring-1 ring-inset ring-neutral-200 transition hover:no-underline hover:ring-maroon/40 hover:text-maroon focus:outline-none focus-visible:shadow-[var(--focus-ring)]";
+
 const ShareLinks = ({ text, url }) => {
   const t = encodeURIComponent(text), u = encodeURIComponent(url);
   const links = [
-    ["WhatsApp", `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`],
-    ["LinkedIn", `https://www.linkedin.com/sharing/share-offsite/?url=${u}`],
-    ["X", `https://twitter.com/intent/tweet?text=${t}&url=${u}`],
+    ["WhatsApp", WhatsAppIcon, `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`],
+    ["LinkedIn", LinkedInIcon, `https://www.linkedin.com/sharing/share-offsite/?url=${u}`],
+    ["X", XIcon, `https://twitter.com/intent/tweet?text=${t}&url=${u}`],
   ];
   return (
     <div className="flex flex-wrap gap-2">
-      {links.map(([name, href]) => (
-        <a key={name} href={href} target="_blank" rel="noreferrer"
-          className="rounded-full border border-neutral-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 hover:border-primary hover:text-primary hover:no-underline focus:outline-none focus-visible:shadow-[var(--focus-ring)]">
-          {name}
+      {links.map(([name, Mark, href]) => (
+        <a key={name} href={href} target="_blank" rel="noreferrer" className={pill}>
+          <Mark className="h-4 w-4 shrink-0" /> {name}
         </a>
       ))}
-      <button type="button" onClick={() => copy(url, "Link")}
-        className="inline-flex items-center gap-1 rounded-full border border-neutral-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 hover:border-primary hover:text-primary focus:outline-none focus-visible:shadow-[var(--focus-ring)]">
-        <Copy className="h-3.5 w-3.5" /> Copy link
+      <button type="button" onClick={() => copy(url, "Link")} className={pill}>
+        <Copy className="h-4 w-4 shrink-0 text-maroon" strokeWidth={2.2} /> Copy link
       </button>
     </div>
   );
