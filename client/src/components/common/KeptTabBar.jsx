@@ -88,7 +88,7 @@ const Tab = ({ label, Icon, SolidIcon, active, dot, onClick, buttonRef, ...rest 
   </button>
 );
 
-const MoreSheet = ({ open, onClose, items, activeId, attention, onPick }) => {
+const MoreSheet = ({ open, onClose, items, activeId, attention, onPick, icons = ICON, sub = SUB }) => {
   const sheetRef = useRef(null);
   useEffect(() => {
     if (!open) return undefined;
@@ -123,7 +123,7 @@ const MoreSheet = ({ open, onClose, items, activeId, attention, onPick }) => {
             </div>
             <ul className="grid grid-cols-2 gap-2.5 px-4">
               {items.map((it) => {
-                const Icon = ICON[it.id] || LayoutGrid;
+                const Icon = icons[it.id] || LayoutGrid;
                 const on = activeId === it.id;
                 return (
                   <li key={it.id} className="min-w-0">
@@ -141,7 +141,7 @@ const MoreSheet = ({ open, onClose, items, activeId, attention, onPick }) => {
                         {/* isNew: the badge sits on the second line so a half-width tile keeps the whole name. */}
                         <span className="flex min-w-0 items-center gap-1.5">
                           {it.isNew && <span className="shrink-0 rounded-[8px] bg-maroon px-1.5 text-[12px] font-semibold leading-[18px] text-white">New</span>}
-                          <span className="truncate text-[12px] text-muted">{SUB[it.id]}</span>
+                          <span className="truncate text-[12px] text-muted">{sub[it.id]}</span>
                         </span>
                       </span>
                     </button>
@@ -157,14 +157,23 @@ const MoreSheet = ({ open, onClose, items, activeId, attention, onPick }) => {
   );
 };
 
-export default function KeptTabBar() {
+/**
+ * `config` (optional) points the bar at another console — the guest space passes
+ * GUEST_SHELL.tabBar from guestNav.js: { sections, order, sheet, icons, sub }.
+ * `sheet` items are section ids or plain { id, label, to } links. Omitted, the bar
+ * is the host's, unchanged.
+ */
+export default function KeptTabBar({ config = null }) {
   const { user } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { flags } = useFeatureFlags();
   const plan = normalizePlan(user?.plan);
   // Same model as the Kept rail: NAV_V2 always (see DashboardLayoutV2).
-  const sections = visibleSections({ user, plan, flags: { ...flags, console_v2: true } });
+  const hostSections = visibleSections({ user, plan, flags: { ...flags, console_v2: true } });
+  const sections = config?.sections || hostSections;
+  const icons = config?.icons ? { ...ICON, ...config.icons } : ICON;
+  const sub = config?.sub ? { ...SUB, ...config.sub } : SUB;
   const badges = { ...computeBadges(user), chatUnread: useSupportUnread() };
   const [open, setOpen] = useState(false);
   const moreRef = useRef(null);
@@ -175,18 +184,23 @@ export default function KeptTabBar() {
   const attention = (s) => (s?.id === 'help'
     ? (badges.chatUnread || 0) > 0
     : !!s?.items?.some((i) => (i.badgeKey ? badges[i.badgeKey] || 0 : 0) > 0));
-  const activeId = pathname.startsWith(HELP.to) ? 'help' : resolveActive(pathname, sections).sectionId;
+  // Sheet links that aren't sections (Help; the guest's Profile) light themselves by path.
+  const links = config ? config.sheet.filter((it) => typeof it === 'object') : [HELP];
+  const linkHit = links.find((it) => pathname === it.to || pathname.startsWith(`${it.to}/`));
+  const activeId = linkHit ? linkHit.id : resolveActive(pathname, sections).sectionId;
 
   // If a host's nav has no Grow section, Clients takes a slot instead, so the bar
   // never shows a gap.
   const grow = byId('grow');
-  const order = grow ? ['home', 'bookings', 'grow', 'money'] : ['home', 'clients', 'bookings', 'money'];
+  const order = config?.order || (grow ? ['home', 'bookings', 'grow', 'money'] : ['home', 'clients', 'bookings', 'money']);
   const tabs = order.map(byId).filter(Boolean);
-  const sheetItems = [
-    ...SHEET_ORDER.filter((id) => !order.includes(id)).map(byId).filter(Boolean),
-    ...(order.includes('bookings') ? [] : [byId('bookings')].filter(Boolean)),
-    HELP,
-  ];
+  const sheetItems = config
+    ? config.sheet.map((it) => (typeof it === 'string' ? byId(it) : it)).filter(Boolean)
+    : [
+      ...SHEET_ORDER.filter((id) => !order.includes(id)).map(byId).filter(Boolean),
+      ...(order.includes('bookings') ? [] : [byId('bookings')].filter(Boolean)),
+      HELP,
+    ];
   const moreActive = !!activeId && !order.includes(activeId);
   const moreAttention = sheetItems.some(attention);
 
@@ -213,13 +227,13 @@ export default function KeptTabBar() {
       <nav aria-label="Primary"
         className="mt-hide-while-typing dash dash-v2 fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
         {tabs.map((s) => (
-          <Tab key={s.id} label={s.label} Icon={ICON[s.id] || LayoutGrid} SolidIcon={SOLID[s.id]}
+          <Tab key={s.id} label={s.label} Icon={icons[s.id] || LayoutGrid} SolidIcon={SOLID[s.id]}
             active={activeId === s.id} dot={attention(s)} onClick={() => onTab(s)} />
         ))}
         <Tab label="More" Icon={LayoutGrid} SolidIcon={SOLID.more} active={moreActive || open} dot={moreAttention} buttonRef={moreRef}
           aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((v) => !v)} />
       </nav>
-      <MoreSheet open={open} onClose={close} items={sheetItems} activeId={activeId} attention={attention}
+      <MoreSheet open={open} onClose={close} items={sheetItems} activeId={activeId} attention={attention} icons={icons} sub={sub}
         onPick={(it) => { setOpen(false); goTo(it); }} />
     </>,
     document.body,

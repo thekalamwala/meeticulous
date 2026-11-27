@@ -70,8 +70,8 @@ const useRailState = () => {
   return [collapsed, toggle];
 };
 
-const Icon = ({ id, className, strokeWidth = 2.2 }) => {
-  const El = ICONS[id] || Home;
+const Icon = ({ id, className, strokeWidth = 2.2, icons = ICONS }) => {
+  const El = icons[id] || Home;
   return <El className={className} strokeWidth={strokeWidth} />;
 };
 
@@ -84,7 +84,7 @@ const Badge = ({ n, on }) => (
 /** One section row. A multi-page section carries a chevron that expands it in
  *  place; the row itself still navigates to the section's first page, so the
  *  chevron is never the only way in. */
-const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigate, collapsed }) => {
+const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigate, collapsed, icons }) => {
   const landing = firstItemTo(section, plan);
   const multi = !isLeafSection(section);
   const attention = section.items.some((i) => (i.badgeKey ? badges[i.badgeKey] || 0 : 0) > 0);
@@ -100,7 +100,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
           className={cn('relative mx-auto grid h-9 w-9 place-items-center rounded-[10px] transition', ring,
             sectionActive ? 'bg-white text-maroon shadow-[var(--shadow-sm)]' : 'text-muted hover:bg-white/70 hover:text-ink')}
         >
-          <Icon id={section.id} className="h-[18px] w-[18px]" />
+          <Icon id={section.id} icons={icons} className="h-[18px] w-[18px]" />
           {attention && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-rose" />}
         </NavLink>
         <div className="pointer-events-none absolute left-full top-0 z-50 hidden pl-1.5 group-hover/row:block group-focus-within/row:block">
@@ -140,7 +140,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
             // maroon block, which was the loudest thing on every page.
             sectionActive ? 'bg-white font-semibold text-maroon shadow-[var(--shadow-sm)]' : 'text-ink hover:bg-white/70')}
         >
-          <Icon id={section.id} className={cn('h-[18px] w-[18px] shrink-0', sectionActive ? 'text-maroon' : 'text-muted')} />
+          <Icon id={section.id} icons={icons} className={cn('h-[18px] w-[18px] shrink-0', sectionActive ? 'text-maroon' : 'text-muted')} />
           <span className="flex-1 truncate">{section.label}</span>
           {/* isNew: a section being promoted (Community, 2026-11-26). Kept badge: 8px, a word. */}
           {section.isNew && <span className="shrink-0 rounded-[8px] bg-maroon px-1.5 py-px text-[12px] font-semibold leading-4 text-white">New</span>}
@@ -195,7 +195,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
   );
 };
 
-const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed = false }) => {
+const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed = false, groups = GROUPS, icons }) => {
   const active = resolveActive(useLocation().pathname, sections);
   const [open, setOpen] = useState(() => active.sectionId || null);
   useEffect(() => { if (active.sectionId) setOpen(active.sectionId); }, [active.sectionId]);
@@ -205,7 +205,7 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
   return (
     <>
       <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-1.5">
-        {GROUPS.map((group, i) => {
+        {groups.map((group, i) => {
           const rows = group.ids.map(byId).filter(Boolean);
           if (rows.length === 0) return null;
           return (
@@ -222,6 +222,7 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
                     badges={badges}
                     activeTo={activeTo}
                     collapsed={collapsed}
+                    icons={icons}
                     expanded={open === section.id}
                     onToggle={(id) => setOpen((o) => (o === id ? null : id))}
                     onNavigate={onNavigate}
@@ -260,10 +261,10 @@ const greetingFor = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h 
 
 // Same 56px height as the rail header, so the logo, the greeting and the profile
 // card sit on one line (founder pick, 2026-11-25).
-const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
+const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome, home = '/dashboard', helpTo = '/dashboard/chat', showBell = true, accountMenu = null }) => (
   <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:px-8">
     {/* Mobile: the logo still goes home; Today also has its own tab now (founder, 2026-11-25). */}
-    <Link to="/dashboard" title="Meeticulous — Home" aria-label="Meeticulous — Home"
+    <Link to={home} title="Meeticulous — Home" aria-label="Meeticulous — Home"
       className="group/home grid justify-items-center gap-1 rounded-[12px] p-1 transition active:scale-95 lg:hidden">
       <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" className="h-8 w-8 object-contain" />
     </Link>
@@ -282,22 +283,30 @@ const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
     )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
       {/* Kept: the lifebuoy opens the dashboard's Help hub (founder, 2026-11-26). */}
-      <Link to="/dashboard/chat" title="Help" aria-label="Help"
+      <Link to={helpTo} title="Help" aria-label="Help"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
-      <NotificationsDrawer />
+      {showBell && <NotificationsDrawer />}
+      {accountMenu || (<>
       <div className="hidden lg:block">
         <ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} identity
           triggerClassName="flex h-12 max-w-[260px] items-center gap-2.5 rounded-[14px] bg-white py-1.5 pl-1.5 pr-3 transition hover:bg-pink-100"
           chevronClassName="h-4 w-4 shrink-0 text-faint" />
       </div>
       <div className="lg:hidden"><ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} /></div>
+      </>)}
     </div>
   </header>
 );
 
-const DashboardLayoutV2 = ({ children }) => {
+/**
+ * `config` (optional) re-points the shell at another console — the guest space
+ * (/user/*) passes GUEST_SHELL from guestNav.js. Omitted, every value below is the
+ * host dashboard's own, so the host renders exactly as before.
+ *   { home, sections, groups, icons, helpTo, showBell, AccountMenu, tabBar }
+ */
+const DashboardLayoutV2 = ({ children, config = null }) => {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
 
@@ -316,7 +325,8 @@ const DashboardLayoutV2 = ({ children }) => {
   // Forcing it here keeps Clients/Schedule/Grow — which only exist as their own
   // sections in NAV_V2 — on the rail even when console_v2 is off. navParity's
   // GROUPS-coverage test pins that every NAV_V2 section has a bucket.
-  const sections = visibleSections({ user, plan, flags: { ...flags, console_v2: true } });
+  const sections = config?.sections || visibleSections({ user, plan, flags: { ...flags, console_v2: true } });
+  const home = config?.home || '/dashboard';
   const chatUnread = useSupportUnread();
   const badges = { ...computeBadges(user), chatUnread };
   const activeTo = resolveActive(pathname, sections).to;
@@ -339,7 +349,7 @@ const DashboardLayoutV2 = ({ children }) => {
           style={{ width: railCollapsed ? RAIL_MIN : RAIL }}
         >
           <div className={cn('flex h-14 shrink-0 items-center', railCollapsed ? 'justify-center px-0' : 'gap-2.5 px-4')}>
-            <Link to="/dashboard" aria-label="Meeticulous — Home" className={cn('grid shrink-0 place-items-center rounded-xs', ring)}>
+            <Link to={home} aria-label="Meeticulous — Home" className={cn('grid shrink-0 place-items-center rounded-xs', ring)}>
               <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-7 w-7 object-contain" />
             </Link>
             {!railCollapsed && <span className="flex-1 truncate font-display text-[17px] font-extrabold tracking-[-0.02em] text-maroon">Meeticulous</span>}
@@ -354,13 +364,14 @@ const DashboardLayoutV2 = ({ children }) => {
               <PanelLeft className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
           </div>
-          <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} collapsed={railCollapsed} />
+          <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} collapsed={railCollapsed} groups={config?.groups} icons={config?.icons} />
         </aside>
 
 
         {/* Content — offset by the fixed rail on lg+. */}
         <div className={cn('transition-[padding] duration-200', railCollapsed ? 'lg:pl-[64px]' : 'lg:pl-[232px]')}>
-          <TopbarV2 user={user} plan={plan} initial={initial} logout={logout} onHome={pathname === '/dashboard'} />
+          <TopbarV2 user={user} plan={plan} initial={initial} logout={logout} onHome={pathname === home} home={home}
+            helpTo={config?.helpTo} showBell={config?.showBell ?? true} accountMenu={config?.AccountMenu ? <config.AccountMenu /> : null} />
           <main className="min-h-[calc(100dvh-44px)]">
             {/* No scrollerRef: the window scrolls here. Passing <main> made scrollTop read 0
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
@@ -377,7 +388,7 @@ const DashboardLayoutV2 = ({ children }) => {
           </main>
         </div>
 
-        <KeptTabBar />
+        <KeptTabBar config={config?.tabBar} />
       </div>
     </RefreshProvider>
   );

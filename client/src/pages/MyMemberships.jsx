@@ -1,22 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { getMySubscriptions, cancelMembership } from "../services/api";
-import BackButton from "../components/common/BackButton";
-import { EmptyState, StatusBadge, Badge, ConfirmSheet } from "../components/dashboard/ui";
-import { Users } from "lucide-react";
 import toast from "react-hot-toast";
+import { getMySubscriptions, cancelMembership } from "../services/api";
+import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
+import { ConfirmSheet } from "../components/dashboard/ui";
+import { StatusPill } from "../components/dashboard/ui/v2";
+import { KeptError } from "./catalog/KeptKit";
+import { GuestEmpty, LibraryHead, btnPrimary, btnQuiet } from "./guest/GuestKit";
 
-const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null);
+// /user/memberships — Library › Memberships (Kept). Cancel copy and behaviour as before.
+const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : null);
 
 export default function MyMemberships() {
   const [subs, setSubs] = useState(null);
+  const [error, setError] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(null);
 
-  const load = async () => {
-    try { const { data } = await getMySubscriptions(); setSubs(data.subscriptions || []); }
-    catch { setSubs([]); }
-  };
-  useEffect(() => { load(); }, []);
+  const load = useCallback(() => getMySubscriptions()
+    .then(({ data }) => { setSubs(data.subscriptions || []); setError(false); })
+    .catch(() => setError(true)), []);
+  useEffect(() => { load(); }, [load]);
+  useRegisterRefresh(load);
 
   const doCancel = async () => {
     const s = confirmCancel; setConfirmCancel(null);
@@ -28,37 +32,35 @@ export default function MyMemberships() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl p-4 space-y-4">
-      <BackButton />
-      <h1 className="font-display text-2xl font-extrabold text-maroon">My memberships</h1>
-
-      {subs && subs.length === 0 && (
-        <EmptyState icon={Users} title="No memberships yet"
-          description="Join a host's membership from their profile to see it here." />
-      )}
-
-      {subs?.map((s) => (
-        <div key={s.id} className="mt-card flex items-center justify-between gap-3 p-4">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              {s.host?.username
-                ? <Link to={`/${s.host.username}/membership`} className="font-semibold text-ink no-underline hover:text-maroon">{s.host?.name || "Host"}</Link>
-                : <span className="font-semibold text-ink">{s.host?.name || "Host"}</span>}
-              {s.tier && <Badge>{s.tier.name}{s.tier.type === "paid" ? ` · ₹${s.tier.price_inr}/mo` : " · Free"}</Badge>
-              }
-            </div>
-            <div className="mt-1 flex items-center gap-2 text-xs text-ink/60">
-              <StatusBadge status={s.status} />
-              {s.current_period_end && ["active", "past_due"].includes(s.status) && (
-                <span>{s.paid ? "Renews" : "Since"} {fmtDate(s.current_period_end || s.started_at)}</span>
-              )}
-            </div>
-          </div>
-          {["active", "past_due"].includes(s.status) && (
-            <button onClick={() => setConfirmCancel(s)} className="mt-btn mt-btn--ghost mt-btn--s shrink-0">Cancel</button>
+    <div className="flex flex-col gap-6">
+      <LibraryHead />
+      {error && !subs ? <KeptError what="memberships" onRetry={load} />
+        : !subs ? <div aria-hidden="true" className="h-40 animate-pulse rounded-[24px] bg-white" />
+          : subs.length === 0 ? (
+            <GuestEmpty mascot="green" title="No memberships yet" sub="Join a host's membership from their page to see it here."
+              action={<Link to="/explore" className={btnPrimary}>Browse creators</Link>} />
+          ) : (
+            <ul className="divide-y divide-neutral-200 overflow-hidden rounded-[24px] bg-white">
+              {subs.map((s) => {
+                const live = ["active", "past_due"].includes(s.status);
+                return (
+                  <li key={s.id} className="flex items-center gap-3 px-5 py-4 sm:px-6">
+                    <div className="min-w-0 flex-1">
+                      {s.host?.username
+                        ? <Link to={`/${s.host.username}/membership`} className="block truncate text-[15px] font-semibold text-ink hover:text-maroon hover:no-underline">{s.host?.name || "Host"}</Link>
+                        : <span className="block truncate text-[15px] font-semibold text-ink">{s.host?.name || "Host"}</span>}
+                      <p className="mb-0 mt-0.5 truncate text-[13px] text-muted">
+                        {s.tier ? `${s.tier.name} · ${s.tier.type === "paid" ? `₹${s.tier.price_inr}/mo` : "Free"}` : "Membership"}
+                        {live && s.current_period_end ? ` · ${s.paid ? "Renews" : "Since"} ${fmtDate(s.current_period_end || s.started_at)}` : ""}
+                      </p>
+                    </div>
+                    <StatusPill status={s.status}>{s.status === "past_due" ? "Payment due" : undefined}</StatusPill>
+                    {live && <button type="button" onClick={() => setConfirmCancel(s)} className={btnQuiet}>Cancel</button>}
+                  </li>
+                );
+              })}
+            </ul>
           )}
-        </div>
-      ))}
 
       <ConfirmSheet open={!!confirmCancel} danger title="Cancel membership?"
         message={confirmCancel?.paid
