@@ -1,7 +1,7 @@
 // client/src/pages/InviteLanding.jsx
 // ONE shared VIP landing for every /invite/:slug (marketing gimmick + lead-source
 // attribution). Soft-modern design, built from the shipped home/pricing kit + a
-// few presentational bits ported from the parked HomeArchive (/_attic) — kept
+// few presentational bits ported from the retired homepage snapshot (deleted 2026-11-27) — kept
 // LOCAL here on purpose so the invite chunk never imports the 2000-line archive.
 // The global Navbar + Footer render on this route (it is NOT in App.jsx's
 // hideNavbar list), so this page ships NO chrome of its own — only the body.
@@ -52,7 +52,7 @@ function GoogleCTA({ onClick, label = 'Get started with Google', onDark = false 
   );
 }
 
-/* ── Small presentational bits (ported-compact from /_attic) ────────────── */
+/* ── Small presentational bits (ported-compact from the retired homepage snapshot) ────────────── */
 // Hero social-proof face — webp with a neutral chip fallback.
 function HeroFace({ src }) {
   const [err, setErr] = useState(false);
@@ -84,7 +84,7 @@ function TAvatar({ src, name }) {
   return <img src={src} onError={() => setErr(true)} alt={name} loading="lazy" className="h-11 w-11 flex-shrink-0 rounded-xl object-cover" />;
 }
 
-/* ── Content (trimmed from /_attic data) ────────────────────────────────── */
+/* ── Content (trimmed from the retired homepage snapshot) ────────────────────────────────── */
 const VALUE = [
   { icon: Link2, title: 'One booking link', desc: 'meeticulous.com/you — everything you offer, in a single calm link.', color: 'var(--c-blue)' },
   { icon: CreditCard, title: 'Payments built in', desc: 'Clients pay over UPI, cards or netbanking before the slot is confirmed.', color: 'var(--c-emerald)' },
@@ -102,7 +102,7 @@ const TRUST = [
 ];
 
 const FAQS = [
-  { q: 'Is Meeticulous really free?', a: 'Yes. The free plan has no time limit — you pay a 5% fee only when you get paid. Upgrade to 0% commission once you’re booking regularly.' },
+  { q: 'Is Meeticulous really free?', a: 'Yes. The free plan has no time limit — you pay a 9% commission only when you get paid. Upgrade to 0% appointment commission once you’re booking regularly.' },
   { q: 'Can clients pay while booking?', a: 'Yes — that’s the point. Clients pay via UPI, card or netbanking at checkout, so you’re paid before the session starts.' },
   { q: 'Do clients need an account?', a: 'No. Clients book and pay without creating an account.' },
   { q: 'Can I connect Google Calendar?', a: 'Yes. Two-way sync keeps your availability accurate and adds Meet links to online bookings automatically.' },
@@ -298,7 +298,7 @@ export default function InviteLanding() {
             Simple, <span className="text-primary-cta">honest</span> pricing
           </h2>
           <p className="mx-auto mb-10 max-w-[560px] text-center text-neutral-500">
-            Start free. Upgrade only when you're earning enough that 0% commission beats the 5%.
+            Start free. Upgrade only when you're earning enough that 0% commission beats the 9%.
           </p>
           <PricingCards />
         </div>

@@ -161,7 +161,7 @@ const FAQ = [
   { q: 'Can I offer different meeting types and lengths?', a: 'Yes. Set up separate services — a 30-minute discovery call, a paid design consultation, a site visit, a concept review — each with its own duration, price and availability, and clients pick the one they need.' },
   { q: 'Can I manage more than one designer’s calendar?', a: 'Right now Meeticulous is best for a single booking calendar per account — two designers on one account share one diary and cannot be booked in parallel. Parallel multi-calendar scheduling is on our roadmap; in the meantime a separate account per designer is the workaround. We would rather tell you upfront than have it surprise you after setup.' },
   { q: 'Does it sync with my Google Calendar?', a: 'Yes. Meeticulous reads the busy times on your Google Calendar, so a slot you have blocked there is not offered to clients, and online bookings are added to your calendar with a Meet link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited consultation types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and more.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited consultation types and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and more.' },
 ];
 
 const FOOTER_COLS = [
@@ -775,7 +775,7 @@ export default function ArchitectPage() {
                   <span className="font-heading text-5xl font-extrabold tracking-tight">0</span>
                   <span className="pb-2 text-sm text-slate-500">/month</span>
                 </div>
-                <p className="mt-1.5 text-xs font-semibold text-slate-500">Free forever · 5% per booking</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-500">Free forever · 9% per booking</p>
                 <ul className="mt-6 flex flex-col gap-3">
                   {FREE_PLAN.features.slice(0, 5).map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">

@@ -7,8 +7,8 @@
 //
 // HONESTY: every Zoho Bookings fact reads from data/competitors.js
 // (COMPETITORS.zoho); every Meeticulous price / commission reads from
-// data/plans.js. Fee facts (₹10 + GST booking fee, ~2% gateway at cost,
-// TDS 1% + TCS 1%, ₹100 minimum) are the published /host-fees numbers.
+// data/plans.js. Fee facts (₹10 GST-inclusive booking fee, ~2% gateway at cost,
+// TDS 0.1% (plus 0.5% TCS if GST-registered), ₹100 minimum) are the published /host-fees numbers.
 // Testimonials are verbatim from data/testimonials.js. No images except a
 // competitor favicon. No scroll animation: the h1 is the LCP element.
 //
@@ -51,8 +51,8 @@ const Z_FREE = Z.freePlan.replace(/^Yes:\s*/, ''); // "1 user (Forever Free)"
 const FREE_MO = inr(FREE_PLAN.monthly);
 const PAID_MO = inr(PREMIUM_PLAN.monthly);
 const PAID_YR = inr(PREMIUM_PLAN.yearly);
-// ponytail: /host-fees worked example (₹1,000 at 0%: ~2% gateway on ₹1,011.80, TDS 1%, TCS 1%). Update if fees change.
-const PAYOUT_ON_1000 = '₹959.76';
+// ponytail: /host-fees worked example (₹1,000 on Pro: ~2% gateway on ₹1,010.00, TDS 0.1%, no TCS for a host without a GSTIN). Update if fees change.
+const PAYOUT_ON_1000 = '₹978.80';
 const favicon = (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
 const TITLE = 'Zoho Bookings Alternative in India (UPI, GST) | Meeticulous';
@@ -103,7 +103,7 @@ const DIFFERENT = [
   },
   {
     title: 'Fees you can see up front',
-    body: `Your client pays a flat ₹10 + GST booking fee per paid booking. The gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout. On a ₹1,000 booking at ${commission.premium} commission you receive ${PAYOUT_ON_1000}. Paid services start at ₹100.`,
+    body: `Your client pays a flat ₹10 booking fee (GST included, appointments of ₹300+) per paid booking. The gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On a ₹1,000 booking on ${PREMIUM_PLAN.name} you receive ${PAYOUT_ON_1000}. Paid services start at ₹100.`,
     link: { to: '/host-fees', label: 'Read the full host fee breakdown' },
   },
 ];
@@ -136,7 +136,7 @@ const LANES = {
       { who: 'Your client', title: 'Client pays by UPI or card at booking', body: 'Through Razorpay, on both plans.' },
       { who: 'Meeticulous', title: 'Meeticulous collects the payment', body: 'It never passes through an account you run.' },
       { who: 'Meeticulous', title: 'A GST invoice goes out automatically', body: 'On both plans.' },
-      { who: 'Meeticulous', title: 'Settled to your Indian bank account', body: `Minus the gateway charge (about 2%, at cost), TDS 1% + TCS 1%, and ${commission.free} commission on ${FREE_PLAN.name} (${commission.premium} on ${PREMIUM_PLAN.name}).` },
+      { who: 'Meeticulous', title: 'Settled to your Indian bank account', body: `Minus the gateway charge (about 2%, at cost), TDS 0.1% (plus 0.5% TCS if GST-registered), and ${commission.free} commission on ${FREE_PLAN.name} (${commission.premium} on ${PREMIUM_PLAN.name}).` },
     ],
   },
 };
@@ -177,7 +177,7 @@ export const FAQ = [
   },
   {
     q: "What's the cheapest Zoho Bookings alternative in India?",
-    a: `It depends on what you earn from bookings. Meeticulous's ${FREE_PLAN.name} plan costs ${FREE_MO} a month and takes ${commission.free} of each paid booking. ${PREMIUM_PLAN.name} costs ${PAID_MO} a month or ${PAID_YR} a year and takes ${commission.premium}. On both, clients pay a flat ₹10 + GST booking fee, and the gateway charge (about 2%) is passed through at cost.`,
+    a: `It depends on what you earn from bookings. Meeticulous's ${FREE_PLAN.name} plan costs ${FREE_MO} a month and takes ${commission.free} of each paid booking. ${PREMIUM_PLAN.name} costs ${PAID_MO} a month or ${PAID_YR} a year and takes ${commission.premium}. On both, clients pay a flat ₹10 booking fee (GST included, appointments of ₹300+), and the gateway charge (about 2%) is passed through at cost.`,
   },
   {
     q: 'Can I move from Zoho Bookings to Meeticulous?',
@@ -185,7 +185,7 @@ export const FAQ = [
   },
   {
     q: 'Do I need my own Razorpay account on Meeticulous?',
-    a: `No. Meeticulous collects your clients' payments through Razorpay and settles them to your Indian bank account after a one-time KYC. You pay the gateway charge (about 2%) at cost, and TDS 1% + TCS 1% are deducted on payout. On a ₹1,000 booking at ${commission.premium} commission, you receive ${PAYOUT_ON_1000}.`,
+    a: `No. Meeticulous collects your clients' payments through Razorpay and settles them to your Indian bank account after a one-time KYC. You pay the gateway charge (about 2%) at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On a ₹1,000 booking on ${PREMIUM_PLAN.name} you receive ${PAYOUT_ON_1000}.`,
   },
   {
     q: 'Can my whole team use Meeticulous?',

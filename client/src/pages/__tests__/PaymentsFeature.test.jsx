@@ -4,16 +4,18 @@ import { MemoryRouter } from 'react-router-dom';
 import PaymentsFeature, { payoutBreakdown } from '../features/PaymentsFeature';
 
 describe('payoutBreakdown', () => {
-  // Pinned to the worked examples published on /host-fees §5 (you list ₹1,000).
-  it('matches the 0% commission example', () => {
+  // Pinned to the worked examples published on /host-fees §5 (you list ₹1,000;
+  // pricing v2 fee, tds_tcs_v2 withholding for a host with a PAN and no GSTIN).
+  it('matches the Pro (0%) example', () => {
     const b = payoutBreakdown(1000, 0);
-    expect(b.guestPays).toBe(1011.8);
-    expect(b.gateway).toBe(20.24);
-    expect(b.keep).toBe(959.76);
+    expect(b.guestPays).toBe(1010);
+    expect([b.feeTaxable, b.feeGst]).toEqual([8.47, 1.53]);
+    expect(b.gateway).toBe(20.2);
+    expect(b.keep).toBe(978.8);
   });
 
-  it('matches the 5% commission example', () => {
-    expect(payoutBreakdown(1000, 5).keep).toBe(909.76);
+  it('matches the Starter (9%) example', () => {
+    expect(payoutBreakdown(1000, 9).keep).toBe(888.8);
   });
 });
 
@@ -40,7 +42,7 @@ describe('Payments feature page', () => {
   it('recalculates what you keep when the price changes', () => {
     renderPage();
     fireEvent.change(screen.getByLabelText(/your price for one session/i), { target: { value: '1000' } });
-    expect(screen.getByText('₹959.76')).toBeTruthy();
-    expect(screen.getByText('₹909.76')).toBeTruthy();
+    expect(screen.getByText('₹978.80')).toBeTruthy();
+    expect(screen.getByText('₹888.80')).toBeTruthy();
   });
 });

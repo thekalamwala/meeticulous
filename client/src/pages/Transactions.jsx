@@ -153,10 +153,10 @@ const Detail = ({ tx }) => {
               )}
               {pg > 0 && <Row label="− Payment gateway" value={fmtMoney(pg, { decimals: true })} />}
               {Number(tx.tds_amount) > 0 && (
-                <Row label="− TDS (194-O, 1%)" value={fmtMoney(tx.tds_amount, { decimals: true })} />
+                <Row label="− TDS (194-O)" value={fmtMoney(tx.tds_amount, { decimals: true })} />
               )}
               {Number(tx.tcs_amount) > 0 && (
-                <Row label="− TCS (GST §52, 1%)" value={fmtMoney(tx.tcs_amount, { decimals: true })} />
+                <Row label="− TCS (GST §52)" value={fmtMoney(tx.tcs_amount, { decimals: true })} />
               )}
               <div className="mt-1 flex items-center justify-between border-t border-maroon/10 pt-2">
                 <span className="text-xs font-semibold text-ink">Net payout</span>

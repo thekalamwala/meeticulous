@@ -151,7 +151,7 @@ const FAQ = [
   { q: 'What if I run more than one turf or court?', a: 'Right now Meeticulous is built for a single bookable ground or court per account — two facilities on one account share the same calendar, so they cannot be booked in parallel. If you run a multi-court arena, true parallel-court booking is on our roadmap; in the meantime a separate account per court is the workaround. We would rather tell you this upfront than have it surprise you after setup.' },
   { q: 'Can I set different prices for peak and off-peak hours?', a: 'Each service has its own fixed price, so automatic time-based (peak vs off-peak) pricing is not built yet. You can create separate listings — for example an off-peak morning slot and an evening slot at different prices — as a manual workaround.' },
   { q: 'Do I need any technical knowledge?', a: 'No. Setup takes minutes and needs no technical skills. You add your ground, slots and availability, and your booking page is ready to share — players need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited slots and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited slots and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -749,7 +749,7 @@ export default function SportsTurf() {
                     <span className="font-heading text-5xl font-extrabold tracking-tight">0</span>
                     <span className="pb-2 text-sm text-neutral-500">/month</span>
                   </div>
-                  <p className="mt-1.5 text-xs font-semibold text-neutral-500">Free forever · 5% per booking</p>
+                  <p className="mt-1.5 text-xs font-semibold text-neutral-500">Free forever · 9% per booking</p>
                   <ul className="mt-6 flex flex-col gap-3">
                     {FREE_PLAN.features.slice(0, 5).map((f) => (
                       <li key={f} className="flex items-start gap-2.5 text-sm text-neutral-600">

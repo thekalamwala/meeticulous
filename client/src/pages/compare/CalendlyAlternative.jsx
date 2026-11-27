@@ -2,8 +2,8 @@
 //
 // HONESTY: every Calendly claim comes from data/competitors.js (COMPETITORS.calendly,
 // checked against calendly.com/pricing). `null` there renders "Not listed", never
-// "No". Meeticulous prices/commission come from data/plans.js. The ₹10 + GST
-// booking fee, ~2% gateway pass-through, TDS 1% + TCS 1% and the ₹959.76-on-₹1,000
+// "No". Meeticulous prices/commission come from data/plans.js. The ₹10 GST-inclusive
+// booking fee, ~2% gateway pass-through, TDS 0.1% (plus 0.5% TCS if GST-registered) and the ₹978.80-on-₹1,000
 // payout are the published /host-fees figures. Quotes are real (data/testimonials.js).
 //
 // Design system "Ledger": warm paper + deep navy ink, ruled lines, one orange
@@ -34,13 +34,15 @@ const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'C
 const CAL_FREE = C.freePlan.replace(/^Yes:\s*/, ''); // "1 event type, 1 calendar"
 const favicon = (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
-// /host-fees: client pays price + ₹10 booking fee + 18% GST on that fee; on
-// Pro (0%) a ₹1,000 booking pays out ₹959.76 after ~2% gateway + TDS 1% + TCS 1%.
-const BOOKING_FEE = 10;
-const BOOKING_FEE_GST = 1.8;
+// /host-fees (pricing v2): client pays price + ₹10 booking fee, GST included
+// (₹8.47 + ₹1.53 GST; none under ₹300); on
+// Pro (0%) a ₹1,000 booking pays out ₹978.80 after ~2% gateway + TDS 0.1% (plus 0.5% TCS if GST-registered).
+const BOOKING_FEE = 10;          // GST included
+const BOOKING_FEE_TAXABLE = 8.47; // 10 / 1.18, GST backed out (pricingEngine.splitInclusiveFee)
+const BOOKING_FEE_GST = 1.53;     // the remainder
 const EXAMPLE_PRICE = 1000;
-const EXAMPLE_TOTAL = EXAMPLE_PRICE + BOOKING_FEE + BOOKING_FEE_GST;
-const EXAMPLE_PAYOUT = '₹959.76';
+const EXAMPLE_TOTAL = EXAMPLE_PRICE + BOOKING_FEE;
+const EXAMPLE_PAYOUT = '₹978.80';
 
 const PALETTE = {
   '--lg-paper': '#FBF8F2',
@@ -86,7 +88,7 @@ const ROWS = [
   ['Taking payments', C.payments, 'UPI and cards through Razorpay, on both plans'],
   ['UPI at booking', C.upi, true],
   ['GST invoice for your client', null, 'Yes, on both plans'],
-  ['Fee your client pays', null, `${inr(BOOKING_FEE)} + GST per paid booking`],
+  ['Fee your client pays', null, `${inr(BOOKING_FEE)}, GST included, per paid booking of ₹300+`],
   ['WhatsApp reminders', C.whatsapp, `Yes on ${PREMIUM_PLAN.name}; first 2 months on ${FREE_PLAN.name}, then email`],
 ];
 
@@ -117,10 +119,10 @@ export const FAQ = [
   { q: 'Is Calendly free?', a: `Yes. Calendly has a free plan with ${CAL_FREE}, according to its pricing page (checked ${CHECKED_LABEL}). Taking payments isn't part of it: Calendly lists payments through Stripe or PayPal on paid plans. Meeticulous's ${FREE_PLAN.name} plan is also free, with unlimited services and bookings and UPI payments, and a ${COMMISSION.free} commission on paid bookings.` },
   { q: 'Does Calendly support UPI payments?', a: `No. Calendly's pricing page lists ${C.payments}, and UPI isn't one of the options. Meeticulous takes UPI and cards through Razorpay inside the booking flow on both of its plans, so your client pays when they book and gets a GST invoice for the payment.` },
   { q: 'How much does Calendly cost in India?', a: `Calendly's paid plans start at ${C.paidFrom}, and it publishes prices in ${C.currency}, not rupees. There is also a free plan with ${CAL_FREE}. Meeticulous is priced in rupees with GST included: ${FREE_PLAN.name} is ₹0 and ${PREMIUM_PLAN.name} is ${inr(PREMIUM_PLAN.monthly)} a month or ${inr(PREMIUM_PLAN.yearly)} a year.` },
-  { q: "What's the cheapest Calendly alternative for India?", a: `Meeticulous starts at ₹0 a month. Its ${FREE_PLAN.name} plan includes unlimited services and bookings, UPI payments and GST invoices, with a ${COMMISSION.free} commission on paid bookings. ${PREMIUM_PLAN.name} costs ${inr(PREMIUM_PLAN.monthly)} a month and takes ${COMMISSION.premium} commission. On both plans your client pays a flat ${inr(BOOKING_FEE)} + GST booking fee per paid booking.` },
+  { q: "What's the cheapest Calendly alternative for India?", a: `Meeticulous starts at ₹0 a month. Its ${FREE_PLAN.name} plan includes unlimited services and bookings, UPI payments and GST invoices, with a ${COMMISSION.free} commission on paid bookings. ${PREMIUM_PLAN.name} costs ${inr(PREMIUM_PLAN.monthly)} a month and takes ${COMMISSION.premium} commission. On both plans your client pays a flat ${inr(BOOKING_FEE)} booking fee, GST included, on paid bookings of ₹300+.` },
   { q: 'Can I move from Calendly to Meeticulous?', a: 'Yes. Sign in with Google, set up each Calendly event type as a service with its price and your weekly availability, then share your new booking link wherever your Calendly link was. Paid services start at ₹100. To receive payments, complete a one-time KYC so payouts reach your Indian bank account.' },
   { q: 'Does Meeticulous send GST invoices?', a: `Yes, on both plans. Every paid booking generates a GST invoice for your client automatically, so you don't type receipts or collect payment screenshots. It comes with ${FREE_PLAN.name} and ${PREMIUM_PLAN.name} alike, with nothing extra to buy. Calendly's pricing page doesn't list GST invoicing (checked ${CHECKED_LABEL}).` },
-  { q: 'Does Meeticulous take a commission?', a: `Only on the free plan. ${FREE_PLAN.name} takes ${COMMISSION.free} per paid booking and ${PREMIUM_PLAN.name} takes ${COMMISSION.premium}. On every paid booking the client pays a ${inr(BOOKING_FEE)} + GST booking fee, the gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout. On ${inr(EXAMPLE_PRICE)} at ${COMMISSION.premium} commission you receive ${EXAMPLE_PAYOUT}.` },
+  { q: 'Does Meeticulous take a commission?', a: `${FREE_PLAN.name} takes ${COMMISSION.free} per paid appointment and ${PREMIUM_PLAN.name} takes ${COMMISSION.premium}. On every paid booking the client pays a ${inr(BOOKING_FEE)} booking fee (GST included, appointments of ₹300+), the gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On ${inr(EXAMPLE_PRICE)} on ${PREMIUM_PLAN.name} you receive ${EXAMPLE_PAYOUT}.` },
   { q: 'Does Calendly send WhatsApp reminders?', a: `Calendly's pricing page doesn't list WhatsApp reminders (checked ${CHECKED_LABEL}). Meeticulous sends WhatsApp reminders on ${PREMIUM_PLAN.name}. On the free ${FREE_PLAN.name} plan they're included for your first 2 months, then reminders go by email. Booking confirmations go out by email and WhatsApp on both plans.` },
 ];
 
@@ -297,20 +299,20 @@ function TwoCheckouts() {
               <StepRow title="Your details">Name and contact details</StepRow>
               <StepRow n={3} title={`Pay ${inr(EXAMPLE_TOTAL, 2)}`} state="pay">
                 <PayTiles options={[['UPI', true], ['Card', false]]} />
-                <div className="mt-2 text-xs">{inr(EXAMPLE_PRICE)} session + {inr(BOOKING_FEE + BOOKING_FEE_GST, 2)} booking fee and GST</div>
+                <div className="mt-2 text-xs">{inr(EXAMPLE_PRICE)} session + {inr(BOOKING_FEE, 2)} booking fee, GST included</div>
               </StepRow>
               <StepRow title="GST invoice sent">
                 <div className={`mt-1 rounded-[16px] border border-dashed ${RULE} bg-white p-2.5 text-xs`}>
                   <div className={`mb-1 flex items-center gap-1.5 font-semibold ${INK}`}><Receipt size={13} aria-hidden /> Tax invoice</div>
                   <div className="flex justify-between"><span>Session</span><span className="tabular-nums">{inr(EXAMPLE_PRICE, 2)}</span></div>
-                  <div className="flex justify-between"><span>Booking fee</span><span className="tabular-nums">{inr(BOOKING_FEE, 2)}</span></div>
+                  <div className="flex justify-between"><span>Booking fee</span><span className="tabular-nums">{inr(BOOKING_FEE_TAXABLE, 2)}</span></div>
                   <div className="flex justify-between"><span>GST on fee (18%)</span><span className="tabular-nums">{inr(BOOKING_FEE_GST, 2)}</span></div>
                   <div className={`mt-1 flex justify-between border-t ${RULE} pt-1 font-semibold ${INK}`}><span>Paid in total</span><span className="tabular-nums">{inr(EXAMPLE_TOTAL, 2)}</span></div>
                 </div>
               </StepRow>
             </ol>
             <p className={NOTE}>
-              On {PREMIUM_PLAN.name} you receive {EXAMPLE_PAYOUT} of the {inr(EXAMPLE_PRICE)}, after the ~2% gateway charge and TDS 1% + TCS 1%.
+              On {PREMIUM_PLAN.name} you receive {EXAMPLE_PAYOUT} of the {inr(EXAMPLE_PRICE)}, after the ~2% gateway charge and TDS 0.1% (plus 0.5% TCS if GST-registered).
             </p>
           </div>
         </div>
@@ -455,7 +457,7 @@ export default function CalendlyAlternative() {
             ))}
           </ol>
           <p className={`mt-8 max-w-3xl text-sm leading-relaxed ${MUTED}`}>
-            <span className={`font-semibold ${INK}`}>Every fee, in plain numbers:</span> clients pay {inr(BOOKING_FEE)} + GST per paid booking, the gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout. On {inr(EXAMPLE_PRICE)} at {COMMISSION.premium} commission you receive {EXAMPLE_PAYOUT}.
+            <span className={`font-semibold ${INK}`}>Every fee, in plain numbers:</span> clients pay {inr(BOOKING_FEE)} per paid appointment of ₹300+, GST included, the gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On {inr(EXAMPLE_PRICE)} on {PREMIUM_PLAN.name} you receive {EXAMPLE_PAYOUT}.
             {' '}<Link to="/host-fees" className="font-semibold text-primary-cta underline underline-offset-4">See every host fee</Link> or read <Link to="/features/payments" className="font-semibold text-primary-cta underline underline-offset-4">how payments work</Link>.
           </p>
         </div>

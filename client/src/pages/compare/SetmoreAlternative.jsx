@@ -8,7 +8,7 @@
 //
 // HONESTY: every Setmore fact comes from data/competitors.js (checked against
 // setmore.com/pricing). Every Meeticulous price, plan name and commission comes
-// from data/plans.js; the few other platform facts (₹10 + GST booking fee,
+// from data/plans.js; the few other platform facts (₹10 GST-inclusive booking fee,
 // ~2% gateway, TDS/TCS, KYC payouts, ₹100 minimum) are the ones on /host-fees.
 // No ratings, no user counts. Testimonials are real, consented quotes.
 //
@@ -164,7 +164,7 @@ const RECEIPTS = {
     ],
     total: ['Monthly price', inr(FREE_PLAN.monthly)],
     notes: [
-      'Clients pay a flat ₹10 + GST booking fee per paid booking. The gateway charge (~2%) and TDS 1% + TCS 1% come off your payout.',
+      'Clients pay a flat ₹10 booking fee (GST included, appointments of ₹300+) per paid booking. The gateway charge (~2%) and TDS 0.1% (plus 0.5% TCS if GST-registered) come off your payout.',
       `${PREMIUM_PLAN.name}: ${inr(PREMIUM_PLAN.monthly)} / month, ${commission.premium} commission.`,
     ],
   },
@@ -195,7 +195,7 @@ export const FAQ = [
   },
   {
     q: 'What is a free Setmore alternative with UPI?',
-    a: `Meeticulous's ${FREE_PLAN.name} plan costs ${inr(FREE_PLAN.monthly)} a month and takes UPI at booking. You pay a ${commission.free} commission on paid bookings, plus the gateway charge (about 2%) and TDS 1% + TCS 1% on payouts. Clients pay a ₹10 + GST booking fee. ${PREMIUM_PLAN.name} at ${inr(PREMIUM_PLAN.monthly)} a month drops the commission to ${commission.premium}.`,
+    a: `Meeticulous's ${FREE_PLAN.name} plan costs ${inr(FREE_PLAN.monthly)} a month and takes UPI at booking. You pay a ${commission.free} commission on paid bookings, plus the gateway charge (about 2%) and TDS 0.1% (plus 0.5% TCS if GST-registered) on payouts. Clients pay a ₹10 booking fee (GST included, appointments of ₹300+). ${PREMIUM_PLAN.name} at ${inr(PREMIUM_PLAN.monthly)} a month drops the commission to ${commission.premium}.`,
   },
   {
     q: 'Can I move from Setmore to Meeticulous?',
@@ -211,7 +211,7 @@ export const FAQ = [
   },
   {
     q: 'How much does Meeticulous cost?',
-    a: `${FREE_PLAN.name} is ${inr(FREE_PLAN.monthly)} a month with ${commission.free} commission on paid bookings. ${PREMIUM_PLAN.name} is ${inr(PREMIUM_PLAN.monthly)} a month or ${inr(PREMIUM_PLAN.yearly)} a year, GST included, with ${commission.premium} commission. On each paid booking the client pays a ₹10 + GST booking fee, and the gateway charge (about 2%) plus TDS 1% and TCS 1% come out of your payout.`,
+    a: `${FREE_PLAN.name} is ${inr(FREE_PLAN.monthly)} a month with ${commission.free} commission on paid bookings. ${PREMIUM_PLAN.name} is ${inr(PREMIUM_PLAN.monthly)} a month or ${inr(PREMIUM_PLAN.yearly)} a year, GST included, with ${commission.premium} commission. On each paid booking the client pays a ₹10 booking fee (GST included, appointments of ₹300+), and the gateway charge (about 2%) plus TDS 0.1% (plus 0.5% TCS if GST-registered) come out of your payout.`,
   },
 ];
 
@@ -483,7 +483,7 @@ const SetmoreAlternative = () => {
             ))}
           </div>
           <p className={`mt-8 max-w-3xl text-sm leading-relaxed ${MUTED}`}>
-            What it costs, in full: clients pay a flat ₹10 + GST booking fee per paid booking. The payment gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout, so on ₹1,000 at {commission.premium} commission you receive ₹959.76.{' '}
+            What it costs, in full: clients pay a flat ₹10 booking fee (GST included, appointments of ₹300+) per paid booking. The payment gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout, so on ₹1,000 on {PREMIUM_PLAN.name} you receive ₹978.80.{' '}
             <Link to="/host-fees" className={TEXT_LINK}>See every fee on the host fees page</Link>.
           </p>
         </div>

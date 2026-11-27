@@ -110,7 +110,7 @@ const DIFFERENT = [
   },
   {
     icon: Wallet, title: 'Every fee, written down',
-    body: `Clients pay a flat ₹10 + GST booking fee on top of your price. The gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout. On ₹1,000 at ${commission.premium} commission you receive ₹959.76.`,
+    body: `Clients pay a flat ₹10 booking fee (GST included, appointments of ₹300+) on top of your price. The gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On ₹1,000 on ${PREMIUM_PLAN.name} you receive ₹978.80.`,
     link: { to: '/host-fees', label: 'Read the host fees' },
   },
 ];
@@ -142,7 +142,7 @@ export const FAQ = [
   },
   {
     q: 'How much does SimplyBook.me cost in India?',
-    a: `SimplyBook.me publishes its prices in euros, from ${SB.paidFrom}. SMS and WhatsApp reminders are ${SB.sms.toLowerCase()}. Meeticulous bills in rupees with GST included: ${FREE} is ₹0 a month with ${commission.free} commission per paid booking, and ${PREM} is ${MONTHLY} a month or ${YEARLY} a year with ${commission.premium} commission. Clients pay a ₹10 + GST booking fee on each paid booking.`,
+    a: `SimplyBook.me publishes its prices in euros, from ${SB.paidFrom}. SMS and WhatsApp reminders are ${SB.sms.toLowerCase()}. Meeticulous bills in rupees with GST included: ${FREE} is ₹0 a month with ${commission.free} commission per paid booking, and ${PREM} is ${MONTHLY} a month or ${YEARLY} a year with ${commission.premium} commission. Clients pay a ₹10 booking fee (GST included, appointments of ₹300+) on each paid booking.`,
   },
   {
     q: 'Does SimplyBook.me support UPI payments?',
@@ -154,11 +154,11 @@ export const FAQ = [
   },
   {
     q: "What's the cheapest SimplyBook.me alternative in India?",
-    a: `Meeticulous's ${FREE} plan costs ₹0 a month, with no booking cap and ${commission.free} commission per paid booking. If you take a lot of paid bookings, ${PREM} at ${MONTHLY} a month with ${commission.premium} commission can cost less than the ${commission.free} would. Either way, clients pay a ₹10 + GST booking fee on each paid booking.`,
+    a: `Meeticulous's ${FREE} plan costs ₹0 a month, with no booking cap and ${commission.free} commission per paid booking. If you take a lot of paid bookings, ${PREM} at ${MONTHLY} a month with ${commission.premium} commission can cost less than the ${commission.free} would. Either way, clients pay a ₹10 booking fee (GST included, appointments of ₹300+) on each paid booking.`,
   },
   {
     q: 'Do I need my own payment gateway account with Meeticulous?',
-    a: `No. Meeticulous collects UPI and card payments through Razorpay and settles them to your Indian bank account after a one-time KYC. The gateway charge (about 2%) is passed through at cost, and TDS 1% and TCS 1% are deducted on payout. On a ₹1,000 booking at ${commission.premium} commission, you receive ₹959.76.`,
+    a: `No. Meeticulous collects UPI and card payments through Razorpay and settles them to your Indian bank account after a one-time KYC. The gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On a ₹1,000 booking on ${PREMIUM_PLAN.name} you receive ₹978.80.`,
   },
   {
     q: 'Can I move from SimplyBook.me to Meeticulous?',

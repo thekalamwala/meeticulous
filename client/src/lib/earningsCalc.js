@@ -12,7 +12,7 @@ const round2 = (n) => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
 // Neither plan caps bookings since v3.165 — both are unlimited, so there is no
 // "you can't accept booking #1,001" ceiling to model any more. The whole
 // comparison is now a single question: at what volume does the flat annual fee
-// beat 5% commission?
+// beat Starter's 9% commission?
 const ANNUAL_BOOKING_CAP = { free: null, premium: null };
 
 // Annual fees from the single pricing source (GST-inclusive, as charged).
@@ -91,7 +91,7 @@ export function platformFeesPerYear(earning, sessionsPerMonth) {
   return [
     { key: 'topmate-own', name: 'Topmate, your own link', fee: topmate(TOPMATE_FEES.ownLink), note: '10% of sales + 18% GST on the fee' },
     { key: 'topmate-marketplace', name: 'Topmate, marketplace sale', fee: topmate(TOPMATE_FEES.marketplace), note: '20% of sales + 18% GST on the fee' },
-    { key: 'free', name: 'Meeticulous · Starter', fee: freeCommissionPerYear(earning, sessionsPerMonth), note: '5% per paid booking' },
+    { key: 'free', name: 'Meeticulous · Starter', fee: freeCommissionPerYear(earning, sessionsPerMonth), note: '9% per paid appointment' },
     { key: 'premium', name: 'Meeticulous · Pro', fee: ANNUAL_FEE.premium, note: 'Flat yearly plan, 0% commission' },
   ];
 }
@@ -106,7 +106,7 @@ export function deltaVsFree(results, winnerKey) {
 }
 
 // Sessions/month at which Pro (0% commission, flat annual fee) starts
-// beating free for a given per-session price: it wins once a year of saved 5%
+// beating free for a given per-session price: it wins once a year of saved 9%
 // commission clears the fee → ceil(fee / (rate·price·12)). Powers the honest
 // "stay free until ~N/mo" message when free is the winner.
 export function premiumCrossover(earning) {

@@ -439,7 +439,7 @@ const PROBLEMS = [
   },
   {
     title: "Fees that eat into every booking",
-    fixes: ["Starter is free: we take 5% only when you get paid.", "Pro has 0% commission, so you keep every rupee."],
+    fixes: ["Starter is free: we take 9% only when you get paid.", "Pro has 0% commission on appointments, so you keep every rupee."],
     icon: IndianRupee,
     tile: "bg-cyan-100 text-cyan-500",
     band: "bg-cyan-900",
@@ -1200,7 +1200,7 @@ const Home = () => {
             Simple pricing. <span className="text-rose">No surprises.</span>
           </Reveal>
           <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-[750px] text-center text-muted">
-            Start free — we take 5% only when you get paid. Go Pro for 0% commission and keep every rupee.
+            Start free — we take 9% only when you get paid. Go Pro for 0% appointment commission and keep every rupee.
           </Reveal>
 
           <Reveal delay={0.12} className="mt-8">

@@ -186,7 +186,7 @@ export const PROFESSION_LANDING = {
       },
       {
         q: 'How much does it cost?',
-        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every consultation fee.',
+        a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every consultation fee.',
       },
       {
         q: 'Is it suitable for Chartered Accountants and legal consultants too?',
@@ -624,7 +624,7 @@ export const PROFESSION_LANDING = {
       },
       {
         q: 'How much does it cost?',
-        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every session fee.',
+        a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every session fee.',
       },
       {
         q: 'Is it suitable for coaches, advisors and freelance consultants?',
@@ -1048,7 +1048,7 @@ export const PROFESSION_LANDING = {
       },
       {
         q: 'How much does it cost?',
-        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.',
+        a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every fee.',
       },
       {
         q: 'Is it suitable for designers, developers, writers and consultants?',
@@ -1382,7 +1382,7 @@ export const PROFESSION_LANDING = {
       { q: 'Can I collect class fees when students book?', a: 'Yes. Your fee is shown on the booking page and collected at checkout through Razorpay (UPI, cards, netbanking) before the class, with a GST invoice generated automatically. You can charge per class or per batch.' },
       { q: 'Can I run both batches and 1:1 lessons?', a: 'Yes. You can set up separate services for group batches and private lessons, each with its own capacity and availability, so bookings never clash.' },
       { q: 'How does it reduce demo-class no-shows?', a: 'Automatic email and WhatsApp reminders go out before every class, and making demos confirmed or paid means only serious students book your time.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every fee.' },
       { q: 'Is it suitable for coaching institutes and online educators?', a: 'Yes. Tutors, coaching institutes, music and language teachers, exam-prep coaches and online educators can all use Meeticulous to run class bookings and payments from one link.' },
     ],
     finalCta: { icon: GraduationCap, urgency: 'Every empty seat is a student who enrolled elsewhere.', headline: 'More teaching. Less timetabling.', subline: 'Set up your class booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.', ctaText: 'Create My Booking Page' },
@@ -1565,7 +1565,7 @@ export const PROFESSION_LANDING = {
       { q: 'Can clients pay an advance to hold their date?', a: 'Yes. You can collect a consultation fee or a date-hold advance at checkout through Razorpay (UPI, cards, netbanking), with a GST invoice generated automatically — so only committed clients block your calendar.' },
       { q: 'Does it prevent double-booking peak dates?', a: 'Yes. A date locks the moment its advance is paid, and Google Calendar busy-time blocking keeps availability accurate — so two clients can never hold the same date.' },
       { q: 'How does it reduce no-shows for planning meetings?', a: 'Automatic email and WhatsApp reminders go out before every consultation, and paid consultations mean serious clients actually attend.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every fee.' },
       { q: 'Is it suitable for wedding planners and decorators?', a: 'Yes. Wedding and event planners, decorators, caterers and venue managers can all use Meeticulous for consultation bookings, date holds and payments from one link.' },
     ],
     finalCta: { icon: Sparkles, urgency: 'Every un-held date is an event that went to another planner.', headline: 'More celebrations. Less coordination.', subline: 'Set up your event booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.', ctaText: 'Create My Booking Page' },
@@ -1656,7 +1656,7 @@ export const PROFESSION_LANDING = {
       { q: 'Can I route calls to different team members?', a: 'Yes. Each team member can have their own services and availability, so prospects book the right person and slots never clash across the team.' },
       { q: 'Can I charge for paid strategy sessions or audits?', a: 'Yes. You can offer free discovery calls and paid sessions side by side, collecting fees at checkout through Razorpay with a GST invoice generated automatically.' },
       { q: 'Can I filter out unqualified leads?', a: 'Yes. Intake questions and paid strategy slots filter out tyre-kickers before they ever reach your team’s calendar.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every fee.' },
       { q: 'Is it suitable for design, marketing and dev studios?', a: 'Yes. Design, branding, marketing, development and creative studios of any size can use Meeticulous to route discovery calls and collect payments from one shared link.' },
     ],
     finalCta: { icon: TrendingUp, urgency: 'Every slow reply is a lead that booked a competitor.', headline: 'More pitches. Less scheduling.', subline: 'Set up your agency booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.', ctaText: 'Create My Booking Page' },
@@ -1797,7 +1797,7 @@ PROFESSION_LANDING.therapists = {
 
   pricing: {
     hook: 'Less than a cup of chai a day.',
-    line: 'Start free on Starter with 5% per paid booking. Pro is ₹235/month or ₹1,179/year, GST included, with 0% commission.',
+    line: 'Start free on Starter with 9% per paid appointment. Pro is ₹199/month or ₹1,199/year, GST included, with 0% commission on appointments.',
   },
 
   midCtas: {
@@ -1838,7 +1838,7 @@ PROFESSION_LANDING.therapists = {
     },
     {
       q: 'How much does it cost?',
-      a: 'You can start free on the Starter plan, which charges 5% per paid booking. Pro costs ₹235 a month or ₹1,179 a year, GST included, with 0% commission. Clients pay a ₹10 booking fee plus GST on it at checkout, and the payment gateway’s charge applies on both plans.',
+      a: 'You can start free on the Starter plan, which charges 9% per paid appointment. Pro costs ₹199 a month or ₹1,199 a year, GST included, with 0% commission on appointments. Clients pay a ₹10 booking fee, GST included, on appointments of ₹300 or more, and the payment gateway’s charge applies on both plans.',
     },
   ],
 
@@ -1982,7 +1982,7 @@ PROFESSION_LANDING['yoga-instructors'] = {
 
   pricing: {
     hook: 'Less than a cup of chai a day.',
-    line: 'Start free on Starter with 5% per paid booking. Pro is ₹235/month or ₹1,179/year, GST included, with 0% commission.',
+    line: 'Start free on Starter with 9% per paid appointment. Pro is ₹199/month or ₹1,199/year, GST included, with 0% commission on appointments.',
   },
 
   midCtas: {
@@ -2019,7 +2019,7 @@ PROFESSION_LANDING['yoga-instructors'] = {
     },
     {
       q: 'How much does it cost?',
-      a: 'You can start free on the Starter plan, which charges 5% per paid booking. Pro costs ₹235 a month or ₹1,179 a year, GST included, with 0% commission. Students pay a ₹10 booking fee plus GST on it at checkout for paid classes, and the payment gateway’s charge applies on both plans.',
+      a: 'You can start free on the Starter plan, which charges 9% per paid booking. Pro costs ₹199 a month or ₹1,199 a year, GST included, with 0% commission on bookings. Students pay a ₹10 booking fee, GST included, at checkout for paid classes of ₹300 or more, and the payment gateway’s charge applies on both plans.',
     },
   ],
 

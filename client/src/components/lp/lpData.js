@@ -3,7 +3,7 @@
 
    HONESTY: Topmate facts come from data/competitors.js (checked against its
    pricing page, CHECKED_LABEL). Meeticulous prices/plan names come from
-   data/plans.js — never type ₹235 / 5% / 0% here. Booking fee, gateway and
+   data/plans.js — never type a plan price or commission rate here. Booking fee, gateway and
    TDS/TCS figures mirror /host-fees.
 
    PROFILES + COHORTS use real testimonial hosts (data/testimonials.js).
@@ -127,7 +127,7 @@ export const FAQ = [
   { q: "Is Meeticulous a good Topmate alternative?", a: `Yes, if you want to stop paying commission. Meeticulous takes ${COMMISSION.premium} commission on ${PREMIUM_PLAN.name} for a flat ${PRICE_LINE}, or ${COMMISSION.free} on the free ${FREE_PLAN.name} plan. Clients pay by UPI or card at booking and every paid booking gets a GST invoice. Topmate takes 10% of each sale, with no subscription.` },
   { q: "How much commission does Topmate take?", a: `Topmate's pricing page lists 10% of each sale made through your profile or link, and 20% on marketplace sales to new customers (checked ${CHECKED_LABEL}). Meeticulous takes ${COMMISSION.free} on the free ${FREE_PLAN.name} plan and ${COMMISSION.premium} on ${PREMIUM_PLAN.name}.` },
   { q: "When does Pro cost less than Topmate?", a: `Once you sell more than about ${inr(BREAKEVEN)} a month. At that point Topmate's 10% equals the flat ${PRICE_LINE} for ${PREMIUM_PLAN.name}, and every rupee above it costs you nothing extra in commission. Below that, the free ${FREE_PLAN.name} plan at ${COMMISSION.free} costs less than Topmate's 10%.` },
-  { q: "Are there any other fees on Meeticulous?", a: `Your client pays a flat ₹10 + GST booking fee on each paid booking. The payment gateway charge (about 2%) is passed through at cost, and TDS 1% and TCS 1% are deducted on payout as Indian tax law requires. On a ₹1,000 booking on ${PREMIUM_PLAN.name} you receive ₹959.76.` },
+  { q: "Are there any other fees on Meeticulous?", a: `Your client pays a flat ₹10 booking fee (GST included, appointments of ₹300+) on each paid booking. The payment gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout as Indian tax law requires. On a ₹1,000 booking on ${PREMIUM_PLAN.name} you receive ₹978.80.` },
   { q: "Can my clients pay by UPI, and do I get paid in rupees?", a: "Yes. Clients pay upfront by UPI or card through Razorpay, and your earnings settle to your Indian bank account in rupees after a one-time KYC. There's no foreign-currency conversion." },
   { q: "Do I get GST invoices automatically?", a: `Yes. Meeticulous sends a GST invoice for every paid booking on both the ${FREE_PLAN.name} and ${PREMIUM_PLAN.name} plans, so you don't need a separate billing tool.` },
   { q: "How do payouts work?", a: "Clients pay upfront when they book. Meeticulous settles your earnings to your bank account after the session, once your one-time KYC is done. Topmate advertises instant payouts, so if same-day money matters most to you, that is a real difference." },
