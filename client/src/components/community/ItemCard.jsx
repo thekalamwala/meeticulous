@@ -24,6 +24,17 @@ export function SpaceIcon({ spaceKey, size = 20 }) {
 
 export const TOMBSTONE = { deleted: '[deleted]', removed: '[removed]' };
 
+// A thread body often opens by repeating its own title ("hey there i'm new" / "hey
+// there i'm new.... Please help"), which printed the same sentence twice in a row.
+// Drop the repeat under the title; the stored post is untouched. Pure, tested.
+export const bodyAfterTitle = (title, body) => {
+  const t = String(title || '').trim();
+  const b = String(body || '');
+  if (!t || !b.toLowerCase().startsWith(t.toLowerCase())) return b;
+  const rest = b.slice(t.length).replace(/^[\s.,;:!?…-]+/, '');
+  return rest || b;
+};
+
 function Photos({ media, author }) {
   if (!media?.length) return null;
   return (
@@ -95,8 +106,9 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
   const label = item.title || item.author?.display_name || 'Post';
   // No "Announcement" tag — the role badge + space carry context now.
   const meta = [relTime(item.created_at), item.edited_at && 'edited'].filter(Boolean).join(' · ');
-  const long = !detail && typeof item.body === 'string' && item.body.length > BODY_PREVIEW;
-  const bodyText = long ? `${item.body.slice(0, BODY_PREVIEW).trimEnd()}…` : item.body;
+  const fullBody = bodyAfterTitle(item.title, item.body);
+  const long = !detail && typeof fullBody === 'string' && fullBody.length > BODY_PREVIEW;
+  const bodyText = long ? `${fullBody.slice(0, BODY_PREVIEW).trimEnd()}…` : fullBody;
 
   const space = item.space && (
     <Link to={`/community/s/${item.space.key}`} className="mt-post__chip">
@@ -119,7 +131,7 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
             <span className="mt-post__meta">Thread · last reply {relTime(item.last_activity_at)}</span>
           </div>
           <Link to={item.url} className="mt-post__title">{item.title}</Link>
-          <p className="mt-post__body line-clamp-3 text-muted">{item.body}</p>
+          <p className="mt-post__body line-clamp-3 text-muted">{fullBody}</p>
           <div className="flex items-center gap-3">
             <AuthorChip author={item.author} size="s" badge={<IdentityBadge author={item.author} />} />
             {menu && <span className="shrink-0">{menu}</span>}
@@ -158,7 +170,8 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
         </>
       )}
 
-      <div className="mt-actionrow">
+      {/* Detail: the card's own edge closes the row, so no second rule under it. */}
+      <div className={`mt-actionrow ${detail ? 'mt-actionrow--open' : ''}`}>
         <Cell><LikeButton targetType="post" id={item.id} liked={item.viewer?.liked} count={item.like_count} /></Cell>
         <Cell>
           {detail ? (

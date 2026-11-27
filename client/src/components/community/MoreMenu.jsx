@@ -5,7 +5,16 @@ import { Ellipsis } from 'lucide-react';
 // click closes it. Returns null when there is nothing to offer.
 export default function MoreMenu({ label = 'More', items }) {
   const [open, setOpen] = useState(false);
+  const [up, setUp] = useState(false);
   const ref = useRef(null);
+
+  // Near the bottom of the screen the menu opens upward: dropping down, it landed on the
+  // fixed tab bar (and its raised + button). 240px ≈ the bar plus a three-item menu.
+  // ponytail: a fixed threshold, not measured collision; measure if menus grow longer.
+  const toggle = () => {
+    if (!open) setUp((ref.current?.getBoundingClientRect().bottom ?? 0) > window.innerHeight - 240);
+    setOpen((o) => !o);
+  };
 
   useEffect(() => {
     if (!open) return undefined;
@@ -19,11 +28,11 @@ export default function MoreMenu({ label = 'More', items }) {
   if (!items.length) return null;
   return (
     <span ref={ref} className="mt-more">
-      <button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s">
+      <button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={toggle} className="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s">
         <Ellipsis size={16} aria-hidden="true" />
       </button>
       {open && (
-        <div className="mt-menu" role="menu" aria-label={label}>
+        <div className={`mt-menu ${up ? 'mt-menu--up' : ''}`} role="menu" aria-label={label}>
           {items.map((it) => (
             <button key={it.label} type="button" role="menuitem" className="mt-menu__item" onClick={() => { setOpen(false); it.onSelect(); }}>{it.label}</button>
           ))}

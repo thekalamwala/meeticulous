@@ -1,10 +1,12 @@
 // KeptTabBar — the host dashboard's bottom bar on phones (Kept shell only; the old
 // layouts keep MobileTabBar). Founder-approved 2026-11-25:
 //
-//   Today · Bookings · ( Grow ) · Money · More
+//   Today · Bookings · Grow · Money · More
 //
 // No new grammar, just the one people already know from Instagram, GPay and iOS:
-// five equal slots so the raised centre is truly centred; the active tab's icon
+// five equal, flat slots. Grow used to sit in a raised maroon centre circle, but in
+// Community that same raised slot means "create a post" — one shape, two meanings —
+// so the raised centre is kept for create actions only (founder, 2026-11-27). The active tab's icon
 // turns solid maroon (no backing); one 12px label size; a rose dot
 // only when something needs you. Tapping the tab you're on scrolls to the top.
 // "More" rises as a bottom sheet with everything else as big tiles.
@@ -81,20 +83,6 @@ const Tab = ({ label, Icon, SolidIcon, active, dot, onClick, buttonRef, ...rest 
       active ? 'text-maroon' : 'text-muted')}>
       {active && SolidIcon ? <SolidIcon className="h-6 w-6" /> : <Icon className="h-6 w-6" strokeWidth={active ? 2.3 : 1.8} />}
       {dot && <Dot className="right-3 top-0.5" />}
-    </span>
-    <span className={cn(label12, active ? 'font-semibold text-maroon' : 'font-medium text-muted')}>{label}</span>
-  </button>
-);
-
-// The raised centre: a maroon circle that sits above the bar, label on the same
-// baseline as every other tab.
-const CentreTab = ({ label, Icon, active, dot, onClick }) => (
-  <button type="button" onClick={onClick} aria-current={active ? 'page' : undefined}
-    aria-label={dot ? `${label}, needs your attention` : label}
-    className="group flex min-w-0 flex-col items-center justify-end gap-1 pb-3 focus-visible:outline-none">
-    <span className={cn('relative -mt-7 grid h-14 w-14 place-items-center rounded-full bg-maroon text-white ring-4 ring-white shadow-[var(--shadow-md)] group-focus-visible:ring-rose', press)}>
-      <Icon className="h-6 w-6" strokeWidth={2.4} />
-      {dot && <Dot className="right-0.5 top-0.5" />}
     </span>
     <span className={cn(label12, active ? 'font-semibold text-maroon' : 'font-medium text-muted')}>{label}</span>
   </button>
@@ -189,11 +177,10 @@ export default function KeptTabBar() {
     : !!s?.items?.some((i) => (i.badgeKey ? badges[i.badgeKey] || 0 : 0) > 0));
   const activeId = pathname.startsWith(HELP.to) ? 'help' : resolveActive(pathname, sections).sectionId;
 
-  // Grow sits in the raised centre. If a host's nav has no Grow section, Bookings
-  // takes the centre and Clients the second slot, so the bar never shows a gap.
+  // If a host's nav has no Grow section, Clients takes a slot instead, so the bar
+  // never shows a gap.
   const grow = byId('grow');
   const order = grow ? ['home', 'bookings', 'grow', 'money'] : ['home', 'clients', 'bookings', 'money'];
-  const centreId = grow ? 'grow' : 'bookings';
   const tabs = order.map(byId).filter(Boolean);
   const sheetItems = [
     ...SHEET_ORDER.filter((id) => !order.includes(id)).map(byId).filter(Boolean),
@@ -224,11 +211,11 @@ export default function KeptTabBar() {
   return createPortal(
     <>
       <nav aria-label="Primary"
-        className="dash dash-v2 fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
-        {tabs.map((s) => {
-          const props = { label: s.label, Icon: ICON[s.id] || LayoutGrid, SolidIcon: SOLID[s.id], active: activeId === s.id, dot: attention(s), onClick: () => onTab(s) };
-          return s.id === centreId ? <CentreTab key={s.id} {...props} /> : <Tab key={s.id} {...props} />;
-        })}
+        className="mt-hide-while-typing dash dash-v2 fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
+        {tabs.map((s) => (
+          <Tab key={s.id} label={s.label} Icon={ICON[s.id] || LayoutGrid} SolidIcon={SOLID[s.id]}
+            active={activeId === s.id} dot={attention(s)} onClick={() => onTab(s)} />
+        ))}
         <Tab label="More" Icon={LayoutGrid} SolidIcon={SOLID.more} active={moreActive || open} dot={moreAttention} buttonRef={moreRef}
           aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((v) => !v)} />
       </nav>

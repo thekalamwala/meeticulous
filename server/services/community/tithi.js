@@ -364,6 +364,16 @@ async function publishDeploymentNote({ pr, release } = {}) {
 // the thread to the team by email. A human replying in the thread is a normal member
 // comment — Tithi has already had her one turn, so she won't talk over them.
 
+// The help docs explain the booking link with a placeholder ("meeticulous.com/your-name").
+// Lifted into a reply to a real member it became a link to a page that doesn't exist.
+// Swap in their own username; without one (most guests), the text is left as is and the
+// client won't make the placeholder a link (LinkifiedText). Pure, tested.
+const PLACEHOLDER_LINK = /\b(meeticulous\.com\/)(?:your-name|yourname|your-username)\b/gi;
+function personalizeLinks(body, author) {
+  const u = author?.username;
+  return u ? String(body).replace(PLACEHOLDER_LINK, `$1${u}`) : body;
+}
+
 // Best-effort team handoff for an unresolved community question. Reuses the existing bot
 // escalation path (bot_escalations row + email to SUPPORT_EMAIL). Never throws.
 async function escalateToTeam({ post, author, question, reason }) {
@@ -428,6 +438,7 @@ async function replyToPost({ post } = {}) {
       // route-aware plain-text CTA (comparison/feature) so a product answer has a next step.
       body = text.toPlainText(body);
       body = replyGate.appendCta(body, route);
+      body = personalizeLinks(body, author);
     }
 
     // On escalation, tag a human IN the reply so they're pinged to check + take over.
@@ -498,6 +509,7 @@ async function replyToComment({ comment } = {}) {
     if (!res.escalate) {
       body = text.toPlainText(body);
       body = replyGate.appendCta(body, route);
+      body = personalizeLinks(body, author);
     }
 
     const handle = res.escalate ? escalationHandle() : null;
@@ -530,6 +542,6 @@ module.exports = {
   classifyPr, kindFromPrefix, writeReleaseNote, briefNote,
   parseCommunityBlock, announceDecision, truncateWords,
   releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
-  replyToPost, replyToComment, escalateToTeam,
+  replyToPost, replyToComment, escalateToTeam, personalizeLinks,
   _tithiUserId: tithiUserId,
 };
