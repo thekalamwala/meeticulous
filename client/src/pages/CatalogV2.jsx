@@ -492,8 +492,8 @@ const CatalogV2 = () => {
           ? <>{top.i.title} <em className={serif}>is booked the most.</em></>
           : <>{live} of {sellable} on your page. <em className={serif}>Ready to book.</em></>}
         sub={top && top.n > 0
-          ? `${top.n} ${top.n === 1 ? 'booking' : 'bookings'} so far. Prices below show what guests pay with the booking fee.`
-          : 'Prices below show what guests pay with the booking fee. Hidden items stay off your page.'}
+          ? `${top.n} ${top.n === 1 ? 'booking' : 'bookings'} so far. Under each service is what you get after our commission.`
+          : 'Under each service is what you get after our commission. Hidden items stay off your page.'}
         actions={pageUrl ? (
           <a href={pageUrl} target="_blank" rel="noreferrer" className={cn(bandBtn, 'bg-white text-maroon hover:bg-pink-100')}>
             See your page <ExternalLink className="h-4 w-4" strokeWidth={2.4} />
