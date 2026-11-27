@@ -164,7 +164,6 @@ const Memberships = lazy(() => import('./pages/Memberships'));
 const ProductEditor = lazy(() => import('./pages/catalog/ProductEditor'));
 const CourseEditor  = lazy(() => import('./pages/catalog/CourseEditor'));
 const TierEditor    = lazy(() => import('./pages/catalog/TierEditor'));
-const MembershipSpace = lazy(() => import('./pages/MembershipSpace'));
 const MyMemberships = lazy(() => import('./pages/MyMemberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
@@ -1105,7 +1104,12 @@ function App() {
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />
           <Route path="/:profileSlug/product/:productId" element={<ProductPurchase />} />
           <Route path="/:username/course/:slug" element={<CoursePage />} />
-          <Route path="/:username/membership" element={<MembershipSpace />} />
+          {/* Profile tabs — each its own URL on the same HostProfile (left card stays).
+              These words are reserved service slugs server-side (serviceController
+              RESERVED_SERVICE_SLUGS); /membership was the standalone MembershipSpace. */}
+          <Route path="/:profileSlug/products" element={<HostProfile tab="products" />} />
+          <Route path="/:profileSlug/courses" element={<HostProfile tab="courses" />} />
+          <Route path="/:profileSlug/membership" element={<HostProfile tab="membership" />} />
           <Route path="/:profileSlug/booking" element={<BookingRedirect />} />
           <Route path="/:profileSlug/booking/:serviceSlug" element={<ServiceBooking />} />
           <Route path="/:profileSlug/:serviceSlug" element={<ServiceDetail />} />

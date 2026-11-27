@@ -4,7 +4,7 @@ jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }
 
 const { supabaseAdmin } = require('../../config/supabase');
 const {
-  toLastmod, hostUrl, serviceUrl, staticEntries, hostEntries, serviceEntries, professionEntries, blogEntries,
+  toLastmod, hostUrl, serviceUrl, staticEntries, hostEntries, hostTabEntries, serviceEntries, professionEntries, blogEntries,
   fetchProfessions, fetchBlogs,
 } = require('../../services/sitemapService');
 
@@ -65,6 +65,18 @@ describe('hostEntries', () => {
   });
   test('skips rows with no username', () => {
     expect(hostEntries([{ username: null, updated_at: '2026-06-20T10:00:00Z' }], SITE)).toEqual([]);
+  });
+});
+
+describe('hostTabEntries', () => {
+  const hosts = [{ id: 'h1', username: 'john-doe', updated_at: '2026-06-20T10:00:00Z' }];
+  test('maps a tab row under its listed host', () => {
+    expect(hostTabEntries(hosts, [{ host_id: 'h1', tab: 'products' }], SITE)).toEqual([
+      { loc: 'https://meeticulous.com/john-doe/products', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.6' },
+    ]);
+  });
+  test('drops tabs of unlisted hosts and unknown tab names', () => {
+    expect(hostTabEntries(hosts, [{ host_id: 'h2', tab: 'courses' }, { host_id: 'h1', tab: 'badges' }], SITE)).toEqual([]);
   });
 });
 

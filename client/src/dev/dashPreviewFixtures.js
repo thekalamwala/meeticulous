@@ -5,6 +5,7 @@ import { catalogFixtures } from './dashPreviewCatalog';
 import { buildCrmFixtures } from './dashPreviewCrm';
 import { buildMoneyFixtures } from './dashPreviewMoney';
 import { catalogUpgradeFixtures } from './dashPreviewCatalog2';
+import { profileFixtures } from './dashPreviewProfile';
 
 const day = 86_400_000;
 const at = (days, h = 10, m = 30) => {
@@ -262,4 +263,5 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   // Last on purpose: its '/services' rows are a superset of the CRM picker's.
   ...catalogFixtures(),
   ...catalogUpgradeFixtures(),
+  ...profileFixtures(),
 });

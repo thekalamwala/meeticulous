@@ -614,6 +614,7 @@ export const createCourse        = (data)     => API.post('/courses', data);
 export const getMyCourses        = ()         => API.get('/courses/mine/all');
 export const updateCourse        = (id, data) => API.put(`/courses/${id}`, data);
 export const deleteCourse        = (id)       => API.delete(`/courses/${id}`);
+export const getHostCourses      = (username) => API.get(`/courses/host/${encodeURIComponent(username)}`);
 export const getCoursePublic     = (username, slug) => API.get(`/courses/p/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`);
 export const getCourseContent    = (id)       => API.get(`/courses/${id}/content`);
 export const getPurchasedCourses = ()         => API.get('/courses/purchased');
