@@ -337,6 +337,11 @@ Items previously listed here as pending are now live:
   `sort_order NULLS LAST, created_at DESC` (`services/catalogOrder.js`), so untouched hosts keep
   newest-first. Code is schema-fallback safe (order read in its own query; reorder answers 409
   without the column). Rollback: `ALTER TABLE … DROP COLUMN IF EXISTS sort_order` on the three.
+- **v3.228** (`v3.228_membership_tier_cover.sql`) — applied 2026-11-27 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: `community_membership_tiers.cover_url` + `description`
+  (nullable text, `tier_description_len` check ≤ 600). Tier cover + description on the Kept tier
+  cards (PR #461). Additive; `membershipController` keeps a schema fallback (writeTier retries
+  without the two columns). Rollback: `DROP COLUMN IF EXISTS` on both.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
