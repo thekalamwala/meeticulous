@@ -383,6 +383,7 @@ const AdminGstExports      = lazy(() => import('./pages/admin/AdminGstExports'))
 // Admin — SEO audit dashboard
 const AdminSeo = lazy(() => import('./pages/admin/AdminSeo'));
 const Presentation = lazy(() => import('./pages/presentation/Presentation'));
+const Agents = lazy(() => import('./pages/agents/Agents'));
 
 // ── Fallback shown while a route chunk downloads ──────────────────────────────
 const PageLoader = () => (
@@ -1072,6 +1073,7 @@ function App() {
           <Route path="/agent-tithi" element={<AgentTithi />} />
           {/* Full-screen shareable product pitch deck (pages/presentation/). */}
           <Route path="/presentation" element={<Presentation />} />
+          <Route path="/agents" element={<Agents />} />
 
           {/* Branded error pages — config-driven (see config/errorCatalog.js).
               One <ErrorPage> component renders all of them; adding a code = a

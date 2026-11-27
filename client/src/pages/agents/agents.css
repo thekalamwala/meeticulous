@@ -1,0 +1,61 @@
+/* /agents — full-screen territory page. Single look by design: rose-pink graph paper, agents claim tiles
+   in their own body colour. Colours come from the brand kit (rose-400/500); agent colours are the
+   official mascot body colours. */
+.agents-page {
+  --agents-bg: var(--rose-400, #E87A92);
+  --agents-grid: #DC6A84; /* rose-400 one step darker: the graph-paper line */
+  --agents-px: 4px;       /* one sprite pixel: 32px sprite = 128px on desktop */
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--agents-bg);
+  color: var(--mt-ink, #2B0A14);
+  font-family: var(--font-body);
+  touch-action: manipulation;
+}
+@media (max-width: 640px) { .agents-page { --agents-px: 3px; } } /* smaller agents on phones */
+.agents-page canvas { position: absolute; left: 0; top: 0; }
+
+.agents-sprite {
+  position: absolute; left: 0; top: 0; width: 32em; height: 32em; font-size: var(--agents-px);
+  padding: 0; border: 0; background: none; cursor: pointer; will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+.agents-sprite:focus-visible { outline: 3px solid var(--mt-maroon, #960D32); outline-offset: 2px; border-radius: 24px; }
+.agents-rig { position: absolute; inset: 0; }
+.agents-spr { position: absolute; }
+.agents-spr > i { position: absolute; left: -1em; top: -1em; width: 1em; height: 1em; }
+.agents-spr.zz { display: none; animation: agents-zz 2.4s linear infinite; }
+.agents-spr.z2 { animation-delay: .8s; }
+.agents-spr.z3 { animation-delay: 1.6s; }
+.agents-sprite.napping .agents-spr.zz { display: block; }
+@keyframes agents-zz { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(2em, -6em); opacity: 0; } }
+
+/* name + share tag: pixel-notched bubble (the notches are the rounded corners) */
+.agents-tag {
+  position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translate(-50%, 4px); opacity: 0;
+  pointer-events: none; white-space: nowrap; background: #FFFFFF; color: var(--mt-ink, #2B0A14);
+  padding: 6px 10px; font-size: 13px; line-height: 1.2; text-align: center;
+  box-shadow: 0 -3px 0 0 #2B0A14, 0 3px 0 0 #2B0A14, -3px 0 0 0 #2B0A14, 3px 0 0 0 #2B0A14;
+  transition: opacity .15s ease-out, transform .15s ease-out;
+}
+.agents-tag b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 15px; }
+.agents-tag span { display: block; font-weight: 600; font-variant-numeric: tabular-nums; }
+.agents-sprite.show .agents-tag { opacity: 1; transform: translate(-50%, 0); }
+
+/* score card */
+.agents-hud {
+  position: fixed; z-index: 100000; top: calc(env(safe-area-inset-top, 0px) + 16px); left: max(16px, env(safe-area-inset-left, 0px));
+  width: min(300px, calc(100vw - 32px)); background: #FFFFFF; border-radius: 24px; padding: 14px 16px 12px;
+  display: grid; gap: 10px; box-shadow: 0 8px 24px rgba(43, 10, 20, .22); pointer-events: none;
+}
+.agents-hud h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; line-height: 1.1; letter-spacing: -.01em; }
+.agents-hud p { margin: 0; color: #6E4A55; font-size: .78rem; line-height: 1.4; }
+.agents-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--blush, #FFE4EA); }
+.agents-bar i { display: block; height: 100%; transition: width .5s ease-out; }
+.agents-legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: .72rem; font-variant-numeric: tabular-nums; }
+.agents-legend div { display: grid; }
+.agents-legend b { font-weight: 600; color: #6E4A55; font-size: .68rem; }
+.agents-legend b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 999px; margin-right: 4px; background: var(--c); }
+@media (max-width: 640px) { .agents-hud { padding: 12px 14px 10px; gap: 8px; } .agents-hud h1 { font-size: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .agents-spr.zz { animation: none; opacity: .8; } .agents-bar i, .agents-tag { transition: none; } }
