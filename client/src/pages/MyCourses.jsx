@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getPurchasedCourses } from "../services/api";
+import { coursePath } from "../utils/seo";
 import BackButton from "../components/common/BackButton";
 import { PageHeader, Card, EmptyState, ErrorState } from "../components/dashboard/ui";
 import { Video } from "lucide-react";
@@ -34,7 +35,7 @@ const MyCourses = () => {
         <ul className="grid gap-4 sm:grid-cols-2">
           {courses.map((c) => (
             <Card as="li" key={c.id} padded={false} className="overflow-hidden">
-              <Link to={`/${c.profiles?.username}/course/${c.slug}`}>
+              <Link to={coursePath(c.profiles?.username, c.slug)}>
                 {c.thumbnail_url ? (
                   <img src={c.thumbnail_url} alt={c.title} className="aspect-video w-full object-cover" />
                 ) : (

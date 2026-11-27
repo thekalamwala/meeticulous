@@ -92,7 +92,8 @@ describe('HostProfile — profile info', () => {
 
   test('renders bio text', async () => {
     renderProfile();
-    await waitFor(() => expect(screen.getByText(/I help people/i)).toBeTruthy());
+    // The bio shows in the card AND opens the answer-first summary.
+    await waitFor(() => expect(screen.getAllByText(/I help people/i).length).toBeGreaterThan(0));
   });
 
   test('renders location', async () => {
@@ -316,6 +317,21 @@ describe('HostProfile — tabs', () => {
     expect(screen.getByText('Monthly call')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Join' })).toBeTruthy();
     expect(firstStat()).toEqual({ label: 'Members', n: '42' });
+  });
+
+  test('products tab: own SEO, CollectionPage JSON-LD, answer-first summary, visible FAQ, slug links', async () => {
+    getHostProducts.mockResolvedValue({ data: [{ id: 'p1', slug: 'meal-plan', title: 'Meal plan PDF', price: 299, type: 'pdf' }] });
+    renderTab('/jane-vendor/products');
+    await waitFor(() => expect(document.title).toBe('Digital products by Jane Vendor (1)'));
+    expect(document.querySelector('link[rel="canonical"]').getAttribute('href')).toMatch(/\/jane-vendor\/products$/);
+    const ld = [JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)].flat()[0];
+    const types = ld['@graph'].map((n) => n['@type']);
+    expect(types).toContain('CollectionPage');
+    expect(types).toContain('FAQPage');
+    expect(types).not.toContain('ProfilePage');
+    expect(screen.getByText(/^1 digital product by Jane Vendor, from ₹299\./)).toBeTruthy();
+    expect(screen.getByText('How do I get my download after paying?')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Meal plan PDF' })[0].getAttribute('href')).toBe('/jane-vendor/products/meal-plan');
   });
 
   test('a tab URL with nothing to show falls back to the profile', async () => {

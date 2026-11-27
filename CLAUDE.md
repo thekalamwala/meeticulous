@@ -342,6 +342,13 @@ Items previously listed here as pending are now live:
   (nullable text, `tier_description_len` check ≤ 600). Tier cover + description on the Kept tier
   cards (PR #461). Additive; `membershipController` keeps a schema fallback (writeTier retries
   without the two columns). Rollback: `DROP COLUMN IF EXISTS` on both.
+- **v3.229** (`v3.229_clean_catalog_slugs.sql`) — **PENDING: apply at merge** of the profile SEO
+  overhaul (`feat/profile-seo-overhaul`). Adds `legacy_slugs text[] NOT NULL DEFAULT '{}'` to
+  `products` + `courses` and strips the `demo-` prefix from their slugs (old slug moved into
+  `legacy_slugs`; per-host clash → `-2`, `-3`). Idempotent + additive. Old URLs keep resolving:
+  `services/catalogSlug.js` looks up slug → id → legacy_slugs and the page / bot shell 301s to
+  `/:username/products|courses/<slug>`. Code is schema-fallback safe (no column = the legacy lookup
+  is "not found"). Verify + rollback queries are in the file header.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

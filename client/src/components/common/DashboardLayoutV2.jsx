@@ -269,9 +269,15 @@ const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
     </Link>
     {/* Today's heading lives in the topbar: "Good evening, Riya". Other pages keep
         their own page titles. */}
+    {/* Phones: the greeting is a small line and the name gets its own, so the name —
+        the personal part — is never what truncates (founder, 2026-11-27). Desktop keeps
+        one line. */}
     {onHome && (
-      <h1 className="mb-0 min-w-0 truncate font-display text-[19px] font-extrabold tracking-[-0.03em] text-maroon lg:text-[24px]">
-        {greetingFor()}{user?.name ? `, ${user.name.trim().split(/\s+/)[0]}` : ''}
+      <h1 className="mb-0 flex min-w-0 flex-col font-display font-extrabold tracking-[-0.03em] text-maroon lg:flex-row lg:items-baseline lg:gap-1.5 lg:text-[24px]">
+        <span className="font-sans text-[12.5px] font-medium leading-tight tracking-normal text-muted lg:font-display lg:text-[24px] lg:font-extrabold lg:tracking-[-0.03em] lg:text-maroon">
+          {greetingFor()}{user?.name ? ',' : ''}
+        </span>
+        {user?.name && <span className="truncate text-[19px] leading-tight lg:text-[24px]">{user.name.trim().split(/\s+/)[0]}</span>}
       </h1>
     )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -359,7 +365,9 @@ const DashboardLayoutV2 = ({ children }) => {
             {/* No scrollerRef: the window scrolls here. Passing <main> made scrollTop read 0
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
             <PullToRefresh>
-              <div className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
+              {/* Bottom room = the tab bar plus the home-indicator inset, so the last row
+                  scrolls fully clear of the fixed bar on notched phones too. */}
+              <div className="mx-auto w-full max-w-[1240px] px-4 pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
                 {/* No shell KYC strip (founder call, 2026-11-26): the verify ask lives in
                     Today's setup checklist + the bell, and inside Money's balance. A strip
                     on every page said it twice. */}

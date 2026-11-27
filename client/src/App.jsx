@@ -582,6 +582,16 @@ function BookingRedirect() {
   return <Navigate to={`/${profileSlug}`} replace />;
 }
 
+// Old /:profileSlug/product/:key and /:profileSlug/course/:key → the slug scheme
+// (/:profileSlug/products|courses/:key), keeping the query (emailed ?dl= links).
+// The edge middleware 301s these for real requests; this covers in-app
+// navigation. The page then swaps an id / legacy slug for the canonical slug.
+function LegacyCatalogRedirect({ kind }) {
+  const { profileSlug, key } = useParams();
+  const { search } = useLocation();
+  return <Navigate to={`/${profileSlug}/${kind}/${encodeURIComponent(key)}${search}`} replace />;
+}
+
 // /blogs/* is a common mistype of the canonical /blog/* — keep the link alive.
 // In production Vercel 301s these before the app ever loads (client/vercel.json);
 // this covers what that cannot — local dev, and in-app <Link> navigation, which
@@ -1102,8 +1112,12 @@ function App() {
 
           {/* Public host/service pages — specific before dynamic */}
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />
-          <Route path="/:profileSlug/product/:productId" element={<ProductPurchase />} />
-          <Route path="/:username/course/:slug" element={<CoursePage />} />
+          {/* Catalog items: slug-only /:u/products/:slug and /:u/courses/:slug; the
+              old singular paths redirect (LegacyCatalogRedirect + edge 301). */}
+          <Route path="/:profileSlug/products/:productSlug" element={<ProductPurchase />} />
+          <Route path="/:username/courses/:slug" element={<CoursePage />} />
+          <Route path="/:profileSlug/product/:key" element={<LegacyCatalogRedirect kind="products" />} />
+          <Route path="/:profileSlug/course/:key" element={<LegacyCatalogRedirect kind="courses" />} />
           {/* Profile tabs — each its own URL on the same HostProfile (left card stays).
               These words are reserved service slugs server-side (serviceController
               RESERVED_SERVICE_SLUGS); /membership was the standalone MembershipSpace. */}

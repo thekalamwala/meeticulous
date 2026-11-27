@@ -79,8 +79,11 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
           role={role}
           aria-label={title}
           className={cn(
-            'absolute inset-y-0 right-0 flex w-[86%] max-w-[340px] flex-col overflow-y-auto bg-white shadow-[0_0_48px_-8px_rgba(43,10,20,0.45)] transition-transform duration-300 ease-out',
-            open ? 'translate-x-0' : 'translate-x-full',
+            'absolute inset-y-0 right-0 flex w-[86%] max-w-[340px] flex-col overflow-y-auto bg-white shadow-[0_0_48px_-8px_rgba(43,10,20,0.45)] transition-[transform,visibility] duration-300 ease-out',
+            // Closed = invisible, not just off-screen: parked at translate-x-full, its 48px
+            // shadow still bled back over the right edge of every page as a white strip.
+            // visibility flips after the slide-out, so the exit still animates.
+            open ? 'visible translate-x-0' : 'invisible translate-x-full',
           )}
         >
           <div className="flex items-center justify-between border-b border-neutral-200/60 px-5 py-3">

@@ -54,10 +54,14 @@ export default function AuthorChip({ author, meta, size = 'm', avatar = true, ba
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       {avatar && <Avatar author={author} size={size} />}
-      <div className="mt-identity">
+      {/* With collaborators the row wraps (mt-identity--wrap) rather than truncating, and
+          the seal sits right after the author it belongs to — after the co-author it read
+          as theirs, and the author was the name that got cut ("Shub…"). */}
+      <div className={`mt-identity ${collaborators.length ? 'mt-identity--wrap' : ''}`}>
         {author?.profile_url
           ? <Link to={author.profile_url} className="mt-identity__name">{name}</Link>
           : <span className="mt-identity__name">{name}</span>}
+        {badge && <span className="mt-identity__seal">{badge}</span>}
         {collaborators.length > 0 && (
           <span className="mt-identity__collab">
             {' with '}
@@ -71,7 +75,6 @@ export default function AuthorChip({ author, meta, size = 'm', avatar = true, ba
             ))}
           </span>
         )}
-        {badge && <span className="mt-identity__seal">{badge}</span>}
         {handle && <span className="mt-identity__handle">{handle}</span>}
         {meta && <span className="mt-identity__time">{meta}</span>}
       </div>

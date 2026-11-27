@@ -306,13 +306,39 @@ describe('getPublicServiceByProfileAndSlug', () => {
 describe('uniqueSlug never hands out a profile tab route', () => {
   beforeEach(() => mockFrom(null)); // no existing service holds any slug
 
-  test.each(['products', 'courses', 'membership', 'badges', 'booking'])('%s gets a suffix', async (word) => {
-    const slug = await uniqueSlug(word, 'vendor-uuid');
-    expect(slug).not.toBe(word);
-    expect(slug).toMatch(new RegExp(`^${word}-[a-z0-9]+$`));
+  test.each(['products', 'courses', 'membership', 'badges', 'booking'])('%s gets a readable -2 suffix', async (word) => {
+    expect(await uniqueSlug(word, 'vendor-uuid')).toBe(`${word}-2`);
   });
 
   test('a normal slug is kept as-is', async () => {
     expect(await uniqueSlug('product-shoot', 'vendor-uuid')).toBe('product-shoot');
+  });
+});
+
+describe('uniqueSlug collisions use -2, -3 (no random letters)', () => {
+  // Each candidate is one maybeSingle() probe; `takenUntil` probes report a hit.
+  const probes = (takenUntil) => {
+    let n = 0;
+    supabaseAdmin.from.mockImplementation(() => {
+      const q = { select: jest.fn(() => q), eq: jest.fn(() => q), neq: jest.fn(() => q) };
+      q.maybeSingle = jest.fn(async () => ({ data: n++ < takenUntil ? { id: 'x' } : null }));
+      return q;
+    });
+  };
+  afterEach(() => supabaseAdmin.from.mockReset());
+
+  test('base taken -> base-2', async () => {
+    probes(1);
+    expect(await uniqueSlug('seo-consultation', 'h1')).toBe('seo-consultation-2');
+  });
+  test('base and -2 taken -> base-3', async () => {
+    probes(2);
+    expect(await uniqueSlug('seo-consultation', 'h1')).toBe('seo-consultation-3');
+  });
+  test('reserved word that is also taken at -2 -> -3, digits only', async () => {
+    probes(1);
+    const slug = await uniqueSlug('membership', 'h1');
+    expect(slug).toBe('membership-3');
+    expect(slug).toMatch(/^[a-z-]+-\d+$/);
   });
 });
