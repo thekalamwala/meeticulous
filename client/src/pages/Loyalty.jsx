@@ -33,15 +33,18 @@ const Loyalty = () => {
               ? <>You&apos;ve spent {inr(spent)}. <em className={serif}>{inr(gap)} to {next.name}.</em></>
               : <>You&apos;ve spent {inr(spent)}. <em className={serif}>Top tier.</em></>}
             sub="Based on your paid bookings. Courses and memberships will count soon."
-            actions={next && <BandPrimary onClick={() => navigate("/explore")}>Book a session</BandPrimary>}
-            aside={next && (
-              <div className="max-w-[320px]">
-                <div className="h-2.5 overflow-hidden rounded-full bg-white/20" role="progressbar" aria-label={`Progress to ${next.name}`}
-                  aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct * 100)}>
-                  <div className="h-full rounded-full bg-pink" style={{ width: `${Math.max(4, pct * 100)}%` }} />
+            actions={next && (
+              <>
+                {/* Progress first, full row, then the action — kept left of the mascot. */}
+                <div className="w-full max-w-[360px]">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-white/20" role="progressbar" aria-label={`Progress to ${next.name}`}
+                    aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct * 100)}>
+                    <div className="h-full rounded-full bg-pink" style={{ width: `${Math.max(4, pct * 100)}%` }} />
+                  </div>
+                  <p className="mb-0 mt-2 flex justify-between text-[13px] text-white/80"><span>{tier.name}</span><span>{next.name} at {inr(next.spend)}</span></p>
                 </div>
-                <p className="mb-0 mt-2 flex justify-between text-[13px] text-white/80"><span>{tier.name}</span><span>{next.name} at {inr(next.spend)}</span></p>
-              </div>
+                <BandPrimary onClick={() => navigate("/explore")}>Book a session</BandPrimary>
+              </>
             )} />
         )}
       </div>
