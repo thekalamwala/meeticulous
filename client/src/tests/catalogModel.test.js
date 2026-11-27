@@ -168,10 +168,15 @@ describe('editHref', () => {
     expect(editHref({ kind: 'service', id: 's1' })).toBe('/dashboard/service/edit/s1');
   });
 
-  it('sends the others to their page, opening the item where it has an inline editor', () => {
-    // Products and courses edit inline on their own page; ?edit= opens the one.
-    expect(editHref({ kind: 'product', id: 'p1' })).toBe('/dashboard/products?edit=p1');
-    expect(editHref({ kind: 'course', id: 'c1' })).toBe('/dashboard/courses?edit=c1');
+  it('deep-links products, courses and membership tiers to their own editor routes', () => {
+    expect(editHref({ kind: 'product', id: 'p1' })).toBe('/dashboard/product/edit/p1');
+    expect(editHref({ kind: 'course', id: 'c1' })).toBe('/dashboard/course/edit/c1');
+    expect(editHref({ kind: 'membership', id: 't1' })).toBe('/dashboard/memberships/tier/edit/t1');
+    // Discounts still edit on their page.
     expect(editHref({ kind: 'coupon', id: 'o1' })).toBe('/dashboard/coupons');
+  });
+
+  it('adds a membership TIER (not just the program page)', () => {
+    expect(ADD_ROUTE.membership).toBe('/dashboard/memberships/tier/add-new');
   });
 });

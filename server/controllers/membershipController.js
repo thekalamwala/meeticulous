@@ -15,9 +15,13 @@ const { quoteUpgrade, isUpgrade } = require('../lib/membershipProration');
 
 const MAX_TIERS = 3;
 
+// At most 2 PAID tiers; a 3rd tier is only allowed if it is the (one) free tier.
+const MAX_PAID_TIERS = 2;
+
 const publicTier = (t) => ({
   id: t.id, name: t.name, type: t.type, price_inr: t.price_inr,
   billing_period: t.billing_period, perks: Array.isArray(t.perks) ? t.perks : [],
+  cover_url: t.cover_url || null, description: t.description || null,
 });
 
 // ponytail: schema-fallback — if v3.218 isn't applied yet, Supabase returns a
@@ -27,6 +31,21 @@ const MISSING_TABLE_RE = /relation .* does not exist|Could not find the table|sc
 const isMissingTable = (err) => err && MISSING_TABLE_RE.test(err.message || '');
 // Postgres unique_violation — hit when a 2nd free tier races the uq_membership_free_tier index.
 const isUniqueViolation = (err) => err && (err.code === '23505' || /duplicate key|unique constraint/i.test(err.message || ''));
+
+// ponytail: schema-fallback for v3.228 (tier cover_url + description). Until it is
+// applied, PostgREST rejects the unknown columns; the write is retried without
+// them, so a tier still saves (just without cover/description).
+const TIER_V228_COLS = ['cover_url', 'description'];
+const MISSING_COL_RE = /column .* does not exist|Could not find the '.*' column/i;
+const writeTier = async (run, row) => {
+  const first = await run(row);
+  if (!first.error || !MISSING_COL_RE.test(first.error.message || '')) return first;
+  const slim = { ...row };
+  TIER_V228_COLS.forEach((c) => delete slim[c]);
+  return run(slim);
+};
+const cleanUrl = (u) => (u && /^https?:\/\//i.test(String(u)) ? String(u).slice(0, 1000) : null);
+const cleanDescription = (d) => (d ? String(d).slice(0, 600) : null);
 
 const sanitizePerks = (perks) =>
   Array.isArray(perks) ? perks.map((p) => String(p).slice(0, 200)).filter(Boolean).slice(0, 12) : [];
@@ -88,22 +107,27 @@ const addTier = async (req, res) => {
     const programId = await callerProgramId(req.user.id);
     if (!programId) return res.status(400).json({ message: 'Create your membership program first.' });
 
-    const { name, type, price_inr, perks } = req.body;
+    const { name, type, price_inr, perks, cover_url, description } = req.body;
     if (!name || !String(name).trim()) return res.status(400).json({ message: 'name is required' });
     if (!['free', 'paid'].includes(type)) return res.status(400).json({ message: 'type must be free or paid' });
     const price = type === 'paid' ? Math.round(Number(price_inr)) : null;
     if (type === 'paid' && !(price > 0)) return res.status(400).json({ message: 'paid tier needs a price' });
 
-    // Cap: <=3 tiers per program.
-    const { count } = await supabaseAdmin
-      .from('community_membership_tiers')
-      .select('id', { count: 'exact', head: true }).eq('program_id', programId);
-    if ((count || 0) >= MAX_TIERS) return res.status(400).json({ message: `A program can have at most ${MAX_TIERS} tiers.` });
+    // Caps: <=3 tiers per program, of which <=2 paid (so a 3rd must be the free one).
+    // The one-free-tier rule is the uq_membership_free_tier index (handled below).
+    const { data: existing } = await supabaseAdmin
+      .from('community_membership_tiers').select('type').eq('program_id', programId);
+    const count = (existing || []).length;
+    if (count >= MAX_TIERS) return res.status(400).json({ message: `A program can have at most ${MAX_TIERS} tiers.` });
+    if (type === 'paid' && (existing || []).filter((t) => t.type === 'paid').length >= MAX_PAID_TIERS) {
+      return res.status(400).json({ message: `You can have at most ${MAX_PAID_TIERS} paid tiers. Add a free tier instead.` });
+    }
 
-    const { data, error } = await supabaseAdmin.from('community_membership_tiers').insert({
+    const { data, error } = await writeTier((row) => supabaseAdmin.from('community_membership_tiers').insert(row).select().single(), {
       program_id: programId, name: String(name).slice(0, 80), type,
-      price_inr: price, perks: sanitizePerks(perks), position: count || 0, status: 'draft',
-    }).select().single();
+      price_inr: price, perks: sanitizePerks(perks), position: count, status: 'draft',
+      cover_url: cleanUrl(cover_url), description: cleanDescription(description),
+    });
     if (error) {
       if (isUniqueViolation(error)) return res.status(400).json({ message: 'You can have only one free tier.' });
       if (isMissingTable(error)) return res.status(503).json({ message: 'Memberships are not available yet.' });
@@ -126,15 +150,19 @@ const ownedTier = async (hostId, tierId) => {
 const updateTier = async (req, res) => {
   try {
     if (!(await ownedTier(req.user.id, req.params.id))) return res.status(404).json({ message: 'Tier not found.' });
-    const { name, price_inr, perks, status } = req.body;
+    const { name, price_inr, perks, status, cover_url, description } = req.body;
     const patch = {};
+    if (cover_url !== undefined) patch.cover_url = cleanUrl(cover_url);
+    if (description !== undefined) patch.description = cleanDescription(description);
     if (name != null) patch.name = String(name).slice(0, 80);
     if (price_inr != null) patch.price_inr = Math.round(Number(price_inr)) || null; // only meaningful for paid
     if (perks != null) patch.perks = sanitizePerks(perks);
     if (status && ['draft', 'live'].includes(status)) patch.status = status;
     if (!Object.keys(patch).length) return res.status(400).json({ message: 'nothing to update' });
-    const { data, error } = await supabaseAdmin
-      .from('community_membership_tiers').update(patch).eq('id', req.params.id).select().single();
+    const { data, error } = await writeTier(
+      (row) => supabaseAdmin.from('community_membership_tiers').update(row).eq('id', req.params.id).select().single(),
+      patch,
+    );
     if (error) return safeError(res, error);
     res.json({ tier: data });
   } catch (error) { safeError(res, error); }

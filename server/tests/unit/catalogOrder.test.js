@@ -9,6 +9,7 @@
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 jest.mock('../../services/platformConfig', () => ({ getConfig: jest.fn() }));
 jest.mock('../../services/paidMode', () => ({ feeOnlyForHost: jest.fn() }));
+jest.mock('../../services/planService', () => ({ getPlan: jest.fn(), resolveVendorPlan: jest.fn((p) => p.plan || 'free') }));
 
 const { supabaseAdmin } = require('../../config/supabase');
 const platformConfig = require('../../services/platformConfig');
@@ -16,7 +17,8 @@ const { feeOnlyForHost } = require('../../services/paidMode');
 const {
   compareHostOrder, sortHostOrder, applyHostOrder, parseReorder, makeReorderHandler, MAX_IDS,
 } = require('../../services/catalogOrder');
-const { guestPrice, serviceGuestPrice, withGuestPrices } = require('../../services/guestPrice');
+const planService = require('../../services/planService');
+const { guestPrice, serviceGuestPrice, serviceHostEarnings, withGuestPrices } = require('../../services/guestPrice');
 const { computeBreakdown } = require('../../lib/pricingEngine');
 
 const U = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -154,5 +156,33 @@ describe('guest price (display only, same engine as checkout)', () => {
     platformConfig.getConfig.mockRejectedValue(new Error('down'));
     const rows = [{ id: 'p', price: 10 }];
     expect(await withGuestPrices(rows, 'product', 'h')).toBe(rows);
+  });
+
+  // "You'll get" — price less commission only. Rates here are made up (7%, 0%);
+  // the real ones come from subscription_plans.commission_percentage.
+  test('host earnings: price less commission at the plan rate, nothing else', () => {
+    expect(serviceHostEarnings({ price: 1000 }, 7)).toEqual({ host_earnings: 930 });
+    expect(serviceHostEarnings({ price: 1000 }, 0)).toEqual({ host_earnings: 1000 });
+    expect(serviceHostEarnings({ price: 0 }, 7)).toEqual({ host_earnings: 0 });
+    expect(serviceHostEarnings({ price: 999, price_on_request: true }, 7)).toEqual({ host_earnings: null });
+  });
+
+  test('withGuestPrices reads the commission from the host plan row; a failed read drops only host_earnings', async () => {
+    platformConfig.getConfig.mockResolvedValue(cfg);
+    feeOnlyForHost.mockResolvedValue(false);
+    const maybeSingle = jest.fn().mockResolvedValue({ data: { plan: 'pro_x', plan_expires_at: null } });
+    supabaseAdmin.from.mockReturnValue({ select: () => ({ eq: () => ({ maybeSingle }) }) });
+    planService.getPlan.mockResolvedValue({ commission_percentage: 7 });
+    const [row] = await withGuestPrices([{ id: 's', price: 1000 }], 'service', 'h');
+    expect(planService.getPlan).toHaveBeenCalledWith('pro_x');
+    expect(row).toMatchObject({ host_earnings: 930, guest_total: 1050 });
+
+    planService.getPlan.mockRejectedValue(new Error('down'));
+    const [row2] = await withGuestPrices([{ id: 's', price: 1000 }], 'service', 'h');
+    expect(row2.guest_total).toBe(1050);
+    expect(row2).not.toHaveProperty('host_earnings');
+
+    const [prod] = await withGuestPrices([{ id: 'p', price: 300 }], 'product', 'h');
+    expect(prod).not.toHaveProperty('host_earnings');
   });
 });

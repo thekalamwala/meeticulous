@@ -11,13 +11,17 @@ jest.mock('../../../config/supabase', () => {
     const q = {
       _table: table, _filters: {},
       select: () => q, eq: () => q, maybeSingle: () => q,
-      insert: (row) => { mockCalls.inserted = { table, row }; return q; },
-      update: () => q, upsert: () => q, delete: () => q,
-      // head:true count query resolves with { count }
-      then: undefined,
+      insert: (row) => { mockCalls.inserted = { table, row }; (mockCalls.writes ||= []).push(row); return q; },
+      update: (row) => { (mockCalls.writes ||= []).push(row); return q; }, upsert: () => q, delete: () => q,
+      // a plain list read (select('type').eq(...)) resolves with mockScenario.rows
+      then: (resolve) => resolve({ data: mockScenario.rows ?? [], error: null }),
     };
-    // terminal resolvers depend on table + mockScenario
-    q.single = async () => ({ data: mockScenario.single ?? null, error: mockScenario.singleErr ?? null });
+    // terminal resolvers depend on table + mockScenario; singleErrs is a queue
+    // (one error per call) for the schema-fallback retry.
+    q.single = async () => ({
+      data: mockScenario.single ?? null,
+      error: (mockScenario.singleErrs && mockScenario.singleErrs.shift()) ?? mockScenario.singleErr ?? null,
+    });
     q.maybeSingle = async () => ({ data: mockScenario.maybeSingle ?? null, error: null });
     // count path: select('id',{count:'exact',head:true}) -> returns a thenable
     q.select = (cols, opts) => {
@@ -40,12 +44,12 @@ const mkRes = () => {
   return res;
 };
 
-beforeEach(() => { mockScenario = {}; mockCalls.inserted = null; });
+beforeEach(() => { mockScenario = {}; mockCalls.inserted = null; mockCalls.writes = []; });
 
 describe('addTier cap', () => {
   test('rejects a 4th tier', async () => {
     mockScenario.maybeSingle = { id: 'prog1' }; // callerProgramId
-    mockScenario.count = 3;                      // already 3 tiers
+    mockScenario.rows = [{ type: 'free' }, { type: 'paid' }, { type: 'paid' }]; // already 3 tiers
     const res = mkRes();
     await ctl.addTier({ user: { id: 'h' }, body: { name: 'X', type: 'paid', price_inr: 100 } }, res);
     expect(res.statusCode).toBe(400);
@@ -66,6 +70,46 @@ describe('addTier cap', () => {
     await ctl.addTier({ user: { id: 'h' }, body: { name: 'X', type: 'free' } }, res);
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(/program first/);
+  });
+});
+
+describe('addTier paid cap + cover/description', () => {
+  test('a 3rd PAID tier is refused (max 2 paid)', async () => {
+    mockScenario.maybeSingle = { id: 'prog1' };
+    mockScenario.rows = [{ type: 'paid' }, { type: 'paid' }];
+    const res = mkRes();
+    await ctl.addTier({ user: { id: 'h' }, body: { name: 'X', type: 'paid', price_inr: 100 } }, res);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch(/at most 2 paid/);
+    expect(mockCalls.inserted).toBeNull();
+  });
+  test('a 3rd tier is allowed when it is free, and carries cover + description', async () => {
+    mockScenario.maybeSingle = { id: 'prog1' };
+    mockScenario.rows = [{ type: 'paid' }, { type: 'paid' }];
+    mockScenario.single = { id: 't3' };
+    const res = mkRes();
+    await ctl.addTier({ user: { id: 'h' }, body: {
+      name: 'Friends', type: 'free', cover_url: 'https://x.test/c.jpg', description: 'Say hi', perks: ['Updates'],
+    } }, res);
+    expect(res.statusCode).toBe(201);
+    expect(mockCalls.inserted.row).toMatchObject({ type: 'free', position: 2, cover_url: 'https://x.test/c.jpg', description: 'Say hi' });
+  });
+  test('a non-http cover is dropped', async () => {
+    mockScenario.maybeSingle = { id: 'prog1' };
+    mockScenario.single = { id: 't1' };
+    await ctl.addTier({ user: { id: 'h' }, body: { name: 'X', type: 'free', cover_url: 'javascript:alert(1)' } }, mkRes());
+    expect(mockCalls.inserted.row.cover_url).toBeNull();
+  });
+  test('before v3.228 is applied, the write retries without cover/description', async () => {
+    mockScenario.maybeSingle = { id: 'prog1' };
+    mockScenario.single = { id: 't1' };
+    mockScenario.singleErrs = [{ message: "Could not find the 'cover_url' column of 'community_membership_tiers' in the schema cache" }];
+    const res = mkRes();
+    await ctl.addTier({ user: { id: 'h' }, body: { name: 'X', type: 'free', cover_url: 'https://x.test/c.jpg' } }, res);
+    expect(res.statusCode).toBe(201);
+    expect(mockCalls.writes).toHaveLength(2);
+    expect(mockCalls.writes[1]).not.toHaveProperty('cover_url');
+    expect(mockCalls.writes[1]).not.toHaveProperty('description');
   });
 });
 

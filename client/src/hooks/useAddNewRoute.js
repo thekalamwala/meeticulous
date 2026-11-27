@@ -14,6 +14,7 @@ export default function useAddNewRoute({ open, ready, formOpen, listPath }) {
   const navigate = useNavigate();
   const wantsNew = pathname.endsWith('/add-new');
   const opened = useRef(false);
+  const shown = useRef(false); // the form has actually rendered open
 
   useEffect(() => {
     if (wantsNew && ready && !opened.current) {
@@ -22,9 +23,15 @@ export default function useAddNewRoute({ open, ready, formOpen, listPath }) {
     }
   }, [wantsNew, ready, open]);
 
+  // Only a form that was SEEN open can close. When `ready` is already true on the
+  // first commit, both effects run in that same commit: the one above calls
+  // open(), and this one still holds the stale formOpen=false — which used to
+  // read as "closed" and bounce straight back to the list (2026-11-27 bug).
   useEffect(() => {
-    if (wantsNew && opened.current && !formOpen) {
+    if (formOpen) { shown.current = true; return; }
+    if (wantsNew && shown.current) {
       opened.current = false;
+      shown.current = false;
       navigate(listPath, { replace: true });
     }
   }, [wantsNew, formOpen, listPath, navigate]);
