@@ -352,10 +352,11 @@ Items previously listed here as pending are now live:
   before: new prices (168.64 / 1016.10 ex-GST = ₹199 / ₹1,199; founding 761.86 = ₹898.99), §3 limits,
   `commission_rates` on free + Pro rows, `insights:-1` on Pro + legacy paid. Live within 60s of apply;
   early apply mis-prices checkout and gives Starter the reschedule alert.
-- **v3.231** (`v3.231_purchase_commission.sql`) — **PENDING, apply BEFORE the pricing-v2 code deploys**:
-  `commission_percentage` / `commission_applied` / `commission_gst` / `commission_taxable` on
-  `product_purchases` and `course_purchases` (additive). Until applied, a product purchase falls back
-  to the base insert, which also drops its v3.37 `vendor_amount` snapshot — so apply it first.
+- **v3.231** (`v3.231_purchase_commission.sql`) — applied 2026-11-27 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: `commission_percentage` / `commission_applied` (NOT NULL 0) /
+  `commission_gst` (NOT NULL 0) / `commission_taxable` on `product_purchases` (54 rows) and
+  `course_purchases` (21 rows), all existing rows at 0; no anon/authenticated write grants. Dormant until
+  the pricing-v2 code deploys (it writes the product/course commission snapshot).
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

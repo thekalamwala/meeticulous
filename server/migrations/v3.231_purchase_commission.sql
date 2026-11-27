@@ -14,6 +14,7 @@
 -- course_purchases has no vendor_amount and no ledger entry — the course payout
 -- rail does not exist yet (known record gap); these columns are what it will read.
 --
+-- APPLIED 2026-11-27 on the Meeticulous DB (spquowzrefozmrzoszkf), verified.
 -- Additive, nullable/defaulted, idempotent. Code is schema-fallback safe: the
 -- purchase insert retries without these columns on "column not found", so the
 -- buyer's access is never blocked by bookkeeping. RLS unchanged (service-role
