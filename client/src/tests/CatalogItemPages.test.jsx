@@ -67,8 +67,11 @@ describe('product page', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'How you get it' })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 3, name: 'How do I get access after paying?' })).toBeTruthy();
     expect(screen.getByText('Updated 20 Nov 2026')).toBeTruthy();
-    const graph = [JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)].flat()[0]['@graph'];
-    expect(graph.find((n) => n['@type'] === 'ItemPage')).toMatchObject({ datePublished: '2026-10-01T09:00:00Z', dateModified: '2026-11-20T09:00:00Z' });
+    // <Seo> writes the JSON-LD in an effect, which can flush after the headings paint.
+    await waitFor(() => {
+      const graph = [JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)].flat()[0]['@graph'];
+      expect(graph.find((n) => n['@type'] === 'ItemPage')).toMatchObject({ datePublished: '2026-10-01T09:00:00Z', dateModified: '2026-11-20T09:00:00Z' });
+    });
   });
 });
 
