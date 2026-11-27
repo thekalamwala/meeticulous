@@ -516,6 +516,9 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   // True once products/courses/membership have answered, so a tab URL with nothing
   // to show can redirect to the profile instead of flashing an empty tab.
   const [tabsSettled, setTabsSettled] = useState(false);
+  // Which of those fetches failed (network/5xx/429 — not a membership 404). A failed
+  // tab never redirects: the visitor gets a retry note instead of losing the URL.
+  const [tabFailed,   setTabFailed]   = useState({});
   const [testimonials, setTestimonials] = useState(() => (seed && prerendered(`/host/${profileSlug}/testimonials`)) || []);
   const [badgeList,   setBadgeList]   = useState(() => (seed && prerendered(`/vendors/${profileSlug}/badges`)?.badges) || []);
   const [badgeInfo,   setBadgeInfo]   = useState(null); // clicked badge → bottom-right info popup
@@ -560,8 +563,15 @@ const HostProfile = ({ tab = 'services' } = {}) => {
         Promise.allSettled([
           getHostProducts(profileSlug).then(r => setProducts(r.data || [])),
           getHostCourses(profileSlug).then(r => setCourses(r.data || [])),
-          getMembershipSpace(profileSlug).then(r => setMembership(r.data || null), () => setMembership(null)),
-        ]).then(() => alive && setTabsSettled(true));
+          getMembershipSpace(profileSlug).then(r => setMembership(r.data || null), (e) => {
+            setMembership(null);
+            if (!isNotFoundError(e)) throw e; // 404 = no live program (or flag off)
+          }),
+        ]).then(([p, c, m]) => {
+          if (!alive) return;
+          setTabFailed({ products: p.status === 'rejected', courses: c.status === 'rejected', membership: m.status === 'rejected' });
+          setTabsSettled(true);
+        });
         getHostTestimonials(profileSlug).then(r => setTestimonials(r.data || [])).catch(() => {});
         getVendorBadges(profileSlug).then(r => setBadgeList(r.data?.badges || [])).catch(() => {});
         setLoading(false);
@@ -653,7 +663,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   if (error === 'notfound') return <ErrorPage code={404} />;
   if (error === 'transient') return <TransientError message="This profile didn’t load. Please try again." />;
   // A tab only exists while the host has >=1 published item of that type.
-  if (host && tabsSettled && !tabHasItems) return <Navigate to={`/${profileSlug}`} replace />;
+  if (host && tabsSettled && !tabHasItems && !tabFailed[tab]) return <Navigate to={`/${profileSlug}`} replace />;
 
   // Bring the content back into view only when the visitor has scrolled past its
   // top. Never nudge a page that is already there (the old always-scrollIntoView
@@ -682,9 +692,9 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   const onServices = tab === 'services';
   const SECTIONS = [
     { key: 'service',    label: 'Services',   icon: LayoutGrid,    show: true,          active: onServices && filter !== 'feed', onClick: () => goServicesView('all') },
-    { key: 'product',    label: 'Products',   icon: Package,       show: hasProducts,   active: tab === 'products',              onClick: () => goTab('products') },
-    { key: 'course',     label: 'Courses',    icon: PlayCircle,    show: hasCourses,    active: tab === 'courses',               onClick: () => goTab('courses') },
-    { key: 'membership', label: 'Membership', icon: Crown,         show: hasMembership, active: tab === 'membership',            onClick: () => goTab('membership') },
+    { key: 'product',    label: 'Products',   icon: Package,       show: hasProducts || tab === 'products',     active: tab === 'products',              onClick: () => goTab('products') },
+    { key: 'course',     label: 'Courses',    icon: PlayCircle,    show: hasCourses || tab === 'courses',       active: tab === 'courses',               onClick: () => goTab('courses') },
+    { key: 'membership', label: 'Membership', icon: Crown,         show: hasMembership || tab === 'membership', active: tab === 'membership',            onClick: () => goTab('membership') },
     { key: 'feed',       label: 'Community',  icon: MessageCircle, show: true,          active: onServices && filter === 'feed', onClick: () => goServicesView('feed') },
   ].filter((s) => s.show);
 
@@ -1022,7 +1032,14 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             {/* Anchor for the profile nav's scroll-to (header/intro/featured removed) */}
             <div id="offerings" style={{ scrollMarginTop: 82 }} />
 
-            {tab === 'products' ? (
+            {!onServices && !tabHasItems ? (
+              tabFailed[tab] ? (
+                <div className="rounded-2xl py-16 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
+                  <p className="font-semibold" style={{ color: C.text }}>This didn't load.</p>
+                  <button type="button" onClick={() => window.location.reload()} className="mt-3 text-sm font-semibold underline underline-offset-2" style={{ color: tc }}>Try again</button>
+                </div>
+              ) : null
+            ) : tab === 'products' ? (
               <>
                 <ProfileTabHeading eyebrow={`${firstName}'s`} title="Digital products" C={C} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

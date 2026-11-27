@@ -323,4 +323,11 @@ describe('HostProfile — tabs', () => {
     await waitFor(() => expect(screen.getAllByText('Consultation').length).toBeGreaterThan(0));
     expect(firstStat().label).toBe('Services');
   });
+
+  test('a failed tab fetch (429/5xx) does not redirect — it offers a retry', async () => {
+    getHostCourses.mockRejectedValue({ response: { status: 429 } });
+    renderTab('/jane-vendor/courses');
+    await waitFor(() => expect(screen.getByText("This didn't load.")).toBeTruthy());
+    expect(firstStat().label).toBe('Courses');
+  });
 });
