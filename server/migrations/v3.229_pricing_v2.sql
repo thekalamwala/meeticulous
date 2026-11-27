@@ -10,11 +10,11 @@
 --       scalar, so a partially-migrated DB can never break checkout.
 --   bookings.platform_fee_gross          what the guest paid for the fee (§2.1).
 --
--- VALUES (live within planService's 60s cache — see APPLY TIMING):
---   §3 limits, §1 prices, commission_rates on free + Pro rows.
+-- VALUES (§1 prices, §2 rate maps, §3 limits) are in v3.230_pricing_v2_values.sql,
+--   which goes live within planService's 60s cache — so it waits for the release.
 --
 -- ── GST: three regimes, on purpose (§0). Do not normalise. ──────────────────
---   subscription prices  stored EX-GST, engine adds 18%  (this file's prices)
+--   subscription prices  stored EX-GST, engine adds 18%  (prices: v3.230)
 --   commission           GST-INCLUSIVE, backed out       (pricingEngine — untouched)
 --   platform fee         flips EX-GST → INCLUSIVE        (§2.1, step 3 code)
 --
@@ -50,7 +50,8 @@
 --   commission and Razorpay ids untouched. No commission_rates on them → scalar
 --   fallback = 0% everywhere, which is their grandfathered deal.
 --
--- APPLY TO the Meeticulous DB (spquowzrefozmrzoszkf).
+-- APPLIED 2026-11-27 (schema only) on the Meeticulous DB (spquowzrefozmrzoszkf).
+-- The VALUES live in v3.230_pricing_v2_values.sql, applied at release merge.
 -- ============================================================
 
 -- 1) Schema ─────────────────────────────────────────────────────────────────
@@ -67,52 +68,7 @@ COMMENT ON COLUMN bookings.platform_fee_amount IS
   'Pricing snapshot: platform fee TAXABLE value (ex-GST). From v3.229 backed out of platform_fee_gross. '
   'Immutable after the booking row is inserted.';
 
--- 2) Starter (+ legacy free rows) ──────────────────────────────────────────
---    jsonb || merges only the keys named, so any other limit key survives.
-UPDATE subscription_plans SET
-  limits = COALESCE(limits, '{}'::jsonb)
-        || '{"crm":50,"reminder_flows":2,"followup_flows":1,"categories":2,"free_services":2,"digital_products":-1}'::jsonb,
-  commission_rates = '{"appointments":9,"products":12,"courses":12,"memberships":12,"appointment_band_inr":null,"appointment_rate_above_band":null}'::jsonb
-WHERE slug IN ('free', 'starter', 'starter_legacy');
-
--- 3) Pro + founding ────────────────────────────────────────────────────────
-UPDATE subscription_plans SET
-  limits = COALESCE(limits, '{}'::jsonb)
-        || '{"crm":-1,"reminder_flows":-1,"followup_flows":-1,"categories":-1,"free_services":-1,"digital_products":-1,"insights":-1}'::jsonb,
-  commission_rates = '{"appointments":0,"products":4,"courses":4,"memberships":4,"appointment_band_inr":25000,"appointment_rate_above_band":3}'::jsonb
-WHERE slug IN ('premium', 'premium_founding');
-
--- 4) Prices — and drop the immutable Razorpay plan only when the price moves.
-UPDATE subscription_plans SET
-  razorpay_plan_id_monthly = CASE WHEN monthly_price IS DISTINCT FROM 168.64  THEN NULL ELSE razorpay_plan_id_monthly END,
-  razorpay_plan_id_annual  = CASE WHEN annual_price  IS DISTINCT FROM 1016.10 THEN NULL ELSE razorpay_plan_id_annual  END,
-  monthly_price = 168.64,
-  annual_price  = 1016.10
-WHERE slug = 'premium';
-
-UPDATE subscription_plans SET
-  razorpay_plan_id_monthly = CASE WHEN monthly_price IS DISTINCT FROM 168.64 THEN NULL ELSE razorpay_plan_id_monthly END,
-  razorpay_plan_id_annual  = CASE WHEN annual_price  IS DISTINCT FROM 761.86 THEN NULL ELSE razorpay_plan_id_annual  END,
-  monthly_price = 168.64,
-  annual_price  = 761.86
-WHERE slug = 'premium_founding';
-
--- 5) Legacy paid tiers keep Pro-equivalent entitlements (Intelligence included).
-UPDATE subscription_plans SET
-  limits = COALESCE(limits, '{}'::jsonb) || '{"insights":-1}'::jsonb
-WHERE slug IN ('creator', 'professional', 'supreme');
-
 -- ── Verify ──────────────────────────────────────────────────────────────────
-SELECT slug, active, monthly_price, annual_price,
-       round(monthly_price + round(monthly_price * 0.18, 2), 2) AS monthly_charged,
-       round(annual_price  + round(annual_price  * 0.18, 2), 2) AS annual_charged,
-       commission_percentage, commission_rates,
-       limits->'crm' AS crm, limits->'reminder_flows' AS rem, limits->'followup_flows' AS fu,
-       limits->'categories' AS cat, limits->'free_services' AS free_svc,
-       limits->'digital_products' AS dp, limits->'insights' AS insights,
-       razorpay_plan_id_monthly, razorpay_plan_id_annual
-FROM subscription_plans ORDER BY active DESC, sort_order, slug;
-
 SELECT column_name, data_type FROM information_schema.columns
 WHERE table_schema = 'public'
   AND ((table_name = 'subscription_plans' AND column_name = 'commission_rates')

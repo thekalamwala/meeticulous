@@ -342,6 +342,16 @@ Items previously listed here as pending are now live:
   (nullable text, `tier_description_len` check ≤ 600). Tier cover + description on the Kept tier
   cards (PR #461). Additive; `membershipController` keeps a schema fallback (writeTier retries
   without the two columns). Rollback: `DROP COLUMN IF EXISTS` on both.
+- **v3.229** (`v3.229_pricing_v2.sql`) — applied 2026-11-27 on the Meeticulous DB (`spquowzrefozmrzoszkf`),
+  SCHEMA ONLY, and verified: `subscription_plans.commission_rates` (jsonb, all 8 rows NULL) and
+  `bookings.platform_fee_gross` (numeric 10,2); no anon/authenticated write grants. Dormant until
+  pricing-v2 code reads them (NULL rates → `planService` falls back to `commission_percentage`).
+  `bookings.platform_fee_amount` now means the TAXABLE (ex-GST) fee once the fee goes GST-inclusive;
+  the applied commission rate keeps living in the existing `bookings.commission_percentage` snapshot.
+- **v3.230** (`v3.230_pricing_v2_values.sql`) — **PENDING, apply AT RELEASE MERGE of pricing v2**, never
+  before: new prices (168.64 / 1016.10 ex-GST = ₹199 / ₹1,199; founding 761.86 = ₹898.99), §3 limits,
+  `commission_rates` on free + Pro rows, `insights:-1` on Pro + legacy paid. Live within 60s of apply;
+  early apply mis-prices checkout and gives Starter the reschedule alert.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
