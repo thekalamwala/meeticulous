@@ -54,3 +54,10 @@ test('a mention sits correctly alongside a URL on the same line', () => {
   expect(links.map((a) => a.getAttribute('href'))).toEqual(['/team', 'https://x.com']);
   expect(container.textContent).toBe('@team see https://x.com now');
 });
+
+test("a placeholder link from the help copy stays plain text (it would 404)", () => {
+  const { container } = renderR(<LinkifiedText text="share meeticulous.com/your-name and meeticulous.com/pricing" />);
+  const links = [...container.querySelectorAll('a')];
+  expect(links.map((a) => a.getAttribute('href'))).toEqual(['https://meeticulous.com/pricing']);
+  expect(container.textContent).toBe('share meeticulous.com/your-name and meeticulous.com/pricing');
+});

@@ -132,6 +132,16 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
       .catch(() => {});
     return () => { live = false; };
   }, [v2, user, active]);
+  // Phone status bar takes the white of the v2 header (as the dashboard's takes its
+  // cream), not index.html's marketing maroon — a maroon band over a white bar read as
+  // a different app. Restored on unmount.
+  useEffect(() => {
+    if (!v2) return undefined;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const prev = meta?.getAttribute('content');
+    meta?.setAttribute('content', '#ffffff');
+    return () => { if (meta && prev != null) meta.setAttribute('content', prev); };
+  }, [v2]);
   // The right rail always shows: it carries the ad slot (every audience has a deck,
   // including logged-out guests), plus any page-supplied `aside` above it.
   const showRail = true;
@@ -142,7 +152,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   }, []);
 
   return (
-    <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-24' : 'pb-16'}`}>
+    <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-[calc(6rem+env(safe-area-inset-bottom,0px))]' : 'pb-16'}`}>
       {v2 && (
         <header
           className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 py-1.5 lg:hidden"
@@ -360,7 +370,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
       {v2 && (
         <nav
           aria-label="Community"
-          className="fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-line bg-white lg:hidden"
+          className="mt-hide-while-typing fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-line bg-white lg:hidden"
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
           <Link
