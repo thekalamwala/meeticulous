@@ -228,6 +228,7 @@ const EditService  = lazy(() => import('./pages/services/EditService'));
 const GuestOverview    = lazy(() => import('./pages/GuestOverview'));
 const GuestInvoices    = lazy(() => import('./pages/GuestInvoices'));
 const CustomerBookings = lazy(() => import('./pages/CustomerBookings'));
+const GuestBookingDetail = lazy(() => import('./pages/GuestBookingDetail'));
 const CustomerProfile  = lazy(() => import('./pages/CustomerProfile'));
 const CustomerReviews  = lazy(() => import('./pages/CustomerReviews'));
 const ReviewPage       = lazy(() => import('./pages/ReviewPage'));
@@ -1115,6 +1116,7 @@ function App() {
           <Route element={<GuestRoute><GuestLayout /></GuestRoute>}>
             <Route path="/user" element={<GuestOverview />} />
             <Route path="/user/my-bookings" element={<CustomerBookings />} />
+            <Route path="/user/my-bookings/:id" element={<GuestBookingDetail />} />
             <Route path="/user/courses" element={<MyCourses />} />
             <Route path="/user/memberships" element={<MyMemberships />} />
             <Route path="/user/invoices" element={<GuestInvoices />} />

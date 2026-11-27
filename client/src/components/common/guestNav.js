@@ -44,7 +44,7 @@ export const GUEST_TAB_BAR = {
   ],
   icons: GUEST_ICONS,
   sub: {
-    reviews: 'What you said', rewards: 'Your tier', profile: 'Your details', help: 'Chat with us',
+    reviews: 'What hosts say', rewards: 'Your tier', profile: 'Your details', help: 'Chat with us',
   },
 };
 
