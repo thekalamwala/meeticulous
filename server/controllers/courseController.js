@@ -10,7 +10,7 @@ const planService = require('../services/planService');
 const platformConfig = require('../services/platformConfig');
 const razorpayConfig = require('../services/razorpayConfig');
 const { verifySignature } = require('../utils/razorpaySignature');
-const { round2 } = require('../lib/pricingEngine');
+const { round2, calculateCommission, calculateCommissionGst, calculateCommissionTaxable } = require('../lib/pricingEngine');
 const { sortHostOrder, applyHostOrder } = require('../services/catalogOrder');
 const { withGuestPrices } = require('../services/guestPrice');
 const { auditLog, securityLog } = require('../utils/logger');
@@ -256,6 +256,8 @@ const createCourseOrder = async (req, res) => {
     const fee = 0;
     const gstOnFee = 0;
     const totalPaise = Math.round(price * 100);
+    // Pricing v2 §2: commission at the host's `courses` rate, fixed at checkout.
+    const commissionPct = await planService.hostRate(course.host_id, 'courses');
 
     const razorpay = await razorpayConfig.getClient();
     const order = await razorpay.orders.create({
@@ -264,6 +266,7 @@ const createCourseOrder = async (req, res) => {
       notes: {
         course_id, kind: 'course', buyer_id: req.user.id,
         course_price: price, platform_fee: fee, platform_fee_gst: gstOnFee, gst_rate: cfg.gstRate,
+        commission_pct: commissionPct,
       },
     });
     res.json({
@@ -290,7 +293,24 @@ const materializeCoursePurchase = async ({ course, notes, orderId, paymentId }) 
     payment_status: 'paid',
     razorpay_order_id: orderId, razorpay_payment_id: paymentId,
   };
-  let { data: purchase, error } = await supabaseAdmin.from('course_purchases').insert(row).select().single();
+  // Pricing v2 §2: commission at the rate fixed at checkout (order notes; absent
+  // on pre-v2 orders → 0, their terms). GST-inclusive, backed out as on bookings.
+  // ponytail: recorded only — courses have no ledger entry or payout rail yet
+  // (the known record gap); this is what that rail will read.
+  const commissionPct = Number(notes.commission_pct) || 0;
+  const commission = calculateCommission(price, commissionPct);
+  const fullRow = {
+    ...row,
+    commission_percentage: commissionPct,
+    commission_applied: commission,
+    commission_gst: calculateCommissionGst(commission, { gstRate: notes.gst_rate != null ? Number(notes.gst_rate) : undefined }),
+    commission_taxable: calculateCommissionTaxable(commission, { gstRate: notes.gst_rate != null ? Number(notes.gst_rate) : undefined }),
+  };
+  let { data: purchase, error } = await supabaseAdmin.from('course_purchases').insert(fullRow).select().single();
+  if (error && /Could not find the|column.*does not exist/i.test(error.message || '')) {
+    // v3.231 not applied yet — the access grant must never wait on bookkeeping.
+    ({ data: purchase, error } = await supabaseAdmin.from('course_purchases').insert(row).select().single());
+  }
   if (error) {
     if (error.code === '23505') { // lost the verify-vs-webhook race; the unique index picked a winner
       const { data: winner } = await supabaseAdmin.from('course_purchases')

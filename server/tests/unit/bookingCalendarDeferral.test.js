@@ -15,6 +15,7 @@ jest.mock('../../middleware/planMiddleware', () => ({
 jest.mock('../../services/planService', () => ({
   resolveVendorPlan: () => 'explorer',
   getPlan: jest.fn().mockResolvedValue({ commission_percentage: 0 }),
+  getRate: jest.fn().mockResolvedValue(0),
 }));
 jest.mock('../../services/platformConfig', () => ({
   getConfig: jest.fn().mockResolvedValue({ platformFee: 10, gstRate: 0.18 }),

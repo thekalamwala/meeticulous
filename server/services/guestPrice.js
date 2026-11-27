@@ -56,13 +56,14 @@ function serviceHostEarnings(svc, commissionPct) {
 /**
  * The host's commission %, read exactly as bookingController.createBooking reads
  * it: the plan resolveVendorPlan picks (an expired paid plan falls back to free),
- * then that plan row's commission_percentage. Never hard-coded.
+ * then that plan's `appointments` rate (commission_rates, scalar fallback). Never
+ * hard-coded. Shows the base rate — Pro's above-₹25,000 band is applied per
+ * booking at checkout and is not reflected in this display figure.
  */
 async function hostCommissionPct(hostId) {
   const { data: host } = await supabaseAdmin
     .from('profiles').select('plan, plan_expires_at').eq('id', hostId).maybeSingle();
-  const plan = await planService.getPlan(planService.resolveVendorPlan(host || {}));
-  return Number(plan?.commission_percentage) || 0;
+  return planService.getRate(planService.resolveVendorPlan(host || {}), 'appointments');
 }
 
 /**

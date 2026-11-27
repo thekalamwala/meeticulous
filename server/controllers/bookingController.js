@@ -9,6 +9,7 @@ const { checkBookingReceiveLimit } = require("../middleware/planMiddleware");
 const { parseListRange } = require("../utils/pagination");
 const { runExclusive } = require("../utils/keyedMutex");
 const { checkBookingCaps } = require("../lib/bookingCaps");
+const { appointmentGmvMtd } = require("../lib/appointmentGmv");
 const crypto = require("crypto");
 const { computeBreakdown, resolveWithholding } = require("../lib/pricingEngine");
 const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
@@ -495,10 +496,14 @@ const createBooking = async (req, res) => {
     const pricedValue = Math.max(0, bookingValue - discountAmount);
 
     // Commission % is read from the vendor's subscription plan record (DB-driven,
-    // admin-editable). Expired paid plans fall back to the free tier.
+    // admin-editable). Expired paid plans fall back to the free tier. Pricing v2:
+    // the plan's `appointments` rate (commission_rates, scalar fallback). A plan
+    // with a monthly band (Pro) is re-rated inside the booking lock below, once
+    // month-to-date GMV can be read race-free; until then this is the base rate.
     const effectivePlanSlug = planService.resolveVendorPlan(host);
     const planRecord        = await planService.getPlan(effectivePlanSlug);
-    const commissionPct     = Number(planRecord.commission_percentage) || 0;
+    let commissionPct       = await planService.getRate(effectivePlanSlug, 'appointments');
+    const hasAppointmentBand = planRecord?.commission_rates?.appointment_band_inr != null;
 
     // v3.206: snapshot the cancellation policy agreed at booking time (default tiers
     // while `pro_cancellation_policy` is OFF). Refunds read this snapshot, never the
@@ -542,9 +547,8 @@ const createBooking = async (req, res) => {
 
     // Razorpay fee is vendor-borne and only known at capture → finalised in
     // paymentController.verifyPayment. Here razorpayFee = 0 (payout provisional).
-    const pricing = computeBreakdown({
+    const pricingArgs = {
       servicePrice:         pricedValue,
-      commissionPercentage: commissionPct,
       platformFee:          feeSetting,
       gstRate,
       razorpayFee:          0,
@@ -555,7 +559,8 @@ const createBooking = async (req, res) => {
       // flat 1% + 1% (unchanged behaviour); when ON they follow PAN / entity / ₹5L.
       tdsRate:              _tdsRate,
       tcsRate:              _tcsRate,
-    });
+    };
+    const pricing = computeBreakdown({ ...pricingArgs, commissionPercentage: commissionPct });
     const platformFee  = pricing.platformFee;
     const commission   = pricing.commission;
     const vendorPayout = pricing.vendorPayout;
@@ -675,6 +680,30 @@ const createBooking = async (req, res) => {
         guestId: resolvedGuestId, guestEmail: guest_email, guestPhone: guest_phone,
       });
       if (!capRecheck.allowed) return { capped: capRecheck.message };
+      // Pricing v2 §2: Pro's monthly band. Read MTD-before INSIDE the lock so two
+      // concurrent bookings can't both see "below band", then re-rate the whole
+      // booking if it lands above it (never split across the band — see
+      // planService.appointmentRateFor). A failed read keeps the base rate: a
+      // host is never charged the higher rate on a figure we couldn't read.
+      if (hasAppointmentBand && pricedValue > 0) {
+        try {
+          const mtd = await appointmentGmvMtd({ supabaseAdmin, hostId: host_id });
+          const bandPct = await planService.appointmentRateFor(effectivePlanSlug, mtd);
+          if (bandPct !== commissionPct) {
+            const banded = computeBreakdown({ ...pricingArgs, commissionPercentage: bandPct });
+            commissionPct = bandPct;
+            Object.assign(bookingPayload, {
+              vendor_amount:         banded.vendorPayout,
+              commission_applied:    banded.commission,
+              commission_gst:        banded.commissionGst,
+              commission_taxable:    banded.commissionTaxable,
+              commission_percentage: bandPct,
+            });
+          }
+        } catch (bandErr) {
+          console.error("appointment band read failed — base rate kept:", bandErr.message);
+        }
+      }
       return {
         result: await supabaseAdmin
           .from("bookings")

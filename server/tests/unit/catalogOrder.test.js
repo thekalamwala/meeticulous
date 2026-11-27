@@ -9,7 +9,7 @@
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 jest.mock('../../services/platformConfig', () => ({ getConfig: jest.fn() }));
 jest.mock('../../services/paidMode', () => ({ feeOnlyForHost: jest.fn() }));
-jest.mock('../../services/planService', () => ({ getPlan: jest.fn(), resolveVendorPlan: jest.fn((p) => p.plan || 'free') }));
+jest.mock('../../services/planService', () => ({ getRate: jest.fn(), resolveVendorPlan: jest.fn((p) => p.plan || 'free') }));
 
 const { supabaseAdmin } = require('../../config/supabase');
 const platformConfig = require('../../services/platformConfig');
@@ -175,17 +175,17 @@ describe('guest price (display only, same engine as checkout)', () => {
     expect(serviceHostEarnings({ price: 999, price_on_request: true }, 7)).toEqual({ host_earnings: null });
   });
 
-  test('withGuestPrices reads the commission from the host plan row; a failed read drops only host_earnings', async () => {
+  test("withGuestPrices reads the host plan's appointments rate; a failed read drops only host_earnings", async () => {
     platformConfig.getConfig.mockResolvedValue(cfg);
     feeOnlyForHost.mockResolvedValue(false);
     const maybeSingle = jest.fn().mockResolvedValue({ data: { plan: 'pro_x', plan_expires_at: null } });
     supabaseAdmin.from.mockReturnValue({ select: () => ({ eq: () => ({ maybeSingle }) }) });
-    planService.getPlan.mockResolvedValue({ commission_percentage: 7 });
+    planService.getRate.mockResolvedValue(7);
     const [row] = await withGuestPrices([{ id: 's', price: 1000 }], 'service', 'h');
-    expect(planService.getPlan).toHaveBeenCalledWith('pro_x');
+    expect(planService.getRate).toHaveBeenCalledWith('pro_x', 'appointments');
     expect(row).toMatchObject({ host_earnings: 930, guest_total: 1040 });
 
-    planService.getPlan.mockRejectedValue(new Error('down'));
+    planService.getRate.mockRejectedValue(new Error('down'));
     const [row2] = await withGuestPrices([{ id: 's', price: 1000 }], 'service', 'h');
     expect(row2.guest_total).toBe(1040);
     expect(row2).not.toHaveProperty('host_earnings');

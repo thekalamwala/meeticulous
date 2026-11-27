@@ -15,7 +15,7 @@ jest.mock('../../utils/httpError', () => ({ safeError: (res, e) => res.status(50
 jest.mock('../../utils/hostOf', () => ({ hostOf: jest.fn() }));
 jest.mock('../../utils/razorpaySignature', () => ({ verifySignature: jest.fn() }));
 jest.mock('../../services/razorpayConfig', () => ({ getKeySecret: jest.fn(), getKeyId: jest.fn(), getClient: jest.fn(), getWebhookSecret: jest.fn() }));
-jest.mock('../../services/planService', () => ({ normalizeSlug: (s) => (s || '').toLowerCase(), isFreeSlug: (s) => ['starter','explorer','free','starter_legacy'].includes((s || '').toLowerCase().trim()), getPlan: jest.fn() }));
+jest.mock('../../services/planService', () => ({ normalizeSlug: (s) => (s || '').toLowerCase(), isFreeSlug: (s) => ['starter','explorer','free','starter_legacy'].includes((s || '').toLowerCase().trim()), getPlan: jest.fn(), hostRate: jest.fn().mockResolvedValue(7) }));
 jest.mock('../../services/platformConfig', () => ({ getConfig: jest.fn() }));
 jest.mock('../../services/razorpaySubscriptions', () => ({ getClient: jest.fn() }));
 jest.mock('../../services/subscriptionService', () => ({ activateFromSubscription: jest.fn() }));
@@ -235,5 +235,33 @@ describe('verifyProductPayment — trusts order notes', () => {
     expect(postSafe).toHaveBeenCalledWith(expect.objectContaining({
       sourceType: 'PRODUCT_PAYMENT', sourceId: 'pp1',
     }));
+  });
+  // Pricing v2 §2 / acceptance test 5: no fee, commission at the rate fixed at
+  // checkout (order notes). ₹499 at Starter's 12% → ₹59.88 (₹50.75 + ₹9.13 GST);
+  // the host nets ₹439.12 before the gateway charge they already bear.
+  test('pricing v2: commission from the order notes, snapshotted, ledger balanced', async () => {
+    const notes = { product_id: 'prod_1', product_price: 499, platform_fee: 0, platform_fee_gst: 0,
+      commission_pct: 12, buyer_email: 'buyer@x.com', buyer_name: 'Bee', buyer_phone: '+91' };
+    const getInserted = wire({ notes, amount: 49900, fee: 1178, tax: 180 });
+    const r = res();
+    await verifyProductPayment({ body: reqBody }, r);
+
+    const inserted = getInserted();
+    expect(inserted.customer_total).toBe(499);           // the buyer pays the listed price
+    expect(inserted.commission_percentage).toBe(12);
+    expect(inserted.commission_applied).toBe(59.88);
+    expect(inserted.commission_gst).toBe(9.13);
+    expect(inserted.commission_taxable).toBe(50.75);
+    expect(inserted.vendor_amount).toBe(427.34);         // 499 − 59.88 − 11.78 gateway
+    const { template } = postSafe.mock.calls[0][0];
+    const total = (side) => Math.round(template.lines.reduce((t, l) => t + l[side], 0) * 100);
+    expect(total('debit')).toBe(total('credit'));
+  });
+
+  test('an order created before pricing v2 (no commission_pct in notes) takes no commission', async () => {
+    const getInserted = wire({ fee: 1204, tax: 184 });   // goodNotes: no commission_pct
+    await verifyProductPayment({ body: reqBody }, res());
+    expect(getInserted().commission_applied).toBe(0);
+    expect(getInserted().vendor_amount).toBe(186.96);
   });
 });

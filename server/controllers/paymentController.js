@@ -7,7 +7,7 @@ const { securityLog, auditLog } = require("../utils/logger");
 const sendEmail = require("../utils/sendEmail");
 const { adminAlert } = require("../utils/adminAlert");
 const NotificationEngine = require("../services/notificationEngine");
-const { computeBreakdown, calculateVendorPayout, calculatePlatformFee, computeSubscriptionBreakdown, round2 } = require("../lib/pricingEngine");
+const { computeBreakdown, calculateVendorPayout, calculatePlatformFee, calculateCommission, calculateCommissionGst, calculateCommissionTaxable, computeSubscriptionBreakdown, round2 } = require("../lib/pricingEngine");
 const planService = require("../services/planService");
 const foundingSpots = require("../services/foundingSpots");
 const platformConfig = require("../services/platformConfig");
@@ -957,6 +957,9 @@ const createProductOrder = async (req, res) => {
     const productFee = 0;
     const gstOnFee = 0;
     const totalPaise = Math.round(product.price * 100);
+    // Pricing v2 §2: commission at the host's `products` rate, fixed at checkout
+    // and carried in the order notes so a plan change before capture can't move it.
+    const commissionPct = await planService.hostRate(product.host_id, 'products');
     // Normalize/validate buyer place-of-supply server-side (mirrors bookings &
     // subscriptions, which already call normalizeBilling) instead of trusting raw
     // req.body. Rejects a malformed GSTIN and rewrites state to the canonical
@@ -977,7 +980,7 @@ const createProductOrder = async (req, res) => {
       notes: {
         product_id, title: product.title,
         platform_fee: productFee, platform_fee_gst: gstOnFee, gst_rate: cfg.gstRate,
-        product_price: product.price,
+        product_price: product.price, commission_pct: commissionPct,
         buyer_name: buyer_name || '', buyer_email: buyerEmail, buyer_phone: buyer_phone || '',
         buyer_state: buyerState, buyer_state_code: buyerStateCode, buyer_gstin: buyerGstin,
       },
@@ -1061,7 +1064,14 @@ const materializeProductPurchase = async ({ product, notes, orderId, paymentId, 
   const feeExclTax = Math.max(0, round2(feeTotal - tax));
   const gatewayTotal = round2(feeExclTax + tax);
   const customerTotal = round2(price + platformFee + gstOnFee);
-  const vendorAmount = round2(price - gatewayTotal);
+  // Pricing v2 §2: commission at the rate fixed at checkout (order notes).
+  // GST-inclusive, backed out exactly as on bookings. Notes without it (orders
+  // created before pricing v2) → 0, the terms that buyer checked out under.
+  const commissionPct = Number(notes.commission_pct) || 0;
+  const commission = calculateCommission(price, commissionPct);
+  const commissionGst = calculateCommissionGst(commission, { gstRate: notes.gst_rate });
+  const commissionTaxable = calculateCommissionTaxable(commission, { gstRate: notes.gst_rate });
+  const vendorAmount = round2(Math.max(0, price - commission - gatewayTotal));
 
   const baseRow = {
     product_id: product.id, host_id: product.host_id,
@@ -1083,6 +1093,11 @@ const materializeProductPurchase = async ({ product, notes, orderId, paymentId, 
     vendor_amount: vendorAmount,
     razorpay_fee_actual: feeExclTax,
     razorpay_tax_actual: tax,
+    // v3.231 commission snapshot (schema-fallback safe).
+    commission_percentage: commissionPct,
+    commission_applied: commission,
+    commission_gst: commissionGst,
+    commission_taxable: commissionTaxable,
     // v3.171 GST-on-fee + place-of-supply snapshot (schema-fallback safe).
     platform_fee_gst: gstOnFee,
     gst_rate: Number(notes.gst_rate) || null,
@@ -1126,6 +1141,7 @@ const materializeProductPurchase = async ({ product, notes, orderId, paymentId, 
         product_price: price, platform_fee: platformFee,
         customer_total: customerTotal, vendor_amount: vendorAmount,
         razorpay_fee_actual: feeExclTax, razorpay_tax_actual: tax,
+        commission_applied: commission, commission_gst: commissionGst, commission_taxable: commissionTaxable,
       }),
     });
   } catch (ledgerErr) {
@@ -1191,6 +1207,9 @@ const verifyProductPayment = async (req, res) => {
       // +₹1.80). Legacy/in-flight orders without it default to 0 and still match.
       platform_fee_gst: orderNotes.platform_fee_gst != null ? Number(orderNotes.platform_fee_gst) : 0,
       gst_rate: orderNotes.gst_rate != null ? Number(orderNotes.gst_rate) : undefined,
+      // Pricing v2: absent on orders created before it shipped → 0, the rate those
+      // buyers checked out under (products took no commission then).
+      commission_pct: orderNotes.commission_pct != null ? Number(orderNotes.commission_pct) : 0,
       buyer_name: orderNotes.buyer_name || req.body.buyer_name || '',
       buyer_email: String(orderNotes.buyer_email || req.body.buyer_email || '').toLowerCase().trim(),
       buyer_phone: orderNotes.buyer_phone || req.body.buyer_phone || '',

@@ -150,6 +150,16 @@ const getRate = async (slug, surface) => {
   return Number(plan.commission_percentage) || 0;
 };
 
+/** A host's current rate on one surface: their profile's plan, resolved the way
+ *  every checkout resolves it (an expired paid plan falls back to free), then
+ *  getRate. Used where only the host id is in hand — product/course checkout,
+ *  the catalog "You'll get" figure. */
+const hostRate = async (hostId, surface) => {
+  const { data: host } = await supabaseAdmin
+    .from('profiles').select('plan, plan_expires_at').eq('id', hostId).maybeSingle();
+  return getRate(resolveVendorPlan(host || {}), surface);
+};
+
 /** Appointment commission % for the NEXT booking, given the host's month-to-date
  *  appointment GMV BEFORE that booking (sum of service_price, non-cancelled,
  *  since the 1st of the month IST — the caller reads it inside the booking-quota
@@ -204,4 +214,4 @@ const isCompedSlug = (slug) => COMPED_SLUGS.has(String(slug || '').toLowerCase()
  */
 const isSelfServable = (plan) => !!plan && plan.active !== false;
 
-module.exports = { loadPlans, getPlan, getLimit, getRate, appointmentRateFor, reminderWindowsForPlan, rescheduleNotifyForPlan, resolveVendorPlan, normalizeSlug, isFreeSlug, isCompedSlug, isSelfServable, clearCache, FALLBACK_PLANS, REMINDER_WINDOWS, FREE_PLAN };
+module.exports = { loadPlans, getPlan, getLimit, getRate, hostRate, appointmentRateFor, reminderWindowsForPlan, rescheduleNotifyForPlan, resolveVendorPlan, normalizeSlug, isFreeSlug, isCompedSlug, isSelfServable, clearCache, FALLBACK_PLANS, REMINDER_WINDOWS, FREE_PLAN };

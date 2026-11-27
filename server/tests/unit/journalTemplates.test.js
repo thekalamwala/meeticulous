@@ -171,6 +171,34 @@ describe('productPaymentEntry', () => {
   });
 });
 
+describe('productPaymentEntry — pricing v2 commission (spec §2, test 5)', () => {
+  // ₹499 product, no platform fee, Starter 12% commission GST-INCLUSIVE:
+  // ₹59.88 = taxable ₹50.75 + GST ₹9.13. Gateway ₹11.78 vendor-borne (illustrative).
+  const snapshot = {
+    purchase_id: 'p3', host_id: 'v3', product_price: 499, platform_fee: 0,
+    commission_applied: 59.88, commission_gst: 9.13, commission_taxable: 50.75,
+    razorpay_fee_actual: 9.98, razorpay_tax_actual: 1.8,
+    customer_total: 499, vendor_amount: 427.34, // 499 − 59.88 − 11.78
+  };
+
+  test('balances; commission books at taxable, its GST to GST payable', () => {
+    const { lines } = productPaymentEntry(snapshot);
+    expect(sum(lines, 'debit')).toBe(sum(lines, 'credit'));
+    expect(lineFor(lines, ACCOUNTS.RAZORPAY_RECEIVABLE, 'debit').debit).toBe(499);
+    expect(lineFor(lines, ACCOUNTS.VENDOR_PAYABLES, 'credit').credit).toBe(427.34);
+    expect(lineFor(lines, ACCOUNTS.COMMISSION_REVENUE, 'credit').credit).toBe(50.75);
+    expect(lineFor(lines, ACCOUNTS.GST_PAYABLE, 'credit').credit).toBe(9.13);
+    expect(lines.find((l) => l.account_code === ACCOUNTS.PLATFORM_FEE_REVENUE)).toBeUndefined();
+  });
+
+  test('a reconciler re-post without vendor_amount derives it net of commission, still balanced', () => {
+    const { vendor_amount: _drop, ...noVendor } = snapshot;
+    const { lines } = productPaymentEntry(noVendor);
+    expect(sum(lines, 'debit')).toBe(sum(lines, 'credit'));
+    expect(lineFor(lines, ACCOUNTS.VENDOR_PAYABLES, 'credit').credit).toBe(427.34);
+  });
+});
+
 describe('bankTransferEntry', () => {
   test('DR Bank / CR Receivable', () => {
     const { lines } = bankTransferEntry({ amount: 5000, reference: 'setl_x' });

@@ -42,6 +42,7 @@ jest.mock('../../../services/platformConfig', () => ({
 jest.mock('../../../services/planService', () => ({
   resolveVendorPlan: () => 'free',
   getPlan: async () => ({ slug: 'free', commission_percentage: 5 }),
+  getRate: async (slug, surface) => (surface === 'memberships' ? 5 : 0),
 }));
 let mockWithholdingOn = false;
 jest.mock('../../../services/featureFlags', () => ({
