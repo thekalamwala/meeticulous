@@ -46,7 +46,7 @@ const THEME = {
 
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 const lc1 = (s) => s.charAt(0).toLowerCase() + s.slice(1);
-const commission = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on your bookings');
+const commission = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on appointments');
 const Z_FREE = Z.freePlan.replace(/^Yes:\s*/, ''); // "1 user (Forever Free)"
 const FREE_MO = inr(FREE_PLAN.monthly);
 const PAID_MO = inr(PREMIUM_PLAN.monthly);

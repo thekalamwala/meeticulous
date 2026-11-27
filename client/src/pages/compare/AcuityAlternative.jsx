@@ -38,7 +38,7 @@ const START = '/become-a-host';
 const ACU = COMPETITORS.acuity;
 const FREE = FREE_PLAN.name;
 const PREM = PREMIUM_PLAN.name;
-const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on your bookings');
+const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on appointments');
 
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 const usd = (n) => `$${n.toLocaleString('en-US')}`;

@@ -18,7 +18,7 @@ const DESCRIPTION =
   'How Meeticulous compares to Calendly, Acuity, Setmore, SimplyBook, Zoho Bookings and Topmate: free plans, prices, commission, UPI and WhatsApp reminders, side by side.';
 
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
-const commission = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on your bookings');
+const commission = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on appointments');
 
 // One honest line per competitor: what they do, then what's different here.
 // Every competitor fact in these lines is backed by data/competitors.js.

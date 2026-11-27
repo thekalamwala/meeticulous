@@ -12,8 +12,10 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../data/plans';
 //
 // The worked examples are the source of truth hosts quote back at us, so they must
 // stay numerically identical to docs/payment-model.md v4 and to what pricingEngine
-// computes (₹1000 → guest ₹1,011.80; host ₹959.76 paid / ₹909.76 free). If one
-// changes, change all three.
+// computes (₹1000 → guest ₹1,010.00; host ₹959.80 Pro / ₹869.80 Starter, with the
+// legacy flat TDS/TCS these examples have always used). If one changes, change all
+// three. Pricing v2: the booking fee is GST-INCLUSIVE and appointments-only, and
+// Starter's commission is 9% (12% on digital goods).
 
 const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
@@ -40,8 +42,8 @@ const HostFees = () => (
           clause 5.6 of that Agreement.
         </p>
         <p className="rounded-xl border-2 border-primary/20 bg-primary/5 p-4">
-          <strong>The short version.</strong> You set your price. Your Guest pays that price plus our small booking fee
-          and GST on the fee. You receive your price, minus our commission (if your Plan has one), the payment-gateway
+          <strong>The short version.</strong> You set your price. On appointments of ₹300 or more, your Guest pays that
+          price plus our ₹10 booking fee, GST included. You receive your price, minus our commission, the payment-gateway
           charge, and the tax we are required to deduct at source (TDS and TCS). Your Guest pays the same amount
           whichever Plan you are on and however they choose to pay.
         </p>
@@ -62,14 +64,14 @@ const HostFees = () => (
           <tbody className="text-gray-600">
             <tr>
               <Td><strong>{FREE_PLAN.name}</strong> (free)</Td>
-              <Td>₹10 + GST</Td>
-              <Td><strong>5%</strong> of your price</Td>
+              <Td>₹10 incl. GST, on appointments of ₹300+</Td>
+              <Td><strong>9%</strong> of appointments · <strong>12%</strong> of products, courses &amp; memberships</Td>
               <Td>actual gateway charge</Td>
             </tr>
             <tr>
               <Td><strong>{PREMIUM_PLAN.name}</strong></Td>
-              <Td>₹10 + GST</Td>
-              <Td>nil</Td>
+              <Td>₹10 incl. GST, on appointments of ₹300+</Td>
+              <Td><strong>0%</strong> of appointments up to ₹25,000 a month, then <strong>3%</strong> · <strong>4%</strong> of products, courses &amp; memberships</Td>
               <Td>actual gateway charge</Td>
             </tr>
             <tr>
@@ -80,8 +82,10 @@ const HostFees = () => (
         </table>
       </div>
       <p className="pt-1">
-        The <strong>booking fee</strong> is charged to your Guest on top of your price; the <strong>commission</strong>{' '}
-        ({FREE_PLAN.name} only) is charged to you. Subscription prices for {PREMIUM_PLAN.name} and Enterprise are shown
+        The <strong>booking fee</strong> is charged to your Guest on top of your price, on appointments only — products,
+        courses and memberships carry no booking fee. The <strong>commission</strong> is charged to you. On{' '}
+        {PREMIUM_PLAN.name}, the 3% applies to a whole booking once your appointment bookings that calendar month
+        (IST) have already reached ₹25,000 — a single booking is never split across the threshold. Subscription prices for {PREMIUM_PLAN.name} and Enterprise are shown
         on the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and are charged
         separately with GST.
       </p>
@@ -90,10 +94,12 @@ const HostFees = () => (
         processing charge, and no TDS or TCS.
       </p>
       <p>
+        <strong>Appointments under ₹300.</strong> An appointment priced under ₹300 carries <strong>no booking fee</strong>.
+      </p>
+      <p>
         <strong>Minimum price.</strong> A paid Service must be priced at <strong>₹100 or more</strong> on the{' '}
-        {FREE_PLAN.name} and {PREMIUM_PLAN.name} Plans. Below that, the flat ₹10 booking fee would be too large a share of the price to be fair
-        to your Guest. Free (₹0) Services remain available on every Plan, and the <strong>Supreme</strong> Plan has no
-        minimum price.
+        {FREE_PLAN.name} and {PREMIUM_PLAN.name} Plans. Free (₹0) Services remain available on every Plan, and the{' '}
+        <strong>Supreme</strong> Plan has no minimum price.
       </p>
     </Section>
 
@@ -123,16 +129,17 @@ const HostFees = () => (
 
     <Section title="4. How your payout is computed">
       <div className="rounded-xl border-2 border-gray-200 bg-white p-4 font-mono text-xs leading-relaxed">
-        Guest pays&nbsp;&nbsp;=&nbsp;your price + ₹10 booking fee + GST on the fee<br />
+        Guest pays&nbsp;&nbsp;=&nbsp;your price + ₹10 booking fee (GST included; none under ₹300)<br />
         You receive&nbsp;=&nbsp;your price &minus; commission &minus; gateway charge &minus; TDS (1%) &minus; TCS (1%)
       </div>
       <p>
-        Your Guest pays your listed price plus a flat ₹10 booking fee and 18% GST on that ₹10 (₹1.80). The booking fee
-        is the same regardless of your Plan, so <strong>your Guest pays the same amount whichever Plan you are on</strong>.
+        Your Guest pays your listed price plus a flat ₹10 booking fee. The ₹10 already includes GST — ₹8.47 is our
+        fee and ₹1.53 is GST, and the Guest&rsquo;s receipt shows both lines. The booking fee is the same regardless of
+        your Plan, so <strong>your Guest pays the same amount whichever Plan you are on</strong>.
         Commission, where it applies, is taken from your side, not added to the Guest&rsquo;s price.
       </p>
       <p>
-        The commission is <strong>inclusive of GST</strong> — the 5% already contains the 18% GST on our commission
+        The commission is <strong>inclusive of GST</strong> — the percentage already contains the 18% GST on our commission
         service. We issue you a <strong>commission tax invoice</strong> for it so you can claim input credit if you are
         GST-registered.
       </p>
@@ -149,28 +156,28 @@ const HostFees = () => (
         <table className="w-full text-xs border-2 border-gray-200 rounded-xl overflow-hidden">
           <tbody className="text-gray-600">
             <tr><Td>Your price</Td><Td className="text-right">₹1,000.00</Td></tr>
-            <tr><Td>Booking fee (₹10) + GST (₹1.80) — paid by your Guest</Td><Td className="text-right">₹11.80</Td></tr>
-            <tr><Td><strong>Your Guest pays</strong></Td><Td className="text-right"><strong>₹1,011.80</strong></Td></tr>
-            <tr><Td>&minus; Payment gateway (~2%)</Td><Td className="text-right">₹20.24</Td></tr>
+            <tr><Td>Booking fee, GST included (₹8.47 + ₹1.53 GST) — paid by your Guest</Td><Td className="text-right">₹10.00</Td></tr>
+            <tr><Td><strong>Your Guest pays</strong></Td><Td className="text-right"><strong>₹1,010.00</strong></Td></tr>
+            <tr><Td>&minus; Payment gateway (~2%)</Td><Td className="text-right">₹20.20</Td></tr>
             <tr><Td>&minus; TDS (194-O, 1%)</Td><Td className="text-right">₹10.00</Td></tr>
             <tr><Td>&minus; TCS (§52, 1%)</Td><Td className="text-right">₹10.00</Td></tr>
-            <tr><Td className="border-b-0"><strong>You receive</strong></Td><Td className="border-b-0 text-right"><strong>₹959.76</strong></Td></tr>
+            <tr><Td className="border-b-0"><strong>You receive</strong></Td><Td className="border-b-0 text-right"><strong>₹959.80</strong></Td></tr>
           </tbody>
         </table>
       </div>
 
-      <p className="font-semibold text-ink pt-3">5.2 {FREE_PLAN.name} (5% commission)</p>
+      <p className="font-semibold text-ink pt-3">5.2 {FREE_PLAN.name} (9% commission)</p>
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-2 border-gray-200 rounded-xl overflow-hidden">
           <tbody className="text-gray-600">
             <tr><Td>Your price</Td><Td className="text-right">₹1,000.00</Td></tr>
-            <tr><Td>Booking fee (₹10) + GST (₹1.80) — paid by your Guest</Td><Td className="text-right">₹11.80</Td></tr>
-            <tr><Td><strong>Your Guest pays</strong></Td><Td className="text-right"><strong>₹1,011.80</strong></Td></tr>
-            <tr><Td>&minus; Commission 5% (incl. GST ₹7.63)</Td><Td className="text-right">₹50.00</Td></tr>
-            <tr><Td>&minus; Payment gateway (~2%)</Td><Td className="text-right">₹20.24</Td></tr>
+            <tr><Td>Booking fee, GST included (₹8.47 + ₹1.53 GST) — paid by your Guest</Td><Td className="text-right">₹10.00</Td></tr>
+            <tr><Td><strong>Your Guest pays</strong></Td><Td className="text-right"><strong>₹1,010.00</strong></Td></tr>
+            <tr><Td>&minus; Commission 9% (incl. GST ₹13.73)</Td><Td className="text-right">₹90.00</Td></tr>
+            <tr><Td>&minus; Payment gateway (~2%)</Td><Td className="text-right">₹20.20</Td></tr>
             <tr><Td>&minus; TDS (194-O, 1%)</Td><Td className="text-right">₹10.00</Td></tr>
             <tr><Td>&minus; TCS (§52, 1%)</Td><Td className="text-right">₹10.00</Td></tr>
-            <tr><Td className="border-b-0"><strong>You receive</strong></Td><Td className="border-b-0 text-right"><strong>₹909.76</strong></Td></tr>
+            <tr><Td className="border-b-0"><strong>You receive</strong></Td><Td className="border-b-0 text-right"><strong>₹869.80</strong></Td></tr>
           </tbody>
         </table>
       </div>

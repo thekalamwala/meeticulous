@@ -4,8 +4,8 @@ Meeticulous has two plans: **Starter** and **Pro**. See the [pricing](/pricing) 
 
 ## The plans
 
-- **Starter** — free forever. Unlimited services and bookings, your booking page, online payments, 24-hour booking reminders, and GST invoices. We take a **5% commission** when you actually get paid, and nothing when you don't.
-- **Pro** — **₹235 a month**, or **₹1,179 a year** (under ₹4 a day, and about 58% cheaper than paying monthly). Commission drops to **0%**, and you get the Client CRM, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, a second calendar integration, unlimited AI service writing, and priority WhatsApp support.
+- **Starter** — free forever. Unlimited services, bookings and digital products, your booking page, online payments, 24-hour and 1-hour booking reminders, video courses, coupons and GST invoices. We take **9%** of appointments (**12%** of products, courses and memberships) when you actually get paid, and nothing when you don't.
+- **Pro** — **₹199 a month**, or **₹1,199 a year** (about ₹3 a day — pay for six months, get twelve). Appointment commission drops to **0%** (3% once your month's appointment bookings pass ₹25,000) and products, courses and memberships to **4%**. You also get the full Client CRM, guest self-reschedule and reschedule alerts, day-21 rebook automation, Creator Intelligence, booking caps, all 18 page colours and 15 social links, unlimited AI service writing, and priority support.
 
 All prices include GST. Exact figures and the full comparison live on the [pricing](/pricing) page.
 
@@ -13,7 +13,7 @@ All prices include GST. Exact figures and the full comparison live on the [prici
 
 Start on the free Starter plan. It is a complete booking business, not a trial — there is no time limit and no card required.
 
-Pro pays for itself once the 5% commission costs more than the subscription. That happens at roughly **₹6,000 a month** in bookings on the yearly plan. Below that, staying free genuinely keeps you more money, and your dashboard shows exactly how much commission you have paid so far so the decision is a calculation rather than a guess.
+Pro pays for itself once Starter's 9% commission costs more than the subscription. That happens at roughly **₹1,110 a month** in appointment bookings on the yearly plan. Below that, staying free genuinely keeps you more money, and your dashboard shows exactly how much commission you have paid so far so the decision is a calculation rather than a guess.
 
 ## Is there a free plan?
 
@@ -21,13 +21,13 @@ Yes. Starter is free forever, with real online payment collection built in.
 
 ## Does the free plan limit my services or bookings?
 
-No. Both plans include unlimited services, unlimited bookings, and unlimited service categories.
+No. Both plans include unlimited services, unlimited bookings and unlimited digital products.
 
-Starter caps three things: **digital products** (3), **AI service writing** (10 generations every 6 months), and **free (₹0) services** (2). A free service is meant as a taster — a free discovery call — rather than a way to run a whole business at no cost; list more than a couple and you either set a price or move to Pro. Pro removes all three caps.
+Starter caps a few things: **service categories** (1 — your primary profession), **AI service writing** (10 generations a month), **free (₹0) services** (2), and the **Client CRM** (your 50 most recent clients). A free service is meant as a taster — a free discovery call — rather than a way to run a whole business at no cost; list more than a couple and you either set a price or move to Pro. Pro removes these caps.
 
 ## What does "0% commission" mean?
 
-On Pro we take no percentage of your booking price — you keep the full amount, minus the payment-gateway fee and any statutory taxes. On Starter, a 5% commission applies per booking. A separate flat booking fee is paid by your guest on both plans; see [pricing and commission](/help/pricing-and-commission).
+On Pro we take no percentage of your appointment price up to ₹25,000 of bookings a month (3% beyond that), and 4% of products, courses and memberships — you keep the rest, minus the payment-gateway fee and any statutory taxes. On Starter, 9% applies per appointment and 12% on products, courses and memberships. A separate flat ₹10 booking fee (GST included) is paid by your guest on appointments of ₹300 or more, on both plans; see [pricing and commission](/help/pricing-and-commission).
 
 ## Upgrading
 
@@ -61,7 +61,7 @@ If you had more digital products than the free plan includes, the existing ones 
 
 ## Can I keep accepting bookings after my plan expires?
 
-Yes. Bookings are unlimited on both plans. The 5% commission applies again while you are on Starter.
+Yes. Bookings are unlimited on both plans. Starter's commission (9% of appointments) applies again while you are on Starter.
 
 ## Can I renew after it has expired?
 
@@ -125,7 +125,7 @@ Yes. You can choose Pro while setting up, or publish on Starter and upgrade late
 
 ## Can I use Meeticulous without paying?
 
-Yes, indefinitely. Starter is a complete booking business — page, payments, reminders, invoices — with a 5% commission on what you earn.
+Yes, indefinitely. Starter is a complete booking business — page, payments, reminders, invoices — with a 9% commission on appointments you're paid for.
 
 ## Is my subscription linked to my account?
 

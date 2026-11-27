@@ -30,7 +30,7 @@ const C = COMPETITORS.calendly;
 /* ─────────────────────────────  FACTS  ────────────────────────────── */
 
 const inr = (n, dp = 0) => `₹${n.toLocaleString('en-IN', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
-const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on your bookings');
+const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on appointments');
 const CAL_FREE = C.freePlan.replace(/^Yes:\s*/, ''); // "1 event type, 1 calendar"
 const favicon = (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 

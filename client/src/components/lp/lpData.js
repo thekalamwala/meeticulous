@@ -15,10 +15,9 @@ const CDN = "/images/testimonials";
 const TM = COMPETITORS.topmate;
 const inr = (n) => `₹${n.toLocaleString("en-IN")}`;
 const ROW = (label) => PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === label);
-const COMMISSION = ROW("Commission on your bookings");
-// Free-plan limits as plans.js words them, e.g. "2 free services", "3 digital products".
+const COMMISSION = ROW("Commission on appointments");
+// Free-plan limits as plans.js words them, e.g. "2 free services".
 const FREE_SERVICES = ROW("Free (₹0) services").free.tip.split(" — ")[0];
-const FREE_PRODUCTS = ROW("Digital products").free.tip;
 // Monthly sales at which a flat Pro fee equals Topmate's 10% cut.
 const BREAKEVEN = PREMIUM_PLAN.monthly * 10;
 export const PRICE_LINE = `${inr(PREMIUM_PLAN.monthly)} a month`;
@@ -74,7 +73,7 @@ export const CAPABILITIES = [
   },
   {
     title: "Sell digital products",
-    body: `Add a PDF, template or recording to your booking page and sell it next to your sessions. ${FREE_PLAN.name} includes ${FREE_PRODUCTS}.`,
+    body: `Add a PDF, template or recording to your booking page and sell it next to your sessions. Unlimited on every plan, ${FREE_PLAN.name} included.`,
     preview: { kind: "product", title: "GST Filing Playbook (PDF)", meta: "Download after payment", price: "₹799", accent: "c-blue" },
   },
 ];

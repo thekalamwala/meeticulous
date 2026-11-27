@@ -103,7 +103,7 @@
   },
   {
     "pattern": "how much is host+?",
-    "answer": "Host+ was an older plan — it's retired. Today there are just two:\n\n- **Starter** — ₹0 forever, 5% per paid booking\n- **Pro** — **₹235/month or ₹1,179/year** (about ₹3.23/day), **0% commission**\n\nPrices include GST. Yearly saves 58%. See [both plans](/pricing).",
+    "answer": "Host+ was an older plan — it's retired. Today there are just two:\n\n- **Starter** — ₹0 forever, 9% per paid appointment (12% on products, courses and memberships)\n- **Pro** — **₹199/month or ₹1,199/year** (about ₹3/day), **0% commission on appointments** up to ₹25,000 a month (3% above), 4% on products, courses and memberships\n\nPrices include GST. Yearly saves 50%. See [both plans](/pricing).",
     "enabled": true,
     "category": "General"
   },
@@ -145,7 +145,7 @@
   },
   {
     "pattern": "is it free",
-    "answer": "Yep — **Starter is free forever**. No credit card needed.\n\nCatch: a **5% commission** per paid booking keeps it free. Want 0% commission? Upgrade to **Pro** (₹235/month or ₹1,179/year, incl. GST).\n\nDetails on the [pricing](/pricing) page.",
+    "answer": "Yep — **Starter is free forever**. No credit card needed.\n\nCatch: a **9% commission** per paid appointment (12% on products, courses and memberships) keeps it free. Want 0% on appointments? Upgrade to **Pro** (₹199/month or ₹1,199/year, incl. GST).\n\nDetails on the [pricing](/pricing) page.",
     "enabled": true,
     "category": "General"
   },
@@ -187,13 +187,13 @@
   },
   {
     "pattern": "plans pricing",
-    "answer": "Meeticulous has two plans:\n\n**Starter** — ₹0 forever, no credit card. Unlimited services and bookings, your booking page with UPI payments, 24-hour reminders, Google Calendar & Meet, 3 digital products. A **5% commission** applies per paid booking.\n\n**Pro** — **₹235/month or ₹1,179/year** (incl. GST; yearly saves 58%). Everything in Starter plus **0% commission**, client CRM with notes and history, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, 2 calendar integrations, and priority WhatsApp support.\n\nFull comparison on the [pricing](/pricing) page.",
+    "answer": "Meeticulous has two plans:\n\n**Starter** — ₹0 forever, no credit card. Unlimited services, bookings and digital products, your booking page with UPI payments, 24-hour and 1-hour reminders, video courses and coupons. A **9% commission** applies per paid appointment (12% on products, courses and memberships).\n\n**Pro** — **₹199/month or ₹1,199/year** (incl. GST; yearly saves 50%). Everything in Starter plus **0% commission on appointments** up to ₹25,000 a month (3% above) and 4% on products, courses and memberships, the full client CRM, guest self-reschedule and reschedule alerts, day-21 rebook automation, Creator Intelligence and priority support.\n\nFull comparison on the [pricing](/pricing) page.",
     "enabled": true,
     "category": "General"
   },
   {
     "pattern": "price",
-    "answer": "Depends on the plan.\n\n**Starter** is free forever — no upfront cost, 5% commission per paid booking. **Pro** is ₹235/month or ₹1,179/year (incl. GST) with **0% commission**. Compare both on the [pricing](/pricing) page.\n\nOn every paid booking there's a flat **₹10 booking fee (+18% GST)** plus the payment gateway's own processing fee (Razorpay's) — both shown at checkout, not charged by us on top of your plan.",
+    "answer": "Depends on the plan.\n\n**Starter** is free forever — no upfront cost, 9% commission per paid appointment. **Pro** is ₹199/month or ₹1,199/year (incl. GST) with **0% commission on appointments** up to ₹25,000 a month. Compare both on the [pricing](/pricing) page.\n\nYour guest pays a flat **₹10 booking fee, GST included**, on appointments of ₹300 or more — nothing on cheaper appointments, products, courses or memberships. It's shown at checkout and isn't charged to you.",
     "enabled": true,
     "category": "General"
   },
@@ -223,7 +223,7 @@
   },
   {
     "pattern": "what does it cost",
-    "answer": "Our plans:\n\n- **Starter** — ₹0 forever (+5% per paid booking)\n- **Pro** — ₹235/mo or ₹1,179/yr (~₹3.23/day), 0% commission\n\nPrices include GST. Yearly saves 58%. Earning over ₹4,700 a month? Pro already costs less than the 5%. [See both plans](/pricing).",
+    "answer": "Our plans:\n\n- **Starter** — ₹0 forever (+9% per paid appointment)\n- **Pro** — ₹199/mo or ₹1,199/yr (~₹3/day), 0% on appointments up to ₹25,000 a month\n\nPrices include GST. Yearly saves 50%. Taking over ₹1,110 a month in bookings? Pro already costs less than the 9%. [See both plans](/pricing).",
     "enabled": true,
     "category": "General"
   }

@@ -36,7 +36,7 @@ const CANONICAL = `${SITE_URL}${SB.path}`;
 /* ─────────────────────────────  FACTS (derived, never typed)  ───────────────────────────── */
 
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
-const commission = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on your bookings');
+const commission = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on appointments');
 const FREE = FREE_PLAN.name;
 const PREM = PREMIUM_PLAN.name;
 const MONTHLY = inr(PREMIUM_PLAN.monthly);

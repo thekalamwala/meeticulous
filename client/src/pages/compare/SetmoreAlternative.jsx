@@ -38,7 +38,7 @@ const S = COMPETITORS.setmore;
 
 const MATRIX = PLAN_MATRIX.flatMap((g) => g.rows);
 const row = (label) => MATRIX.find((r) => r.label === label);
-const commission = row('Commission on your bookings');
+const commission = row('Commission on appointments');
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const orList = (s) => s.replace(/, (?=[^,]*$)/, ' or ');
@@ -155,7 +155,7 @@ const RECEIPTS = {
   bas: {
     name: 'Meeticulous', plan: `${FREE_PLAN.name} plan`,
     lines: [
-      ['Bookings', row('Bookings').free],
+      ['Bookings', row('Paid services, bookings & digital products').free],
       ['Payments', 'UPI + cards via Razorpay'],
       ['GST invoices', 'Included'],
       ['Payouts', 'To your Indian bank (KYC)'],
