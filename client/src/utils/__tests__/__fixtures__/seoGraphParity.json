@@ -82,13 +82,19 @@
       "name": "Priya Sharma",
       "username": "priya-ca",
       "profession": "Chartered Accountant",
-      "location": "Nagpur, Maharashtra"
+      "location": "Nagpur, Maharashtra",
+      "social_links": {
+        "instagram": "https://instagram.com/priya.ca",
+        "whatsapp": "9"
+      }
     }
   },
   "product": {
     "username": "priya-ca",
     "product": {
       "id": "prod-123",
+      "slug": "gst-filing-checklist",
+      "type": "pdf",
       "title": "GST filing checklist",
       "description": "A downloadable checklist.",
       "price": 299,
@@ -96,9 +102,28 @@
       "profiles": {
         "name": "Priya Sharma",
         "username": "priya-ca",
+        "profession": "Chartered Accountant",
+        "social_links": {
+          "linkedin": "https://www.linkedin.com/in/priya",
+          "email": "p@x.com"
+        },
         "profile_image": "https://img.example.com/priya.webp"
       }
-    }
+    },
+    "faqs": [
+      {
+        "q": "What's included in GST filing checklist?",
+        "a": "GST filing checklist is a pdf by Priya Sharma. A downloadable checklist."
+      },
+      {
+        "q": "How do I get access after paying?",
+        "a": "Right after payment you get a secure download link on screen and by email. Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page."
+      },
+      {
+        "q": "How much does GST filing checklist cost?",
+        "a": "GST filing checklist costs ₹299. Any platform fee and GST are shown before you pay."
+      }
+    ]
   },
   "expectedProfileGraph": {
     "@context": "https://schema.org",
@@ -353,7 +378,10 @@
         "@type": "Person",
         "@id": "https://meeticulous.com/priya-ca#person",
         "name": "Priya Sharma",
-        "url": "https://meeticulous.com/priya-ca"
+        "url": "https://meeticulous.com/priya-ca",
+        "sameAs": [
+          "https://instagram.com/priya.ca"
+        ]
       },
       {
         "@type": "BreadcrumbList",
@@ -441,28 +469,1573 @@
       },
       {
         "@type": "Product",
-        "@id": "https://meeticulous.com/priya-ca/product/prod-123#product",
+        "@id": "https://meeticulous.com/priya-ca/products/gst-filing-checklist#product",
         "name": "GST filing checklist",
-        "url": "https://meeticulous.com/priya-ca/product/prod-123",
+        "url": "https://meeticulous.com/priya-ca/products/gst-filing-checklist",
         "description": "A downloadable checklist.",
+        "category": "PDF",
         "image": "https://img.example.com/checklist.webp",
-        "brand": {
-          "@id": "https://meeticulous.com/priya-ca#person"
-        },
         "offers": {
           "@type": "Offer",
           "price": "299",
           "priceCurrency": "INR",
           "availability": "https://schema.org/InStock",
-          "url": "https://meeticulous.com/priya-ca/product/prod-123"
+          "url": "https://meeticulous.com/priya-ca/products/gst-filing-checklist",
+          "seller": {
+            "@id": "https://meeticulous.com/priya-ca#person"
+          }
         }
       },
       {
         "@type": "Person",
         "@id": "https://meeticulous.com/priya-ca#person",
         "name": "Priya Sharma",
-        "url": "https://meeticulous.com/priya-ca"
+        "url": "https://meeticulous.com/priya-ca",
+        "sameAs": [
+          "https://www.linkedin.com/in/priya"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://meeticulous.com/priya-ca/products/gst-filing-checklist#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meeticulous.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Priya Sharma",
+            "item": "https://meeticulous.com/priya-ca"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Products",
+            "item": "https://meeticulous.com/priya-ca/products"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "GST filing checklist",
+            "item": "https://meeticulous.com/priya-ca/products/gst-filing-checklist"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://meeticulous.com/priya-ca/products/gst-filing-checklist#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What's included in GST filing checklist?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GST filing checklist is a pdf by Priya Sharma. A downloadable checklist."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get access after paying?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Right after payment you get a secure download link on screen and by email. Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much does GST filing checklist cost?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GST filing checklist costs ₹299. Any platform fee and GST are shown before you pay."
+            }
+          }
+        ]
       }
     ]
-  }
+  },
+  "course": {
+    "username": "priya-ca",
+    "course": {
+      "id": "course-9",
+      "slug": "gst-basics",
+      "title": "GST basics",
+      "description": "Learn GST returns step by step.",
+      "price": 1999,
+      "lesson_count": 2,
+      "course_lessons": [
+        {
+          "id": "l1",
+          "title": "What is GST"
+        },
+        {
+          "id": "l2",
+          "title": "Filing GSTR-1"
+        }
+      ],
+      "profiles": {
+        "name": "Priya Sharma",
+        "username": "priya-ca",
+        "profession": "Chartered Accountant",
+        "social_links": {
+          "linkedin": "https://www.linkedin.com/in/priya",
+          "email": "p@x.com"
+        }
+      }
+    },
+    "faqs": [
+      {
+        "q": "What's included in GST basics?",
+        "a": "2 video lessons: What is GST, Filing GSTR-1."
+      },
+      {
+        "q": "How do I get access after paying?",
+        "a": "Log in and buy the course once. It unlocks on the course page straight away and stays in your account under My courses, so you can watch anytime."
+      },
+      {
+        "q": "How much does GST basics cost?",
+        "a": "GST basics costs ₹1,999, paid once for lifetime access. Any platform fee and GST are shown before you pay."
+      }
+    ]
+  },
+  "productsTab": {
+    "tab": "products",
+    "host": {
+      "name": "Priya Sharma",
+      "username": "priya-ca",
+      "profession": "Chartered Accountant",
+      "social_links": {
+        "linkedin": "https://www.linkedin.com/in/priya",
+        "email": "p@x.com"
+      }
+    },
+    "items": [
+      {
+        "id": "prod-123",
+        "slug": "gst-filing-checklist",
+        "title": "GST filing checklist",
+        "price": 299,
+        "type": "pdf"
+      },
+      {
+        "id": "prod-124",
+        "slug": "itr-template",
+        "title": "ITR template",
+        "price": 0,
+        "type": "template"
+      },
+      {
+        "id": "prod-125",
+        "title": "No slug yet",
+        "price": 50
+      }
+    ],
+    "name": "Digital products by Priya Sharma (3)",
+    "description": "3 digital products by Priya Sharma, from ₹50. Includes GST filing checklist, ITR template, No slug yet. Instant download after secure payment.",
+    "faqs": [
+      {
+        "q": "What digital products does Priya Sharma sell?",
+        "a": "Priya Sharma sells 3 digital products: GST filing checklist (₹299); ITR template (free); No slug yet (₹50)."
+      },
+      {
+        "q": "How do I get my download after paying?",
+        "a": "Right after payment you get a secure download link on screen and by email. Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page."
+      },
+      {
+        "q": "How do I pay?",
+        "a": "Pay securely online with UPI, card or wallet; prices start at ₹50. Free products only need a one-time code sent to your WhatsApp."
+      }
+    ]
+  },
+  "coursesTab": {
+    "tab": "courses",
+    "host": {
+      "name": "Priya Sharma",
+      "username": "priya-ca",
+      "profession": "Chartered Accountant",
+      "social_links": {
+        "linkedin": "https://www.linkedin.com/in/priya",
+        "email": "p@x.com"
+      }
+    },
+    "items": [
+      {
+        "id": "course-9",
+        "slug": "gst-basics",
+        "title": "GST basics",
+        "price": 1999,
+        "lesson_count": 2
+      }
+    ],
+    "name": "Online courses by Priya Sharma (1)",
+    "description": "1 online course by Priya Sharma, from ₹1,999. Includes GST basics. Watch every lesson anytime, on any device. Pay securely online. Buy once, lifetime access.",
+    "faqs": [
+      {
+        "q": "What courses does Priya Sharma offer?",
+        "a": "Priya Sharma offers 1 online course: GST basics (2 lessons, ₹1,999)."
+      },
+      {
+        "q": "How do I get access after paying?",
+        "a": "Log in and buy the course once. It unlocks on the course page straight away and stays in your account under My courses, so you can watch anytime."
+      },
+      {
+        "q": "How much do the courses cost?",
+        "a": "Courses start at ₹1,999. You pay once and keep lifetime access, with no subscription."
+      }
+    ]
+  },
+  "membership": {
+    "host": {
+      "name": "Priya Sharma",
+      "username": "priya-ca",
+      "profession": "Chartered Accountant",
+      "social_links": {
+        "linkedin": "https://www.linkedin.com/in/priya",
+        "email": "p@x.com"
+      }
+    },
+    "program": {
+      "name": "Tax Circle",
+      "blurb": "Monthly tax Q&A with Priya."
+    },
+    "tiers": [
+      {
+        "id": "t1",
+        "name": "Insider",
+        "type": "paid",
+        "price_inr": 299,
+        "perks": [
+          "Monthly live Q&A",
+          "Templates"
+        ],
+        "cover_url": "https://img.example.com/t1.webp"
+      },
+      {
+        "id": "t2",
+        "name": "Community",
+        "type": "free",
+        "perks": []
+      },
+      {
+        "id": "t3",
+        "name": "Insider",
+        "type": "paid",
+        "price_inr": 999,
+        "description": "Everything plus 1:1 review."
+      }
+    ],
+    "name": "Tax Circle — membership by Priya Sharma",
+    "description": "Join Tax Circle, Priya Sharma's membership — 3 tiers from ₹299/month. Tiers: Insider, Community, Insider. Monthly tax Q&A with Priya. Cancel anytime.",
+    "faqs": [
+      {
+        "q": "What do Tax Circle members get?",
+        "a": "Insider (₹299/month): Monthly live Q&A, Templates; Community (free); Insider (₹999/month)."
+      },
+      {
+        "q": "How much does it cost?",
+        "a": "Insider: ₹299/month; Community: free; Insider: ₹999/month. Paid tiers are billed monthly."
+      },
+      {
+        "q": "Can I cancel?",
+        "a": "Yes. Cancel anytime from My memberships in your account; your access stays on until the end of the month you have paid for."
+      },
+      {
+        "q": "How do I get access after joining?",
+        "a": "Log in and pick a tier. Free tiers open instantly and paid tiers right after secure payment; member posts then unlock on this page."
+      }
+    ]
+  },
+  "expectedCourseGraph": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://meeticulous.com/#website",
+        "url": "https://meeticulous.com/",
+        "name": "Meeticulous",
+        "publisher": {
+          "@id": "https://meeticulous.com/#organization"
+        },
+        "inLanguage": "en-IN"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://meeticulous.com/#organization",
+        "name": "Meeticulous",
+        "legalName": "Rajmudra Media LLP",
+        "url": "https://meeticulous.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "@id": "https://meeticulous.com/#logo",
+          "url": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "contentUrl": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "width": 512,
+          "height": 512
+        },
+        "description": "Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "team@meeticulous.com",
+          "availableLanguage": [
+            "en",
+            "hi"
+          ]
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
+      },
+      {
+        "@type": "Course",
+        "@id": "https://meeticulous.com/priya-ca/courses/gst-basics#course",
+        "name": "GST basics",
+        "url": "https://meeticulous.com/priya-ca/courses/gst-basics",
+        "description": "Learn GST returns step by step.",
+        "provider": {
+          "@id": "https://meeticulous.com/priya-ca#person"
+        },
+        "inLanguage": "en",
+        "hasCourseInstance": {
+          "@type": "CourseInstance",
+          "courseMode": "online"
+        },
+        "offers": {
+          "@type": "Offer",
+          "category": "Paid",
+          "price": "1999",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://meeticulous.com/priya-ca/courses/gst-basics"
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://meeticulous.com/priya-ca#person",
+        "name": "Priya Sharma",
+        "url": "https://meeticulous.com/priya-ca",
+        "sameAs": [
+          "https://www.linkedin.com/in/priya"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://meeticulous.com/priya-ca/courses/gst-basics#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meeticulous.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Priya Sharma",
+            "item": "https://meeticulous.com/priya-ca"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Courses",
+            "item": "https://meeticulous.com/priya-ca/courses"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "GST basics",
+            "item": "https://meeticulous.com/priya-ca/courses/gst-basics"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://meeticulous.com/priya-ca/courses/gst-basics#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What's included in GST basics?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "2 video lessons: What is GST, Filing GSTR-1."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get access after paying?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Log in and buy the course once. It unlocks on the course page straight away and stays in your account under My courses, so you can watch anytime."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much does GST basics cost?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GST basics costs ₹1,999, paid once for lifetime access. Any platform fee and GST are shown before you pay."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expectedProductsTabGraph": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://meeticulous.com/#website",
+        "url": "https://meeticulous.com/",
+        "name": "Meeticulous",
+        "publisher": {
+          "@id": "https://meeticulous.com/#organization"
+        },
+        "inLanguage": "en-IN"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://meeticulous.com/#organization",
+        "name": "Meeticulous",
+        "legalName": "Rajmudra Media LLP",
+        "url": "https://meeticulous.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "@id": "https://meeticulous.com/#logo",
+          "url": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "contentUrl": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "width": 512,
+          "height": 512
+        },
+        "description": "Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "team@meeticulous.com",
+          "availableLanguage": [
+            "en",
+            "hi"
+          ]
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "https://meeticulous.com/priya-ca/products",
+        "url": "https://meeticulous.com/priya-ca/products",
+        "name": "Digital products by Priya Sharma (3)",
+        "description": "3 digital products by Priya Sharma, from ₹50. Includes GST filing checklist, ITR template, No slug yet. Instant download after secure payment.",
+        "inLanguage": "en-IN",
+        "isPartOf": {
+          "@id": "https://meeticulous.com/#website"
+        },
+        "about": {
+          "@id": "https://meeticulous.com/priya-ca#person"
+        },
+        "mainEntity": {
+          "@id": "https://meeticulous.com/priya-ca/products#list"
+        },
+        "breadcrumb": {
+          "@id": "https://meeticulous.com/priya-ca/products#breadcrumb"
+        }
+      },
+      {
+        "@type": "ItemList",
+        "@id": "https://meeticulous.com/priya-ca/products#list",
+        "numberOfItems": 2,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "https://meeticulous.com/priya-ca/products/gst-filing-checklist",
+            "name": "GST filing checklist"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "url": "https://meeticulous.com/priya-ca/products/itr-template",
+            "name": "ITR template"
+          }
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://meeticulous.com/priya-ca#person",
+        "name": "Priya Sharma",
+        "url": "https://meeticulous.com/priya-ca",
+        "sameAs": [
+          "https://www.linkedin.com/in/priya"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://meeticulous.com/priya-ca/products#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meeticulous.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Priya Sharma",
+            "item": "https://meeticulous.com/priya-ca"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Products",
+            "item": "https://meeticulous.com/priya-ca/products"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://meeticulous.com/priya-ca/products#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What digital products does Priya Sharma sell?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Priya Sharma sells 3 digital products: GST filing checklist (₹299); ITR template (free); No slug yet (₹50)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get my download after paying?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Right after payment you get a secure download link on screen and by email. Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I pay?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Pay securely online with UPI, card or wallet; prices start at ₹50. Free products only need a one-time code sent to your WhatsApp."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expectedCoursesTabGraph": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://meeticulous.com/#website",
+        "url": "https://meeticulous.com/",
+        "name": "Meeticulous",
+        "publisher": {
+          "@id": "https://meeticulous.com/#organization"
+        },
+        "inLanguage": "en-IN"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://meeticulous.com/#organization",
+        "name": "Meeticulous",
+        "legalName": "Rajmudra Media LLP",
+        "url": "https://meeticulous.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "@id": "https://meeticulous.com/#logo",
+          "url": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "contentUrl": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "width": 512,
+          "height": 512
+        },
+        "description": "Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "team@meeticulous.com",
+          "availableLanguage": [
+            "en",
+            "hi"
+          ]
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "https://meeticulous.com/priya-ca/courses",
+        "url": "https://meeticulous.com/priya-ca/courses",
+        "name": "Online courses by Priya Sharma (1)",
+        "description": "1 online course by Priya Sharma, from ₹1,999. Includes GST basics. Watch every lesson anytime, on any device. Pay securely online. Buy once, lifetime access.",
+        "inLanguage": "en-IN",
+        "isPartOf": {
+          "@id": "https://meeticulous.com/#website"
+        },
+        "about": {
+          "@id": "https://meeticulous.com/priya-ca#person"
+        },
+        "mainEntity": {
+          "@id": "https://meeticulous.com/priya-ca/courses#list"
+        },
+        "breadcrumb": {
+          "@id": "https://meeticulous.com/priya-ca/courses#breadcrumb"
+        }
+      },
+      {
+        "@type": "ItemList",
+        "@id": "https://meeticulous.com/priya-ca/courses#list",
+        "numberOfItems": 1,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "https://meeticulous.com/priya-ca/courses/gst-basics",
+            "name": "GST basics"
+          }
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://meeticulous.com/priya-ca#person",
+        "name": "Priya Sharma",
+        "url": "https://meeticulous.com/priya-ca",
+        "sameAs": [
+          "https://www.linkedin.com/in/priya"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://meeticulous.com/priya-ca/courses#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meeticulous.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Priya Sharma",
+            "item": "https://meeticulous.com/priya-ca"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Courses",
+            "item": "https://meeticulous.com/priya-ca/courses"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://meeticulous.com/priya-ca/courses#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What courses does Priya Sharma offer?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Priya Sharma offers 1 online course: GST basics (2 lessons, ₹1,999)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get access after paying?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Log in and buy the course once. It unlocks on the course page straight away and stays in your account under My courses, so you can watch anytime."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much do the courses cost?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Courses start at ₹1,999. You pay once and keep lifetime access, with no subscription."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expectedMembershipGraph": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://meeticulous.com/#website",
+        "url": "https://meeticulous.com/",
+        "name": "Meeticulous",
+        "publisher": {
+          "@id": "https://meeticulous.com/#organization"
+        },
+        "inLanguage": "en-IN"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://meeticulous.com/#organization",
+        "name": "Meeticulous",
+        "legalName": "Rajmudra Media LLP",
+        "url": "https://meeticulous.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "@id": "https://meeticulous.com/#logo",
+          "url": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "contentUrl": "https://meeticulous.com/web-app-manifest-512x512.png",
+          "width": 512,
+          "height": 512
+        },
+        "description": "Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "team@meeticulous.com",
+          "availableLanguage": [
+            "en",
+            "hi"
+          ]
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "https://meeticulous.com/priya-ca/membership",
+        "url": "https://meeticulous.com/priya-ca/membership",
+        "name": "Tax Circle — membership by Priya Sharma",
+        "description": "Join Tax Circle, Priya Sharma's membership — 3 tiers from ₹299/month. Tiers: Insider, Community, Insider. Monthly tax Q&A with Priya. Cancel anytime.",
+        "inLanguage": "en-IN",
+        "isPartOf": {
+          "@id": "https://meeticulous.com/#website"
+        },
+        "about": {
+          "@id": "https://meeticulous.com/priya-ca#person"
+        },
+        "mainEntity": {
+          "@id": "https://meeticulous.com/priya-ca/membership#list"
+        },
+        "breadcrumb": {
+          "@id": "https://meeticulous.com/priya-ca/membership#breadcrumb"
+        }
+      },
+      {
+        "@type": "ItemList",
+        "@id": "https://meeticulous.com/priya-ca/membership#list",
+        "numberOfItems": 3,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+              "@type": "Product",
+              "@id": "https://meeticulous.com/priya-ca/membership#insider",
+              "name": "Tax Circle — Insider",
+              "url": "https://meeticulous.com/priya-ca/membership#insider",
+              "description": "Monthly live Q&A; Templates",
+              "image": "https://img.example.com/t1.webp",
+              "offers": {
+                "@type": "Offer",
+                "price": "299",
+                "priceCurrency": "INR",
+                "availability": "https://schema.org/InStock",
+                "url": "https://meeticulous.com/priya-ca/membership#insider",
+                "seller": {
+                  "@id": "https://meeticulous.com/priya-ca#person"
+                },
+                "priceSpecification": {
+                  "@type": "UnitPriceSpecification",
+                  "price": "299",
+                  "priceCurrency": "INR",
+                  "billingDuration": "P1M",
+                  "unitCode": "MON"
+                }
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+              "@type": "Product",
+              "@id": "https://meeticulous.com/priya-ca/membership#community",
+              "name": "Tax Circle — Community",
+              "url": "https://meeticulous.com/priya-ca/membership#community",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR",
+                "availability": "https://schema.org/InStock",
+                "url": "https://meeticulous.com/priya-ca/membership#community",
+                "seller": {
+                  "@id": "https://meeticulous.com/priya-ca#person"
+                }
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "item": {
+              "@type": "Product",
+              "@id": "https://meeticulous.com/priya-ca/membership#insider-2",
+              "name": "Tax Circle — Insider",
+              "url": "https://meeticulous.com/priya-ca/membership#insider-2",
+              "description": "Everything plus 1:1 review.",
+              "offers": {
+                "@type": "Offer",
+                "price": "999",
+                "priceCurrency": "INR",
+                "availability": "https://schema.org/InStock",
+                "url": "https://meeticulous.com/priya-ca/membership#insider-2",
+                "seller": {
+                  "@id": "https://meeticulous.com/priya-ca#person"
+                },
+                "priceSpecification": {
+                  "@type": "UnitPriceSpecification",
+                  "price": "999",
+                  "priceCurrency": "INR",
+                  "billingDuration": "P1M",
+                  "unitCode": "MON"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://meeticulous.com/priya-ca#person",
+        "name": "Priya Sharma",
+        "url": "https://meeticulous.com/priya-ca",
+        "sameAs": [
+          "https://www.linkedin.com/in/priya"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://meeticulous.com/priya-ca/membership#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meeticulous.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Priya Sharma",
+            "item": "https://meeticulous.com/priya-ca"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Membership",
+            "item": "https://meeticulous.com/priya-ca/membership"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://meeticulous.com/priya-ca/membership#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What do Tax Circle members get?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Insider (₹299/month): Monthly live Q&A, Templates; Community (free); Insider (₹999/month)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much does it cost?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Insider: ₹299/month; Community: free; Insider: ₹999/month. Paid tiers are billed monthly."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I cancel?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Cancel anytime from My memberships in your account; your access stays on until the end of the month you have paid for."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get access after joining?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Log in and pick a tier. Free tiers open instantly and paid tiers right after secure payment; member posts then unlock on this page."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "metaCases": [
+    {
+      "fn": "profileMeta",
+      "input": {
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "primary_category": "chartered-accountant",
+          "categories": [
+            "chartered-accountant",
+            "tax-consultant"
+          ],
+          "location": "Nagpur, Maharashtra",
+          "bio": "CA in Nagpur. ITR filing + GST notices.",
+          "profile_image": "https://img.example.com/priya.webp",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com",
+            "whatsapp": "9"
+          },
+          "updated_at": "2026-11-01T10:00:00.000Z"
+        },
+        "services": [
+          {
+            "title": "ITR filing consultation",
+            "slug": "itr-consultation",
+            "price": 1500,
+            "currency": "INR",
+            "meeting_mode": "offline",
+            "duration": 45,
+            "category_label": "Tax consultation",
+            "short_description": "45-minute call to review your documents.",
+            "seo_image": "https://img.example.com/itr.webp",
+            "updated_at": "2026-11-01T10:00:00.000Z"
+          },
+          {
+            "title": "GST notice review",
+            "slug": "gst-review",
+            "price_on_request": true,
+            "meeting_mode": "online"
+          }
+        ],
+        "rating": {
+          "avg": 4.8,
+          "count": 12
+        }
+      },
+      "expected": {
+        "title": "Priya Sharma — Chartered Accountant in Nagpur | Meeticulous",
+        "description": "Priya Sharma is a Chartered Accountant in Nagpur. 2 services from ₹1,500 · 4.8★ (12 reviews). CA in Nagpur. Pay securely online. Book online."
+      }
+    },
+    {
+      "fn": "profileMeta",
+      "input": {
+        "host": {
+          "name": "Asha Rao",
+          "profession": "nutritionist",
+          "location": "remote",
+          "bio": "CA in Nagpur. ITR filing + GST notices."
+        },
+        "services": [
+          {
+            "title": "Diet plan",
+            "price": 0
+          }
+        ]
+      },
+      "expected": {
+        "title": "Asha Rao — nutritionist | Meeticulous",
+        "description": "Asha Rao is a nutritionist. 1 free service. CA in Nagpur. Pick a time that suits you and pay securely online. Instant confirmation and reminders. Book online."
+      }
+    },
+    {
+      "fn": "profileMeta",
+      "input": {
+        "host": {
+          "name": "Bare Host"
+        }
+      },
+      "expected": {
+        "title": "Bare Host | Meeticulous",
+        "description": "Bare Host takes bookings on Meeticulous. Pick a time that suits you and pay securely online. Instant confirmation and reminders. Book online."
+      }
+    },
+    {
+      "fn": "serviceDescription",
+      "input": {
+        "service": {
+          "title": "ITR filing consultation",
+          "slug": "itr-consultation",
+          "price": 1500,
+          "currency": "INR",
+          "meeting_mode": "offline",
+          "duration": 45,
+          "category_label": "Tax consultation",
+          "short_description": "45-minute call to review your documents and plan your return.",
+          "seo_image": "https://img.example.com/itr.webp",
+          "updated_at": "2026-11-01T10:00:00.000Z"
+        },
+        "vendor": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "location": "Nagpur, Maharashtra",
+          "social_links": {
+            "instagram": "https://instagram.com/priya.ca",
+            "whatsapp": "9"
+          }
+        }
+      },
+      "expected": "Book a 45-min in-person ITR filing consultation with Priya Sharma for ₹1,500. 45-minute call to review your documents and plan your return. Pay securely online."
+    },
+    {
+      "fn": "serviceDescription",
+      "input": {
+        "service": {
+          "title": "GST notice review",
+          "price_on_request": true,
+          "meeting_mode": "online"
+        },
+        "vendor": {
+          "name": "Priya Sharma"
+        }
+      },
+      "expected": "Book an online GST notice review with Priya Sharma. Pick a time that suits you and pay securely online. Instant confirmation and reminders. Price on request."
+    },
+    {
+      "fn": "profileTabMeta",
+      "input": {
+        "tab": "products",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "id": "prod-123",
+            "slug": "gst-filing-checklist",
+            "title": "GST filing checklist",
+            "price": 299,
+            "type": "pdf"
+          },
+          {
+            "id": "prod-124",
+            "slug": "itr-template",
+            "title": "ITR template",
+            "price": 0,
+            "type": "template"
+          },
+          {
+            "id": "prod-125",
+            "title": "No slug yet",
+            "price": 50
+          }
+        ]
+      },
+      "expected": {
+        "title": "Digital products by Priya Sharma (3)",
+        "description": "3 digital products by Priya Sharma, from ₹50. Includes GST filing checklist, ITR template, No slug yet. Instant download after secure payment."
+      }
+    },
+    {
+      "fn": "profileTabMeta",
+      "input": {
+        "tab": "courses",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "id": "course-9",
+            "slug": "gst-basics",
+            "title": "GST basics",
+            "price": 1999,
+            "lesson_count": 2
+          }
+        ]
+      },
+      "expected": {
+        "title": "Online courses by Priya Sharma (1)",
+        "description": "1 online course by Priya Sharma, from ₹1,999. Includes GST basics. Watch every lesson anytime, on any device. Pay securely online. Buy once, lifetime access."
+      }
+    },
+    {
+      "fn": "profileTabMeta",
+      "input": {
+        "tab": "membership",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "id": "t1",
+            "name": "Insider",
+            "type": "paid",
+            "price_inr": 299,
+            "perks": [
+              "Monthly live Q&A",
+              "Templates"
+            ],
+            "cover_url": "https://img.example.com/t1.webp"
+          },
+          {
+            "id": "t2",
+            "name": "Community",
+            "type": "free",
+            "perks": []
+          },
+          {
+            "id": "t3",
+            "name": "Insider",
+            "type": "paid",
+            "price_inr": 999,
+            "description": "Everything plus 1:1 review."
+          }
+        ],
+        "program": {
+          "name": "Tax Circle",
+          "blurb": "Monthly tax Q&A with Priya."
+        }
+      },
+      "expected": {
+        "title": "Tax Circle — membership by Priya Sharma",
+        "description": "Join Tax Circle, Priya Sharma's membership — 3 tiers from ₹299/month. Tiers: Insider, Community, Insider. Monthly tax Q&A with Priya. Cancel anytime."
+      }
+    },
+    {
+      "fn": "productMeta",
+      "input": {
+        "product": {
+          "id": "prod-123",
+          "slug": "gst-filing-checklist",
+          "type": "pdf",
+          "title": "GST filing checklist",
+          "description": "A downloadable checklist.",
+          "price": 299,
+          "thumbnail_url": "https://img.example.com/checklist.webp",
+          "profiles": {
+            "name": "Priya Sharma",
+            "username": "priya-ca",
+            "profession": "Chartered Accountant",
+            "social_links": {
+              "linkedin": "https://www.linkedin.com/in/priya",
+              "email": "p@x.com"
+            },
+            "profile_image": "https://img.example.com/priya.webp"
+          }
+        },
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        }
+      },
+      "expected": {
+        "title": "GST filing checklist — PDF by Priya Sharma",
+        "description": "PDF by Priya Sharma. A downloadable checklist. Pay securely with UPI, card or wallet. Sold by Priya Sharma on Meeticulous. ₹299, instant download."
+      }
+    },
+    {
+      "fn": "productMeta",
+      "input": {
+        "product": {
+          "title": "Free starter kit",
+          "price": 0,
+          "type": "other"
+        },
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        }
+      },
+      "expected": {
+        "title": "Free starter kit — Digital product by Priya Sharma",
+        "description": "Digital product by Priya Sharma. Verify with a one-time code to get it. Sold by Priya Sharma on Meeticulous. Free, instant download."
+      }
+    },
+    {
+      "fn": "courseMeta",
+      "input": {
+        "course": {
+          "id": "course-9",
+          "slug": "gst-basics",
+          "title": "GST basics",
+          "description": "Learn GST returns step by step.",
+          "price": 1999,
+          "lesson_count": 2,
+          "course_lessons": [
+            {
+              "id": "l1",
+              "title": "What is GST"
+            },
+            {
+              "id": "l2",
+              "title": "Filing GSTR-1"
+            }
+          ],
+          "profiles": {
+            "name": "Priya Sharma",
+            "username": "priya-ca",
+            "profession": "Chartered Accountant",
+            "social_links": {
+              "linkedin": "https://www.linkedin.com/in/priya",
+              "email": "p@x.com"
+            }
+          }
+        },
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        }
+      },
+      "expected": {
+        "title": "GST basics — course by Priya Sharma",
+        "description": "2 video lessons by Priya Sharma. Learn GST returns step by step. Buy once, watch every lesson anytime, on any device. ₹1,999, lifetime access."
+      }
+    }
+  ],
+  "faqCases": [
+    {
+      "input": {
+        "kind": "products",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "id": "prod-123",
+            "slug": "gst-filing-checklist",
+            "title": "GST filing checklist",
+            "price": 299,
+            "type": "pdf"
+          },
+          {
+            "id": "prod-124",
+            "slug": "itr-template",
+            "title": "ITR template",
+            "price": 0,
+            "type": "template"
+          },
+          {
+            "id": "prod-125",
+            "title": "No slug yet",
+            "price": 50
+          }
+        ]
+      },
+      "expected": [
+        {
+          "q": "What digital products does Priya Sharma sell?",
+          "a": "Priya Sharma sells 3 digital products: GST filing checklist (₹299); ITR template (free); No slug yet (₹50)."
+        },
+        {
+          "q": "How do I get my download after paying?",
+          "a": "Right after payment you get a secure download link on screen and by email. Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page."
+        },
+        {
+          "q": "How do I pay?",
+          "a": "Pay securely online with UPI, card or wallet; prices start at ₹50. Free products only need a one-time code sent to your WhatsApp."
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "courses",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "id": "course-9",
+            "slug": "gst-basics",
+            "title": "GST basics",
+            "price": 1999,
+            "lesson_count": 2
+          }
+        ]
+      },
+      "expected": [
+        {
+          "q": "What courses does Priya Sharma offer?",
+          "a": "Priya Sharma offers 1 online course: GST basics (2 lessons, ₹1,999)."
+        },
+        {
+          "q": "How do I get access after paying?",
+          "a": "Log in and buy the course once. It unlocks on the course page straight away and stays in your account under My courses, so you can watch anytime."
+        },
+        {
+          "q": "How much do the courses cost?",
+          "a": "Courses start at ₹1,999. You pay once and keep lifetime access, with no subscription."
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "membership",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "id": "t1",
+            "name": "Insider",
+            "type": "paid",
+            "price_inr": 299,
+            "perks": [
+              "Monthly live Q&A",
+              "Templates"
+            ],
+            "cover_url": "https://img.example.com/t1.webp"
+          },
+          {
+            "id": "t2",
+            "name": "Community",
+            "type": "free",
+            "perks": []
+          },
+          {
+            "id": "t3",
+            "name": "Insider",
+            "type": "paid",
+            "price_inr": 999,
+            "description": "Everything plus 1:1 review."
+          }
+        ],
+        "program": {
+          "name": "Tax Circle",
+          "blurb": "Monthly tax Q&A with Priya."
+        }
+      },
+      "expected": [
+        {
+          "q": "What do Tax Circle members get?",
+          "a": "Insider (₹299/month): Monthly live Q&A, Templates; Community (free); Insider (₹999/month)."
+        },
+        {
+          "q": "How much does it cost?",
+          "a": "Insider: ₹299/month; Community: free; Insider: ₹999/month. Paid tiers are billed monthly."
+        },
+        {
+          "q": "Can I cancel?",
+          "a": "Yes. Cancel anytime from My memberships in your account; your access stays on until the end of the month you have paid for."
+        },
+        {
+          "q": "How do I get access after joining?",
+          "a": "Log in and pick a tier. Free tiers open instantly and paid tiers right after secure payment; member posts then unlock on this page."
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "membership",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "items": [
+          {
+            "name": "Free",
+            "type": "free"
+          }
+        ],
+        "program": {
+          "name": "Tax Circle",
+          "blurb": "Monthly tax Q&A with Priya."
+        }
+      },
+      "expected": [
+        {
+          "q": "What do Tax Circle members get?",
+          "a": "Free (free)."
+        },
+        {
+          "q": "How much does it cost?",
+          "a": "Joining is free."
+        },
+        {
+          "q": "How do I get access after joining?",
+          "a": "Log in and pick a tier. Free tiers open instantly and paid tiers right after secure payment; member posts then unlock on this page."
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "product",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "item": {
+          "id": "prod-123",
+          "slug": "gst-filing-checklist",
+          "type": "pdf",
+          "title": "GST filing checklist",
+          "description": "A downloadable checklist.",
+          "price": 299,
+          "thumbnail_url": "https://img.example.com/checklist.webp",
+          "profiles": {
+            "name": "Priya Sharma",
+            "username": "priya-ca",
+            "profession": "Chartered Accountant",
+            "social_links": {
+              "linkedin": "https://www.linkedin.com/in/priya",
+              "email": "p@x.com"
+            },
+            "profile_image": "https://img.example.com/priya.webp"
+          }
+        }
+      },
+      "expected": [
+        {
+          "q": "What's included in GST filing checklist?",
+          "a": "GST filing checklist is a pdf by Priya Sharma. A downloadable checklist."
+        },
+        {
+          "q": "How do I get access after paying?",
+          "a": "Right after payment you get a secure download link on screen and by email. Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page."
+        },
+        {
+          "q": "How much does GST filing checklist cost?",
+          "a": "GST filing checklist costs ₹299. Any platform fee and GST are shown before you pay."
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "course",
+        "host": {
+          "name": "Priya Sharma",
+          "username": "priya-ca",
+          "profession": "Chartered Accountant",
+          "social_links": {
+            "linkedin": "https://www.linkedin.com/in/priya",
+            "email": "p@x.com"
+          }
+        },
+        "item": {
+          "id": "course-9",
+          "slug": "gst-basics",
+          "title": "GST basics",
+          "description": "Learn GST returns step by step.",
+          "price": 1999,
+          "lesson_count": 2,
+          "course_lessons": [
+            {
+              "id": "l1",
+              "title": "What is GST"
+            },
+            {
+              "id": "l2",
+              "title": "Filing GSTR-1"
+            }
+          ],
+          "profiles": {
+            "name": "Priya Sharma",
+            "username": "priya-ca",
+            "profession": "Chartered Accountant",
+            "social_links": {
+              "linkedin": "https://www.linkedin.com/in/priya",
+              "email": "p@x.com"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "q": "What's included in GST basics?",
+          "a": "2 video lessons: What is GST, Filing GSTR-1."
+        },
+        {
+          "q": "How do I get access after paying?",
+          "a": "Log in and buy the course once. It unlocks on the course page straight away and stays in your account under My courses, so you can watch anytime."
+        },
+        {
+          "q": "How much does GST basics cost?",
+          "a": "GST basics costs ₹1,999, paid once for lifetime access. Any platform fee and GST are shown before you pay."
+        }
+      ]
+    }
+  ]
 }

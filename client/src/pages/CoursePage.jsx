@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, Link, useNavigate, Navigate } from "react-router-dom";
 import {
   getCoursePublic, getCourseContent, createCourseOrder, verifyCoursePayment,
 } from "../services/api";
@@ -8,12 +8,22 @@ import { isValidHex } from "../utils/themeUtils";
 import loadRazorpay from "../utils/loadRazorpay";
 import toast from "react-hot-toast";
 import { Play, Lock, CheckCircle } from "lucide-react";
+import Seo from "../components/common/Seo";
+import FaqAccordion from "../components/FaqAccordion";
+import { SITE_URL, courseMeta, courseGraphJsonLd, coursePath, catalogRobots } from "../utils/seo";
+import { catalogFaqs } from "../utils/profileFaqs";
+
+// FaqAccordion chrome in brand tokens (ink text, cream card, neutral border).
+const FAQ_COLORS = { text: "var(--fg-1)", secondary: "var(--fg-2)", card: "var(--bg-page)", border: "var(--border-1)" };
 
 // Only http(s) links are safe to embed / open.
 const safeUrl = (u) => (/^https?:\/\//i.test(String(u || "")) ? u : null);
 
 const CoursePage = () => {
+  // slug may be an old id / legacy slug — the payload's slug is canonical and the
+  // page replaces the URL with it (below).
   const { username, slug } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -49,7 +59,7 @@ const CoursePage = () => {
   const handleBuy = async () => {
     if (!user?.id) {
       toast("Please log in to buy this course");
-      navigate(`/login?next=${encodeURIComponent(`/${username}/course/${slug}`)}`);
+      navigate(`/login?next=${encodeURIComponent(coursePath(username, course.slug || slug))}`);
       return;
     }
     const loaded = await loadRazorpay();
@@ -90,14 +100,29 @@ const CoursePage = () => {
   if (loading) return <div className="py-20 text-center text-gray-400">Loading…</div>;
   if (!course) return <div className="py-20 text-center text-gray-400">Course not found</div>;
 
+  // An id or legacy slug in the URL → the canonical slug URL.
+  if (course.slug && course.slug !== slug) return <Navigate to={coursePath(username, course.slug)} replace />;
+
   const host = course.profiles;
   const lessons = content ? content.course_lessons : course.course_lessons || [];
   const owned = !!content;
+  const meta = courseMeta({ course, host: host || {} });
+  const faqs = catalogFaqs({ kind: "course", host: host || {}, item: course });
 
   return (
     <div className="min-h-screen bg-canvas">
+      <Seo
+        title={meta.title}
+        description={meta.description}
+        canonical={`${SITE_URL}${coursePath(username, course.slug || slug)}`}
+        image={course.thumbnail_url || host?.profile_image || `${SITE_URL}/og-image.png`}
+        robots={catalogRobots(host || {}, searchParams.get("preview") === "1")}
+        jsonLd={[courseGraphJsonLd({ course, username, siteUrl: SITE_URL, faqs })]}
+      />
       <div className="app-container max-w-4xl py-8">
         <Link to={`/${username}`} className="mb-6 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">← Back to {host?.name}'s profile</Link>
+        {/* Answer-first summary (AEO/GEO) — the data-built meta description. */}
+        <p className="-mt-2 mb-5 text-sm leading-relaxed text-ink/70">{meta.description}</p>
 
         <div className="grid gap-6 md:grid-cols-[1fr_320px]">
           {/* Main: player (owned) or cover + description */}
@@ -120,7 +145,7 @@ const CoursePage = () => {
               </div>
             ) : (
               <div className="fb-card overflow-hidden">
-                {course.thumbnail_url && <div className="aspect-video w-full"><img src={course.thumbnail_url} alt={course.title} className="h-full w-full object-cover" /></div>}
+                {course.thumbnail_url && <div className="aspect-video w-full"><img src={course.thumbnail_url} alt={`${course.title} cover`} className="h-full w-full object-cover" /></div>}
                 <div className="p-5">
                   <h1 className="text-xl font-bold">{course.title}</h1>
                   <p className="mt-1 text-sm text-gray-500">by {host?.name} · {course.lesson_count} lesson{course.lesson_count !== 1 ? "s" : ""} · {course.purchase_count} sold</p>
@@ -167,6 +192,14 @@ const CoursePage = () => {
             </div>
           </div>
         </div>
+
+        {/* Visible FAQ — the same Q&A the FAQPage JSON-LD carries. */}
+        {faqs.length > 0 && (
+          <section className="fb-card mt-6 p-5 sm:p-6">
+            <h2 className="mb-4 text-lg font-bold">Frequently asked questions</h2>
+            <FaqAccordion faqs={faqs} colors={FAQ_COLORS} />
+          </section>
+        )}
       </div>
     </div>
   );

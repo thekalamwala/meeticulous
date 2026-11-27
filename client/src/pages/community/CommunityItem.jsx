@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ChevronRight, LogIn, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogIn, Plus } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { acceptAnswer, deleteComment, deleteItem, getComments, getItem, updateComment, updateItem } from '../../services/communityApi';
@@ -225,12 +225,18 @@ export default function CommunityItem() {
         ]}
       />
 
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-muted">
-        <Link to="/community" className="text-muted no-underline hover:text-maroon hover:underline">Community</Link>
+      {/* Phones get a back arrow to the parent (the space, else the feed), and every crumb
+          is a full 44px tap target — the bare text links were ~20px tall. */}
+      <nav aria-label="Breadcrumb" className="-my-2 flex items-center gap-1 text-sm text-muted">
+        <Link to={space ? `/community/s/${space.key}` : '/community'} aria-label={`Back to ${space ? space.name : 'Community'}`}
+          className="-ml-2 grid h-11 w-11 shrink-0 place-items-center rounded-full text-ink no-underline hover:bg-pink-100 lg:hidden">
+          <ChevronLeft size={20} aria-hidden="true" />
+        </Link>
+        <Link to="/community" className="inline-flex min-h-11 items-center text-muted no-underline hover:text-maroon hover:underline">Community</Link>
         {space && (
           <>
-            <ChevronRight size={16} aria-hidden="true" />
-            <Link to={`/community/s/${space.key}`} className="text-muted no-underline hover:text-maroon hover:underline">{space.name}</Link>
+            <ChevronRight size={16} aria-hidden="true" className="shrink-0" />
+            <Link to={`/community/s/${space.key}`} className="inline-flex min-h-11 min-w-0 items-center truncate text-muted no-underline hover:text-maroon hover:underline">{space.name}</Link>
           </>
         )}
       </nav>
@@ -261,7 +267,10 @@ export default function CommunityItem() {
         </div>
       )}
 
-      <h2 className="mt-post__title mt-2">
+      {/* A section label, not a second headline: in the post title's display style it
+          competed with the title, and the global h2 size + margin left a ~50px hole above
+          the first reply. */}
+      <h2 className="mt-post__name mb-0 mt-3 text-[15px]">
         {item.comment_count} {item.comment_count === 1 ? 'reply' : 'replies'}
       </h2>
       {!s.comments.length && <p className="mt-post__meta py-4 text-center">No replies yet.</p>}

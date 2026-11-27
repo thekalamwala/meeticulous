@@ -13,7 +13,11 @@ describe('resolveServiceSeo — admin overrides win, fallbacks otherwise', () =>
   test('falls back to service title + vendor + brand suffix when no seo_title', () => {
     const seo = resolveServiceSeo({ service: base, vendor: VENDOR, siteUrl: SITE });
     expect(seo.title).toBe('Business Consultation with John Doe | Meeticulous');
-    expect(seo.description).toBe('A 1:1 call.');
+    // Answer-first template: what you book, with whom, then the host's summary.
+    expect(seo.description).toMatch(/^Book an online Business Consultation with John Doe\. A 1:1 call\./);
+    expect(seo.description.length).toBeGreaterThanOrEqual(140);
+    expect(seo.description.length).toBeLessThanOrEqual(160);
+    expect(seo.ogTitle).toBe('Business Consultation with John Doe');
   });
 
   test('drops the brand suffix (then the host) so the title is not truncated', () => {
@@ -100,12 +104,11 @@ describe('resolveProfileSeo', () => {
     expect(resolveProfileSeo({ host: { ...host, is_indexable: false }, siteUrl: SITE }).robots).toBe('noindex,nofollow');
   });
 
-  test('city in title only when the host offers an offline service', () => {
+  test('title is "{Name} — {Profession} in {City} | Meeticulous" (city = where the host is based)', () => {
     const located = { ...host, location: 'Pune, Maharashtra' };
     const online = resolveProfileSeo({ host: located, services: [{ meeting_mode: 'online' }], siteUrl: SITE });
-    expect(online.title).toBe('John Doe — Consultant | Meeticulous');
-    const offline = resolveProfileSeo({ host: located, services: [{ meeting_mode: 'online' }, { meeting_mode: 'offline' }], siteUrl: SITE });
-    expect(offline.title).toBe('John Doe — Consultant in Pune | Meeticulous');
+    expect(online.title).toBe('John Doe — Consultant in Pune | Meeticulous');
+    expect(resolveProfileSeo({ host: { ...host, location: 'Remote' }, siteUrl: SITE }).title).toBe('John Doe — Consultant | Meeticulous');
   });
 });
 
@@ -236,13 +239,14 @@ describe('profileGraphJsonLd', () => {
 });
 
 describe('productGraphJsonLd', () => {
-  test('Product + Offer + brand @id ref; no aggregateRating', () => {
-    const ld = productGraphJsonLd({ username: 'john-doe', siteUrl: SITE, product: { id: 'p1', title: 'Checklist', description: 'A PDF.', price: 299, thumbnail_url: 'https://img/c.webp' } });
+  test('Product + Offer (seller = host Person @id) on the slug URL; no aggregateRating', () => {
+    const ld = productGraphJsonLd({ username: 'john-doe', siteUrl: SITE, product: { id: 'p1', slug: 'checklist', title: 'Checklist', description: 'A PDF.', price: 299, thumbnail_url: 'https://img/c.webp' } });
     const prod = node(ld, 'Product');
-    expect(prod['@id']).toBe('https://meeticulous.com/john-doe/product/p1#product');
-    expect(prod.brand).toEqual({ '@id': 'https://meeticulous.com/john-doe#person' });
-    expect(prod.offers).toEqual({ '@type': 'Offer', price: '299', priceCurrency: 'INR', availability: 'https://schema.org/InStock', url: 'https://meeticulous.com/john-doe/product/p1' });
+    expect(prod['@id']).toBe('https://meeticulous.com/john-doe/products/checklist#product');
+    expect(prod).not.toHaveProperty('brand');
+    expect(prod.offers).toEqual({ '@type': 'Offer', price: '299', priceCurrency: 'INR', availability: 'https://schema.org/InStock', url: 'https://meeticulous.com/john-doe/products/checklist', seller: { '@id': 'https://meeticulous.com/john-doe#person' } });
     expect(prod).not.toHaveProperty('aggregateRating');
+    expect(JSON.stringify(ld)).not.toContain('p1');
   });
 });
 
@@ -552,11 +556,12 @@ describe('glossaryTermJsonLd — single term page', () => {
   });
 });
 
-describe('profileTabSeo (mirrors server profileTabTitle)', () => {
+describe('profileTabSeo (mirrors server resolveProfileTabMeta)', () => {
   test('own title + canonical per tab', () => {
-    const t = profileTabSeo({ tab: 'courses', host: { name: 'Jane', username: 'jane' }, siteUrl: 'https://meeticulous.com' });
-    expect(t.title).toBe('Courses by Jane | Meeticulous');
+    const t = profileTabSeo({ tab: 'courses', host: { name: 'Jane', username: 'jane' }, items: [{ title: 'SEO 101', price: 999, slug: 'seo-101' }], siteUrl: 'https://meeticulous.com' });
+    expect(t.title).toBe('Online courses by Jane (1)');
     expect(t.canonical).toBe('https://meeticulous.com/jane/courses');
+    expect(t.summary).toBe(t.description);
   });
   test('unknown tab adds nothing', () => {
     expect(profileTabSeo({ tab: 'services', host: { name: 'Jane', username: 'jane' } })).toEqual({});
