@@ -410,7 +410,14 @@ async function prerender() {
   const puppeteer = await import('puppeteer');
 
   // Dedup: professions sub-sitemap also carries the /services root already in PRERENDER_ROUTES.
-  const routes = [...new Set([...PRERENDER_ROUTES, ...(await blogRoutes()), ...(await hostServiceRoutes())])];
+  const allRoutes = [...new Set([...PRERENDER_ROUTES, ...(await blogRoutes()), ...(await hostServiceRoutes())])];
+  // PRERENDER_ONLY=<regex>: bake only matching routes (+ always `/`, which the
+  // homepage guard below requires). For LOCAL timing runs on a subset — never set
+  // it on Vercel (it would ship the rest as shells; the partial guard below fails
+  // the build if it is).
+  const only = process.env.PRERENDER_ONLY ? new RegExp(process.env.PRERENDER_ONLY) : null;
+  const routes = only ? allRoutes.filter((r) => r === '/' || only.test(r)) : allRoutes;
+  if (only) console.log(`[prerender] PRERENDER_ONLY=${process.env.PRERENDER_ONLY}: ${routes.length} of ${allRoutes.length} routes`);
 
   // The app's absolute API base (…/api). Prerender runs on localhost:4173, which
   // the API's CORS allowlist rejects, so every in-browser fetch (getBlogBySlug,
@@ -469,6 +476,7 @@ async function prerender() {
   let failed = 0;
   const errorBaked = []; // routes whose render came back as the branded ErrorPage
   const skipped = []; // routes not started because the time budget ran out
+  const timings = []; // { route, ms, ok } per render attempt — summarised at the end
   const schemaMissing = []; // host profiles that rendered chrome but no ProfilePage JSON-LD
 
   // Build-scoped cache of proxied API GETs. ~300 pages ask for the same plans /
@@ -509,6 +517,8 @@ async function prerender() {
   };
 
   const renderOnce = async (route, navTimeout = NAV_TIMEOUT_MS) => {
+    const t0 = Date.now();
+    let ok = false;
     const page = await browser.newPage();
     try {
       // Vercel's builder runs in UTC; without this lib/pricingRegion.js would read
@@ -682,11 +692,13 @@ async function prerender() {
       }
 
       writeFileSync(outPath, await inlineCritical(html), 'utf-8');
+      ok = true;
       return outPath;
     } finally {
       // Always close, including on a timeout — an orphaned page holds memory for
       // the rest of the run, and there are 77 of them.
       await page.close().catch(() => {});
+      timings.push({ route, ms: Date.now() - t0, ok });
     }
   };
 
@@ -784,14 +796,36 @@ async function prerender() {
   await browser.close();
   server.close();
 
+  // Per-route timing summary: where the wall clock goes (find the slow tail).
+  if (timings.length) {
+    const okMs = timings.filter((t) => t.ok).map((t) => t.ms).sort((a, b) => a - b);
+    const pct = (q) => (okMs.length ? okMs[Math.min(okMs.length - 1, Math.floor(q * okMs.length))] : 0);
+    const sec = (ms) => `${(ms / 1000).toFixed(1)}s`;
+    const busy = timings.reduce((a, t) => a + t.ms, 0);
+    console.log(`[prerender] timing: ${timings.length} attempts, pool ${POOL}, p50 ${sec(pct(0.5))}, p90 ${sec(pct(0.9))}, max ${sec(okMs[okMs.length - 1] || 0)}, page-time ${sec(busy)} over ${sec(Date.now() - STARTED_AT)} wall`);
+    const slow = [...timings].sort((a, b) => b.ms - a.ms).slice(0, 10);
+    console.log(`[prerender] slowest: ${slow.map((t) => `${t.route} ${sec(t.ms)}${t.ok ? '' : ' (failed)'}`).join(' | ')}`);
+  }
+
   const mins = ((Date.now() - STARTED_AT) / 60000).toFixed(1);
   console.log(`[prerender] Done in ${mins} min: ${rendered} rendered, ${failed} failed, ${errorBaked.length} error-baked, ${skipped.length} over budget (${routes.length} routes, ${apiCache.size} distinct API calls)`);
 
-  // Over budget is NOT a failure: those routes serve the SPA fallback until the
-  // next deploy, which beats Vercel killing the whole build at 45 min. Loud, so a
-  // budget that is routinely hit gets noticed (move the build off Vercel's clock).
+  // Over budget: the routes not reached would ship as the bare SPA shell (200, no
+  // title / JSON-LD) — the silent SEO regression this build exists to prevent. On
+  // Vercel that now FAILS the build (prod keeps serving the previous deploy) unless
+  // PRERENDER_ALLOW_PARTIAL=1 is set to knowingly ship a partial prerender.
+  // Locally it stays a loud warning.
   if (skipped.length > 0) {
     console.error(`[prerender] TIME BUDGET (${BUDGET_MS / 60000} min) hit — ${skipped.length} route(s) left unbaked: ${skipped.join(', ')}`);
+    if (process.env.VERCEL && process.env.PRERENDER_ALLOW_PARTIAL !== '1') {
+      console.error('[prerender] FAILED: routes left unbaked over budget — refusing to ship SPA shells. Raise PRERENDER_POOL / PRERENDER_BUDGET_MS, or set PRERENDER_ALLOW_PARTIAL=1 to ship a partial prerender on purpose.');
+      process.exit(1);
+    }
+  }
+  // A PRERENDER_ONLY subset on Vercel is a partial prerender too.
+  if (only && process.env.VERCEL && process.env.PRERENDER_ALLOW_PARTIAL !== '1') {
+    console.error('[prerender] FAILED: PRERENDER_ONLY is set on Vercel — the other routes would ship as shells.');
+    process.exit(1);
   }
 
   // Routes that came back as the ErrorPage were NOT written, so they fall back to
