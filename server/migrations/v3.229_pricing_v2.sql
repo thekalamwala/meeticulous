@@ -1,0 +1,119 @@
+-- ============================================================
+-- v3.229 — Pricing & Plan Gating v2  (docs/pricing-v2-spec.md §8 step 1)
+-- ------------------------------------------------------------
+-- Additive, idempotent, non-destructive. No column dropped, no host's `plan`
+-- rewritten, no historical booking touched.
+--
+-- SCHEMA (dormant until the code reads it — safe to apply any time):
+--   subscription_plans.commission_rates  per-surface rate map (§2). NULL on any
+--       row = planService.getRate falls back to the commission_percentage
+--       scalar, so a partially-migrated DB can never break checkout.
+--   bookings.platform_fee_gross          what the guest paid for the fee (§2.1).
+--
+-- VALUES (live within planService's 60s cache — see APPLY TIMING):
+--   §3 limits, §1 prices, commission_rates on free + Pro rows.
+--
+-- ── GST: three regimes, on purpose (§0). Do not normalise. ──────────────────
+--   subscription prices  stored EX-GST, engine adds 18%  (this file's prices)
+--   commission           GST-INCLUSIVE, backed out       (pricingEngine — untouched)
+--   platform fee         flips EX-GST → INCLUSIVE        (§2.1, step 3 code)
+--
+-- ── Platform-fee snapshot contract on bookings (from step 3 onward) ─────────
+--   platform_fee_gross   = gross the guest pays           (NEW, e.g. 10.00)
+--   platform_fee_amount  = taxable value, ex-GST          (e.g. 8.47)
+--   platform_fee_gst     = gross − taxable, the REMAINDER (e.g. 1.53)
+--   platform_fee_amount keeps its existing meaning (the ex-GST fee), so
+--   customer_total = service + amount + gst stays true and every reader of
+--   those two columns (invoices, ledger, GST export) keeps working unchanged.
+--   platform_fee_gross is NULL on pre-v2 rows: there, gross = amount + gst.
+--
+-- ── Applied commission rate: reuse bookings.commission_percentage ───────────
+--   Spec §2 asks for a new bookings.commission_rate_applied. bookings already
+--   has commission_percentage (v2.8 snapshot, written by createBooking at
+--   bookingController:648, read by refunds/payouts). Step 4 writes the rate the
+--   map resolved into THAT column instead of adding a duplicate.
+--
+-- ── Prices (§1): back-solved, never rounded up (v3.165 convention) ──────────
+--   168.64  + 30.36  = ₹199.00   Pro monthly
+--   1016.10 + 182.90 = ₹1,199.00 Pro yearly
+--   761.86  + 137.13 = ₹898.99   founding yearly (₹899.00 not reachable from a
+--                                2-dp base; 761.87 would charge ₹899.01)
+--   Verified through computeSubscriptionBreakdown on 2026-11-27.
+--   Razorpay Plan objects are immutable, so a price change NULLs the cached
+--   razorpay_plan_id_* (as planAdminController does on an admin edit); the next
+--   checkout mints a new plan. Live subscriptions stay on their old object.
+--
+-- ── Legacy rows ─────────────────────────────────────────────────────────────
+--   starter / starter_legacy get the same Starter values as `free` (v3.165
+--   precedent: legacy free rows track Starter). creator / professional /
+--   supreme get `insights` only (test 19: Pro-equivalent); prices, scalar 0%
+--   commission and Razorpay ids untouched. No commission_rates on them → scalar
+--   fallback = 0% everywhere, which is their grandfathered deal.
+--
+-- APPLY TO the Meeticulous DB (spquowzrefozmrzoszkf).
+-- ============================================================
+
+-- 1) Schema ─────────────────────────────────────────────────────────────────
+ALTER TABLE subscription_plans ADD COLUMN IF NOT EXISTS commission_rates jsonb;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS platform_fee_gross numeric(10,2);
+
+COMMENT ON COLUMN subscription_plans.commission_rates IS
+  'Per-surface commission % (GST-inclusive): appointments, products, courses, memberships, '
+  'appointment_band_inr, appointment_rate_above_band. NULL → commission_percentage scalar. v3.229';
+COMMENT ON COLUMN bookings.platform_fee_gross IS
+  'Pricing snapshot: platform fee the guest paid, GST-inclusive (= platform_fee_amount + platform_fee_gst). '
+  'NULL on bookings before v3.229. Immutable after insert.';
+COMMENT ON COLUMN bookings.platform_fee_amount IS
+  'Pricing snapshot: platform fee TAXABLE value (ex-GST). From v3.229 backed out of platform_fee_gross. '
+  'Immutable after the booking row is inserted.';
+
+-- 2) Starter (+ legacy free rows) ──────────────────────────────────────────
+--    jsonb || merges only the keys named, so any other limit key survives.
+UPDATE subscription_plans SET
+  limits = COALESCE(limits, '{}'::jsonb)
+        || '{"crm":50,"reminder_flows":2,"followup_flows":1,"categories":2,"free_services":2,"digital_products":-1}'::jsonb,
+  commission_rates = '{"appointments":9,"products":12,"courses":12,"memberships":12,"appointment_band_inr":null,"appointment_rate_above_band":null}'::jsonb
+WHERE slug IN ('free', 'starter', 'starter_legacy');
+
+-- 3) Pro + founding ────────────────────────────────────────────────────────
+UPDATE subscription_plans SET
+  limits = COALESCE(limits, '{}'::jsonb)
+        || '{"crm":-1,"reminder_flows":-1,"followup_flows":-1,"categories":-1,"free_services":-1,"digital_products":-1,"insights":-1}'::jsonb,
+  commission_rates = '{"appointments":0,"products":4,"courses":4,"memberships":4,"appointment_band_inr":25000,"appointment_rate_above_band":3}'::jsonb
+WHERE slug IN ('premium', 'premium_founding');
+
+-- 4) Prices — and drop the immutable Razorpay plan only when the price moves.
+UPDATE subscription_plans SET
+  razorpay_plan_id_monthly = CASE WHEN monthly_price IS DISTINCT FROM 168.64  THEN NULL ELSE razorpay_plan_id_monthly END,
+  razorpay_plan_id_annual  = CASE WHEN annual_price  IS DISTINCT FROM 1016.10 THEN NULL ELSE razorpay_plan_id_annual  END,
+  monthly_price = 168.64,
+  annual_price  = 1016.10
+WHERE slug = 'premium';
+
+UPDATE subscription_plans SET
+  razorpay_plan_id_monthly = CASE WHEN monthly_price IS DISTINCT FROM 168.64 THEN NULL ELSE razorpay_plan_id_monthly END,
+  razorpay_plan_id_annual  = CASE WHEN annual_price  IS DISTINCT FROM 761.86 THEN NULL ELSE razorpay_plan_id_annual  END,
+  monthly_price = 168.64,
+  annual_price  = 761.86
+WHERE slug = 'premium_founding';
+
+-- 5) Legacy paid tiers keep Pro-equivalent entitlements (Intelligence included).
+UPDATE subscription_plans SET
+  limits = COALESCE(limits, '{}'::jsonb) || '{"insights":-1}'::jsonb
+WHERE slug IN ('creator', 'professional', 'supreme');
+
+-- ── Verify ──────────────────────────────────────────────────────────────────
+SELECT slug, active, monthly_price, annual_price,
+       round(monthly_price + round(monthly_price * 0.18, 2), 2) AS monthly_charged,
+       round(annual_price  + round(annual_price  * 0.18, 2), 2) AS annual_charged,
+       commission_percentage, commission_rates,
+       limits->'crm' AS crm, limits->'reminder_flows' AS rem, limits->'followup_flows' AS fu,
+       limits->'categories' AS cat, limits->'free_services' AS free_svc,
+       limits->'digital_products' AS dp, limits->'insights' AS insights,
+       razorpay_plan_id_monthly, razorpay_plan_id_annual
+FROM subscription_plans ORDER BY active DESC, sort_order, slug;
+
+SELECT column_name, data_type FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND ((table_name = 'subscription_plans' AND column_name = 'commission_rates')
+    OR (table_name = 'bookings' AND column_name = 'platform_fee_gross'));
