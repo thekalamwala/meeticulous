@@ -215,10 +215,16 @@ export default function KeptTabBar() {
   };
   const close = () => { setOpen(false); moreRef.current?.focus(); };
 
-  return (
+  // Portalled to <body>, like the More sheet. Pages pin their main action to
+  // <body> too (PinnedAction, the catalog/service/client sticky bars, z-30);
+  // left inside the dashboard's stacking context, the bar's z-40 was local, so
+  // those bars painted over the raised centre button and cropped its top.
+  // At <body> level z-40 beats z-30 everywhere. `dash dash-v2` re-applies the
+  // scoped tokens + button reset it no longer inherits from the layout.
+  return createPortal(
     <>
       <nav aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
+        className="dash dash-v2 fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
         {tabs.map((s) => {
           const props = { label: s.label, Icon: ICON[s.id] || LayoutGrid, SolidIcon: SOLID[s.id], active: activeId === s.id, dot: attention(s), onClick: () => onTab(s) };
           return s.id === centreId ? <CentreTab key={s.id} {...props} /> : <Tab key={s.id} {...props} />;
@@ -228,6 +234,7 @@ export default function KeptTabBar() {
       </nav>
       <MoreSheet open={open} onClose={close} items={sheetItems} activeId={activeId} attention={attention}
         onPick={(it) => { setOpen(false); goTo(it); }} />
-    </>
+    </>,
+    document.body,
   );
 }
