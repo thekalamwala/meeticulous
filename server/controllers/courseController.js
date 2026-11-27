@@ -14,6 +14,7 @@ const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEn
 const { sortHostOrder, applyHostOrder } = require('../services/catalogOrder');
 const { withGuestPrices } = require('../services/guestPrice');
 const { auditLog, securityLog } = require('../utils/logger');
+const { resolveCatalogItem } = require('../services/catalogSlug');
 
 // ponytail: schema-fallback — if the v3.214 tables aren't applied yet, Supabase
 // returns a "relation does not exist" error. Treat that as "no courses" for
@@ -130,7 +131,7 @@ const deleteCourse = async (req, res) => {
 
 const PUBLIC_COLS =
   'id, title, description, price, thumbnail_url, slug, purchase_count, host_id, ' +
-  'profiles!courses_host_id_fkey(name, username, profile_image, tagline, theme_color), ' +
+  'profiles!courses_host_id_fkey(name, username, profile_image, tagline, theme_color, is_verified, profession, social_links), ' +
   'course_lessons(id, title, sort_order)';
 
 // ── GET /api/courses/p/:username/:slug ────────────────────────
@@ -142,9 +143,8 @@ const getCoursePublic = async (req, res) => {
       .from('profiles').select('id').eq('username', username).single();
     if (!host) return res.status(404).json({ message: 'Course not found' });
 
-    const { data, error } = await supabaseAdmin.from('courses')
-      .select(PUBLIC_COLS)
-      .eq('host_id', host.id).eq('slug', slug).eq('is_active', true).maybeSingle();
+    // slug → id → legacy slug (v3.229); the payload's slug is the canonical one.
+    const { data, error } = await resolveCatalogItem('courses', host.id, slug, PUBLIC_COLS);
     if (error && isMissingTable(error)) return res.status(404).json({ message: 'Course not found' });
     if (error) return safeError(res, error);
     if (!data) return res.status(404).json({ message: 'Course not found' });
