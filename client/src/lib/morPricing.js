@@ -87,12 +87,17 @@ export const CALC_PLANS = [
   {
     key: 'free', name: 'Starter',
     charge: { bookingCharge: 10, commissionRate: 0.09, pgRate: 0.02, absorbsPg: false },
+    goodsRate: 0.12, band: null,          // products / courses / memberships; no monthly band
     monthly: 0, maxServicePrice: null,
     note: 'Free forever · 9% per booking',
   },
   {
     key: 'premium', name: 'Pro',
     charge: { bookingCharge: 10, commissionRate: 0, pgRate: 0.02, absorbsPg: false },
+    goodsRate: 0.04,
+    // 0% on appointments until the month's bookings BEFORE a booking reach ₹25,000,
+    // then 3% on the whole booking (spec §2, planService.appointmentRateFor).
+    band: { inr: 25000, rateAbove: 0.03 },
     // GST-INCLUSIVE, matching data/plans.js — this is subtracted from monthly
     // income, so it must be the amount actually charged, not the ex-GST base.
     monthly: 199, maxServicePrice: null,

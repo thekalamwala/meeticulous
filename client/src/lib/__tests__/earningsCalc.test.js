@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   resultsFor, pickWinner, annualSaving, deltaVsFree, premiumCrossover,
   freeCommissionPerYear, annualBookings, ANNUAL_FEE, platformFeesPerYear,
+  bookingsBelowBand, proBandCommissionPerYear, otherPlatformAnnual,
 } from '../earningsCalc';
 import { PREMIUM_PLAN } from '../../data/plans';
 
@@ -94,12 +95,50 @@ describe('the upgrade verdict', () => {
 });
 
 describe('platformFeesPerYear', () => {
-  it('prices Topmate at 10%/20% plus GST on the fee, Starter at 9%, Pro flat', () => {
+  it('prices Topmate at 10%/20% plus GST on the fee, Starter at 9%, Pro yearly + 3% above the band', () => {
     // ₹5,000 × 12 sessions/month × 12 months = ₹7,20,000 in sales
     const rows = Object.fromEntries(platformFeesPerYear(5000, 12).map((r) => [r.key, r.fee]));
     expect(rows['topmate-own']).toBe(84960);
     expect(rows['topmate-marketplace']).toBe(169920);
     expect(rows.free).toBe(64800);
-    expect(rows.premium).toBe(ANNUAL_FEE.premium);
+    // ₹60,000 a month: 5 bookings under ₹25,000 at 0%, 7 at 3% (₹150 each) → ₹12,600 a year + the plan.
+    expect(rows.premium).toBe(ANNUAL_FEE.premium + 12600);
+  });
+});
+
+// Pricing v2 (spec §4 item 11).
+describe('Pro ₹25,000 monthly band', () => {
+  it('counts bookings whose month-to-date BEFORE them is under the band', () => {
+    expect(bookingsBelowBand(5000, 12, 25000)).toBe(5);   // 0, 5k, 10k, 15k, 20k
+    expect(bookingsBelowBand(2000, 12, 25000)).toBe(12);  // never reaches 25k before a booking
+    expect(bookingsBelowBand(25000, 3, 25000)).toBe(1);   // the 2nd starts at exactly 25k → 3%
+  });
+  it('a month under the band costs Pro nothing extra', () => {
+    expect(proBandCommissionPerYear(2000, 12)).toBe(0);
+  });
+  it('Pro take-home reflects 3% on the whole bookings above the band', () => {
+    // ₹5,000 × 12 a month: 5 at 0% keep ₹4,894.80 (− ₹100.20 gateway − ₹5 TDS),
+    // 7 at 3% keep ₹4,744.80 (− ₹150 more). Month ₹57,687.60 → year ₹6,92,251.20.
+    const pro = resultsFor(5000, 12, 'annual').find((r) => r.plan.key === 'premium');
+    expect(pro.grossAnnual).toBe(692251.2);
+  });
+});
+
+describe('product / course / membership sales', () => {
+  it('Starter keeps 86% and Pro 94% of goods (commission + ~2% gateway)', () => {
+    const [free, pro] = resultsFor(1000, 0, 'annual', 10000);
+    expect(free.goodsAnnual).toBe(10000 * 0.86 * 12);
+    expect(pro.goodsAnnual).toBe(10000 * 0.94 * 12);
+  });
+  it('goods move the winner toward Pro', () => {
+    expect(pickWinner(resultsFor(1000, 1, 'annual'))).toBe('free');
+    expect(pickWinner(resultsFor(1000, 1, 'annual', 5000))).toBe('premium');
+  });
+});
+
+describe('the comparison platform (10% + transaction fee = 12%)', () => {
+  it('keeps 87.9% of all sales (12% + 0.1% TDS)', () => {
+    expect(otherPlatformAnnual(1000, 10, 0)).toBe(Math.round(120000 * 0.879 * 100) / 100);
+    expect(otherPlatformAnnual(1000, 0, 1000)).toBe(Math.round(12000 * 0.879 * 100) / 100);
   });
 });
