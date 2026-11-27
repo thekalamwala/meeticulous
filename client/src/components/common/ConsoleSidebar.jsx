@@ -180,7 +180,8 @@ export const NAV_V2 = [
       // services, products, courses and coupons, so a membership program would
       // not appear in the list that replaced its rail line. Collapsing it would
       // leave /dashboard/memberships reachable only by typing the URL.
-      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
+      // Its + adds a tier (a host has one program; tiers are the things it sells).
+      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', addTo: '/dashboard/memberships/tier/add-new', addLabel: 'Add a membership tier', visible: (c) => !!c.flags?.community_memberships },
       // Coupons are called Discounts in the product; the URL stays /dashboard/coupons.
       { to: '/dashboard/coupons', label: 'Discounts', icon: 'nav-refer', matchPrefix: ['/dashboard/coupons', '/dashboard/coupon/'], addTo: '/dashboard/coupon/add-new', addLabel: 'Add a discount', visible: (c) => !!c.flags?.coupons },
     ],

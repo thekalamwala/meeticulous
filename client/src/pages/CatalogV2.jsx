@@ -12,9 +12,10 @@
 // drag it into place, and "Add a service" pinned in the thumb zone. Desktop is
 // a grid of photo cards with the same facts.
 //
-// Price: the big figure is what the host set. The guest's total (fee + GST
-// added) comes from the server's guest_total — never worked out here — and is
-// shown under it only when the server sent it.
+// Price: the big figure is what the host set. Under it, for a paid service, is
+// what the host gets ("You'll get", server host_earnings = price less
+// commission); for products and courses, the guest's total (server
+// guest_total). Neither is ever worked out here.
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
@@ -95,6 +96,12 @@ const priceFacts = (item) => {
   if (item.priceOnRequest) return { big: 'Price on request', small: 'Guests book, then you agree a price' };
   const g = item.guestTotal;
   if (!item.price) return { big: 'Free', small: g ? `Guests pay a ${inr(g, { decimals: g % 1 !== 0 })} booking fee` : null };
+  // A paid service shows what the HOST gets (price less Meeticulous's commission,
+  // server-computed host_earnings); products and courses still show the guest total.
+  if (item.kind === 'service') {
+    const e = item.hostEarnings;
+    return { big: inr(item.price), small: e !== null && e !== undefined ? `You'll get ${inr(e, { decimals: e % 1 !== 0 })}` : null };
+  }
   return { big: inr(item.price), small: g && g > item.price ? `Guests pay ${inr(g, { decimals: g % 1 !== 0 })}` : null };
 };
 
@@ -183,8 +190,8 @@ const Card = ({ item, onOpen, onToggle, onDuplicate, busy }) => {
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-[24px] bg-white">
       <button type="button" onClick={() => onOpen(item)} className={cn('flex min-w-0 flex-1 flex-col text-left transition-colors hover:bg-pink-50', ring)}>
-        {/* Discounts and membership tiers have no picture of their own. */}
-        {item.kind !== 'coupon' && item.kind !== 'membership' && <Thumb item={item} big className="aspect-[16/9] w-full" />}
+        {/* Discounts have no picture; a tier shows its cover (v3.228) or its icon. */}
+        {item.kind !== 'coupon' && <Thumb item={item} big className="aspect-[16/9] w-full" />}
         <span className="flex min-w-0 flex-col gap-0.5 px-5 pb-4 pt-4">
           <span className="text-[13px] font-semibold text-faint">{TYPE_LABEL[item.kind]}</span>
           <span className="truncate font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{item.title}</span>

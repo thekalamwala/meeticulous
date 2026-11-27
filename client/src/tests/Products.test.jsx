@@ -6,7 +6,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 vi.mock('../services/api', () => ({
   getMyProducts: vi.fn().mockResolvedValue({ data: [] }),
@@ -36,6 +36,7 @@ import { useFeature } from '../context/FeatureContext';
 import { uploadProductFile, getPublicPlans, createProduct } from '../services/api';
 import toast from 'react-hot-toast';
 import Products from '../pages/Products';
+import ProductEditor from '../pages/catalog/ProductEditor';
 
 // Reset mock call-counts before every test so assertions like
 // expect(uploadProductFile).not.toHaveBeenCalled() cannot false-positive
@@ -56,15 +57,23 @@ beforeAll(() => {
 
 const renderProducts = async (plan = 'creator') => {
   useAuth.mockReturnValue({ user: { plan }, updateUser: vi.fn() });
-  render(<MemoryRouter><Products /></MemoryRouter>);
+  render(
+    <MemoryRouter initialEntries={['/dashboard/products']}>
+      <Routes>
+        <Route path="/dashboard/products" element={<Products />} />
+        <Route path="/dashboard/product/add-new" element={<ProductEditor />} />
+      </Routes>
+    </MemoryRouter>,
+  );
   // Wait for the initial fetchProducts() effect to settle.
   await waitFor(() => expect(screen.getByText(/Digital Products/i)).toBeTruthy());
 };
 
+// Create lives on its own route now (/dashboard/product/add-new → ProductEditor).
 const openForm = async () => {
   const u = userEvent.setup();
   await u.click(screen.getByRole('button', { name: /add product/i }));
-  await waitFor(() => expect(screen.getByText(/New Product/i)).toBeTruthy());
+  await waitFor(() => expect(screen.getByRole('heading', { name: /New product/i })).toBeTruthy());
   return u;
 };
 
@@ -124,7 +133,7 @@ describe('Products — thumbnail by URL', () => {
     await u.type(urlInput, 'https://cdn.example/cover.png');
 
     await waitFor(() => {
-      const preview = document.querySelector('img[alt="Thumbnail preview"]');
+      const preview = document.querySelector('img[alt="Cover preview"]');
       expect(preview).toBeTruthy();
       expect(preview.getAttribute('src')).toBe('https://cdn.example/cover.png');
     });

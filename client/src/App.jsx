@@ -160,6 +160,10 @@ const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
 const Courses     = lazy(() => import('./pages/Courses'));
 const Memberships = lazy(() => import('./pages/Memberships'));
+// Catalog item editors on their own routes (add-new + edit/:id), like services.
+const ProductEditor = lazy(() => import('./pages/catalog/ProductEditor'));
+const CourseEditor  = lazy(() => import('./pages/catalog/CourseEditor'));
+const TierEditor    = lazy(() => import('./pages/catalog/TierEditor'));
 const MembershipSpace = lazy(() => import('./pages/MembershipSpace'));
 const MyMemberships = lazy(() => import('./pages/MyMemberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
@@ -839,10 +843,15 @@ function App() {
           <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
           <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
-          {/* "Add new" routes for each catalog type, like /dashboard/service/add-new:
-              the type's own page with its create form open (useAddNewRoute). */}
-          <Route path="/dashboard/product/add-new" element={<DashboardWrapper><Products /></DashboardWrapper>} />
-          <Route path="/dashboard/course/add-new" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
+          {/* Catalog item editors: real add + edit pages per type, like
+              /dashboard/service/add-new + /dashboard/service/edit/:id. Coupons
+              still open their page's create form (useAddNewRoute). */}
+          <Route path="/dashboard/product/add-new" element={<DashboardWrapper><ProductEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/product/edit/:id" element={<DashboardWrapper><ProductEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/course/add-new" element={<DashboardWrapper><CourseEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/course/edit/:id" element={<DashboardWrapper><CourseEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/memberships/tier/add-new" element={<DashboardWrapper><TierEditor /></DashboardWrapper>} />
+          <Route path="/dashboard/memberships/tier/edit/:id" element={<DashboardWrapper><TierEditor /></DashboardWrapper>} />
           <Route path="/dashboard/coupon/add-new" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />

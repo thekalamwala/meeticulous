@@ -177,3 +177,87 @@ export const KeptCard = ({ title, sub, action, children, className = '' }) => (
     {children}
   </section>
 );
+
+/* ── Editor page ───────────────────────────────────────────────────────── */
+/** An item's add / edit screen on its own route (like the service editor):
+ *  back link, big title, the form as full-width white cards. Save and Cancel
+ *  sit in the header on desktop and in the thumb zone on a phone; Save submits
+ *  the form by id, so it works from outside it. Delete (edit only) is last. */
+export const EditorPage = ({ back, backLabel, title, sub, formId, saving, saveLabel, onCancel, onDelete, deleteLabel = 'Delete', children }) => {
+  const save = (cls) => (
+    <button type="submit" form={formId} disabled={saving} className={cls}>{saving ? 'Saving…' : saveLabel}</button>
+  );
+  return (
+    <div className="flex flex-col gap-6 pb-28 sm:pb-0">
+      <div className="flex flex-col gap-1">
+        <Link to={back} className={cn('-ml-2 inline-flex h-10 w-fit items-center gap-1 px-2 text-[14px] font-semibold text-muted hover:bg-blush hover:text-maroon', control)}>
+          <ChevronLeft className="h-5 w-5" strokeWidth={2.4} /> {backLabel}
+        </Link>
+        <PageHeading title={title} sub={sub} action={(
+          <span className="hidden items-center gap-2 sm:flex">
+            <button type="button" onClick={onCancel} className={quietBtn}>Cancel</button>
+            {save(cn(primaryBtn, 'min-w-[132px]'))}
+          </span>
+        )} />
+      </div>
+      <FieldStyle.Provider value="filled">
+        <div className="flex flex-col gap-6 [&_label]:text-ink">{children}</div>
+      </FieldStyle.Provider>
+      {onDelete && (
+        <button type="button" onClick={onDelete} className={cn(control, 'inline-flex h-11 w-fit items-center gap-1.5 px-3 text-[14px] font-semibold text-rose-700 hover:bg-rose-50')}>
+          <Trash2 className="h-4 w-4" strokeWidth={2.2} /> {deleteLabel}
+        </button>
+      )}
+      <PinnedAction>{save(pinnedBtn)}</PinnedAction>
+    </div>
+  );
+};
+
+/** A white form section inside an EditorPage. */
+export const EditorSection = ({ title, sub, children }) => (
+  <KeptCard title={title} sub={sub}><div className="space-y-4">{children}</div></KeptCard>
+);
+
+/* ── Photo cards ───────────────────────────────────────────────────────── */
+export const CardGrid = ({ label, children }) => (
+  <ul aria-label={label} className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">{children}</ul>
+);
+
+/** One item as a card: 16:9 cover (or its type on a tint), title, facts, price.
+ *  The body opens it; `footer` holds the switch. */
+export const PhotoCard = ({ image, icon: Icon, eyebrow, title, detail, price, note, onOpen, footer, children }) => {
+  const [broken, setBroken] = useState(false);
+  return (
+    <li className="flex min-w-0 flex-col overflow-hidden rounded-[24px] bg-white">
+      <button type="button" onClick={onOpen} className={cn('flex min-w-0 flex-1 flex-col text-left transition-colors hover:bg-pink-50', ring)}>
+        {image && !broken ? (
+          <img src={image} alt="" loading="lazy" onError={() => setBroken(true)} className="aspect-[16/9] w-full object-cover" />
+        ) : (
+          <span aria-hidden="true" className="grid aspect-[16/9] w-full place-items-center bg-blush"
+            style={{ backgroundImage: 'url(/brand/ds/03-patterns/mt-pattern-dots-on-blush.svg)', backgroundSize: '44px' }}>
+            <span className="grid h-16 w-16 place-items-center rounded-full bg-white text-maroon">
+              {Icon && <Icon className="h-7 w-7" strokeWidth={1.9} />}
+            </span>
+          </span>
+        )}
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5 px-5 pb-4 pt-4">
+          {eyebrow && <span className="text-[13px] font-semibold text-faint">{eyebrow}</span>}
+          <span className="truncate font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{title}</span>
+          {detail && <span className="truncate text-[13.5px] text-muted">{detail}</span>}
+          {price && <span className="mt-2 truncate font-display text-[22px] font-extrabold tabular-nums tracking-[-0.02em] text-maroon">{price}</span>}
+          {note && <span className="truncate text-[13px] text-faint">{note}</span>}
+          {children}
+        </span>
+      </button>
+      {footer && <footer className="flex items-center gap-2 border-t border-neutral-200 px-3 py-2">{footer}</footer>}
+    </li>
+  );
+};
+
+/** The on/off switch in a card footer. */
+export const CardSwitch = ({ checked, onChange, label, word, busy }) => (
+  <label className="flex min-h-11 items-center gap-2.5 px-2 text-[13.5px] font-semibold text-muted">
+    <Toggle checked={checked} disabled={busy} onChange={onChange} label={label} />
+    <span aria-hidden="true">{word}</span>
+  </label>
+);

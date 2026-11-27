@@ -1,31 +1,25 @@
 import { useState, useEffect } from "react";
-import {
-  getMyCourses, createCourse, updateCourse, deleteCourse,
-} from "../services/api";
-import { normalizePlan } from "../utils/themeUtils";
-import { useAuth } from "../context/AuthContext";
-import useAddNewRoute, { useEditParam } from "../hooks/useAddNewRoute";
-import { useFeature } from "../context/FeatureContext";
+import { useNavigate, Link } from "react-router-dom";
+import { getMyCourses, updateCourse, deleteCourse } from "../services/api";
 import BackButton from "../components/common/BackButton";
-import ThumbnailCropper from "../components/common/ThumbnailCropper";
 import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
-import { Link } from "react-router-dom";
-import { Plus, Video, Trash2, GripVertical } from "lucide-react";
+import { Plus, Video } from "lucide-react";
 import useFeatureFlags from "../hooks/useFeatureFlags";
+import { useCourseGate } from "./catalog/CourseEditor";
 import {
-  KeptPage, KeptHeader, KeptList, KeptRow, RowThumb, RowSwitch, KeptEditor, KeptEmpty,
+  KeptPage, KeptHeader, CardGrid, PhotoCard, CardSwitch, KeptEmpty,
   KeptError, KeptSkeleton, PinnedAction, pinnedBtn, primaryBtn,
 } from "./catalog/KeptKit";
 import toast from "react-hot-toast";
 import {
-  PageHeader, Card, Button, buttonClasses, FormField, Input, Textarea,
-  Badge, StatusBadge, EmptyState, ErrorState, ConfirmSheet, Fab, cn,
+  PageHeader, Card, Button, buttonClasses,
+  Badge, StatusBadge, EmptyState, ErrorState, ConfirmSheet, Fab,
 } from "../components/dashboard/ui";
 
-const emptyForm = {
-  title: "", description: "", price: "", thumbnail_url: "",
-  lessons: [{ title: "", video_url: "" }],
-};
+// Create and edit live on their own routes (catalog/CourseEditor):
+//   /dashboard/course/add-new   /dashboard/course/edit/:id
+const ADD = "/dashboard/course/add-new";
+const editOf = (c) => `/dashboard/course/edit/${c.id}`;
 
 // Blurred teaser behind the upgrade overlay for free-plan hosts.
 const SAMPLE = [
@@ -36,26 +30,15 @@ const SAMPLE = [
 ];
 
 const Courses = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loadError, setLoadError] = useState(false);
-  const [form, setForm] = useState(emptyForm);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [dirty, setDirty] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const [fetched, setFetched] = useState(false); // first load finished (Kept skeleton)
-  // Kept look (dashboard_v2). Same state and handlers; only the shell differs.
+  // Kept look (dashboard_v2). Same data and handlers; only the shell differs.
   const { flags } = useFeatureFlags();
   const kept = !!flags?.dashboard_v2;
-
-  // Admin kill-switch (fail-open) + Pro gate. Creation is a paid-plan feature;
-  // server enforces the same via planService.isFreeSlug.
-  const coursesOn = useFeature("course_purchase");
-  const isFreePlan = normalizePlan(user?.plan) === "free";
-  const canCreate = !isFreePlan && coursesOn;
+  const { coursesOn, canCreate } = useCourseGate();
 
   const fetchCourses = async () => {
     setLoadError(false);
@@ -71,65 +54,8 @@ const Courses = () => {
   };
   useEffect(() => { fetchCourses(); }, []);
 
-  const openCreate = () => { setForm(emptyForm); setEditingId(null); setShowForm(true); setDirty(false); };
-  // /dashboard/course/add-new opens the create form (rail +, Catalog "New").
-  useAddNewRoute({ open: openCreate, ready: canCreate, formOpen: showForm, listPath: "/dashboard/courses" });
-  const openEdit = (c) => {
-    setForm({
-      title: c.title, description: c.description || "",
-      price: c.price == null ? "" : String(c.price),
-      thumbnail_url: c.thumbnail_url || "",
-      lessons: (c.course_lessons || []).length
-        ? [...c.course_lessons].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((l) => ({ title: l.title, video_url: l.video_url }))
-        : [{ title: "", video_url: "" }],
-    });
-    setEditingId(c.id); setShowForm(true); setDirty(false);
-  };
-  // /dashboard/courses?edit=<id> (from the Catalog) opens that course.
-  useEditParam(courses, openEdit);
-  const doDiscard = () => { setShowForm(false); setEditingId(null); setDirty(false); setConfirmDiscard(false); };
-  const handleCancel = () => { if (dirty) { setConfirmDiscard(true); return; } doDiscard(); };
-  const handleChange = (f, v) => { setForm((s) => ({ ...s, [f]: v })); setDirty(true); };
-
-  const setLesson = (i, field, v) => {
-    setForm((s) => {
-      const lessons = s.lessons.map((l, idx) => (idx === i ? { ...l, [field]: v } : l));
-      return { ...s, lessons };
-    });
-    setDirty(true);
-  };
-  const addLesson = () => { setForm((s) => ({ ...s, lessons: [...s.lessons, { title: "", video_url: "" }] })); setDirty(true); };
-  const removeLesson = (i) => { setForm((s) => ({ ...s, lessons: s.lessons.filter((_, idx) => idx !== i) })); setDirty(true); };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const lessons = form.lessons.filter((l) => l.title.trim() && l.video_url.trim());
-    if (!lessons.length) { toast.error("Add at least one lesson with a title and video link"); return; }
-    setLoading(true);
-    try {
-      const payload = {
-        title: form.title,
-        description: form.description,
-        price: form.price === "" || form.price == null ? 0 : Number(form.price),
-        thumbnail_url: form.thumbnail_url,
-        lessons,
-      };
-      if (editingId) {
-        await updateCourse(editingId, payload);
-        toast.success("Course updated!");
-      } else {
-        await createCourse(payload);
-        toast.success("Course created!");
-      }
-      doDiscard();
-      fetchCourses();
-    } catch (err) {
-      const data = err.response?.data;
-      toast.error(data?.message || "Failed to save", data?.upgrade_required ? { duration: 5000 } : undefined);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const openCreate = () => navigate(ADD);
+  const openEdit = (c) => navigate(editOf(c));
 
   const doDelete = async () => {
     if (!confirmDelete) return;
@@ -209,48 +135,6 @@ const Courses = () => {
     );
   }
 
-  // Form fields, shared by the legacy card and the Kept editor.
-  const courseFields = (
-    <>
-          <FormField label="Title" htmlFor="crs-title" className="mb-0">
-            <Input id="crs-title" required placeholder="e.g. The Complete Reels Course" value={form.title} onChange={(e) => handleChange("title", e.target.value)} />
-          </FormField>
-          <FormField label="Description" htmlFor="crs-desc" className="mb-0">
-            <Textarea id="crs-desc" rows={3} placeholder="What will buyers learn?" value={form.description} onChange={(e) => handleChange("description", e.target.value)} />
-          </FormField>
-          <FormField label="Price (₹) — 0 for free" htmlFor="crs-price" className="mb-0">
-            <Input id="crs-price" type="number" min={0} placeholder="0" value={form.price} onChange={(e) => handleChange("price", e.target.value)} />
-          </FormField>
-          <FormField label={<>Cover image — 16:9 <span className="font-normal text-ink/40">(optional)</span></>} className="mb-0">
-            <ThumbnailCropper value={form.thumbnail_url} onChange={(url) => handleChange("thumbnail_url", url)} folder="products" />
-          </FormField>
-
-          <div>
-            <p className="mb-2 text-sm font-medium text-ink">Lessons</p>
-            <ul className="space-y-3">
-              {form.lessons.map((l, i) => (
-                <li key={i} className="rounded-lg border border-maroon/10 bg-blush/30 p-3">
-                  <div className="mb-2 flex items-center gap-2 text-xs text-muted">
-                    <GripVertical className="h-4 w-4" /> Lesson {i + 1}
-                    {form.lessons.length > 1 && (
-                      <button type="button" onClick={() => removeLesson(i)} className="ml-auto text-rose-700" aria-label={`Remove lesson ${i + 1}`}>
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                  <Input className="mb-2" placeholder="Lesson title" value={l.title} onChange={(e) => setLesson(i, "title", e.target.value)} />
-                  <Input type="url" placeholder="Video link (YouTube, Vimeo, Drive…)" value={l.video_url} onChange={(e) => setLesson(i, "video_url", e.target.value)} />
-                </li>
-              ))}
-            </ul>
-            <Button type="button" size="sm" variant="outline" className="mt-3" onClick={addLesson}>
-              <Plus className="h-4 w-4" />Add lesson
-            </Button>
-          </div>
-
-    </>
-  );
-
   if (kept) {
     const priceOf = (c) => (Number(c.price) ? `₹${Number(c.price).toLocaleString("en-IN")}` : "Free");
     // Guest total comes from the server (guest_total, pricingEngine). Never computed here.
@@ -269,39 +153,23 @@ const Courses = () => {
             sub="Teach once, sell many times. A course is a set of video lessons a guest buys and watches at their own pace."
             action={<button type="button" onClick={openCreate} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a course</button>} />
         ) : (
-          <KeptList label="Your courses">
+          // A basic card: cover, title, and only what we track (lessons, sales).
+          <CardGrid label="Your courses">
             {courses.map((c) => {
               const n = (c.course_lessons || []).length;
               return (
-                <KeptRow key={c.id} onOpen={() => openEdit(c)}
-                  thumb={<RowThumb image={c.thumbnail_url} icon={Video} />}
+                <PhotoCard key={c.id} onOpen={() => openEdit(c)} image={c.thumbnail_url} icon={Video}
                   title={c.title}
                   detail={[n ? `${n} ${n === 1 ? "lesson" : "lessons"}` : "No lessons yet", c.purchase_count ? `${Number(c.purchase_count).toLocaleString("en-IN")} sold` : null].filter(Boolean).join(" · ")}
                   price={priceOf(c)} note={guestOf(c)}
-                  trailing={<RowSwitch checked={!!c.is_active} onChange={() => handleToggle(c)} word={c.is_active ? "On your page" : "Hidden"}
+                  footer={<CardSwitch checked={!!c.is_active} onChange={() => handleToggle(c)} word={c.is_active ? "On your page" : "Hidden"}
                     label={`${c.is_active ? "Hide" : "Show"} ${c.title} on your page`} />} />
               );
             })}
-          </KeptList>
+          </CardGrid>
         )}
 
-        <KeptEditor open={showForm} onClose={handleCancel} formId="course-form" saving={loading}
-          title={editingId ? "Edit course" : "New course"}
-          subtitle={editingId ? form.title || undefined : "Guests can buy it as soon as you save."}
-          saveLabel={editingId ? "Save changes" : "Create course"}
-          onDelete={editingId ? () => setConfirmDelete(courses.find((x) => x.id === editingId) || { id: editingId, title: form.title }) : undefined}>
-          <form id="course-form" onSubmit={handleSubmit} className="space-y-4">
-            {courseFields}
-          </form>
-        </KeptEditor>
-
-        <ConfirmSheet open={!!confirmDelete} title="Delete course?"
-          message={confirmDelete ? `"${confirmDelete.title}" and its lessons will be permanently deleted. This cannot be undone.` : ""}
-          confirmLabel="Delete" danger onConfirm={async () => { await doDelete(); doDiscard(); }} onClose={() => setConfirmDelete(null)} />
-        <ConfirmSheet open={confirmDiscard} title="Discard changes?" message="Your unsaved changes will be lost."
-          confirmLabel="Discard" danger onConfirm={doDiscard} onClose={() => setConfirmDiscard(false)} />
-
-        <PinnedAction show={!showForm && fetched && !(loadError && courses.length === 0)}>
+        <PinnedAction show={fetched && !(loadError && courses.length === 0)}>
           <button type="button" onClick={openCreate} className={pinnedBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a course</button>
         </PinnedAction>
       </KeptPage>
@@ -310,31 +178,16 @@ const Courses = () => {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <BackButton hasUnsavedChanges={dirty} />
+      <BackButton hasUnsavedChanges={false} />
       <PageHeader
         title="Video Courses"
         subtitle="Sell structured video courses — buy once, watch anytime."
-        actions={!showForm ? (
-          <Button className="hidden sm:inline-flex" onClick={openCreate}><Plus className="h-4 w-4" />Add Course</Button>
-        ) : null}
+        actions={<Button className="hidden sm:inline-flex" onClick={openCreate}><Plus className="h-4 w-4" />Add Course</Button>}
       />
 
-      {showForm && (
-        <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">
-          <h2 className="font-semibold text-ink">{editingId ? "Edit Course" : "New Course"}</h2>
-
-          {courseFields}
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button type="submit" disabled={loading}>{loading ? "Saving..." : editingId ? "Save Changes" : "Create Course"}</Button>
-            <Button type="button" variant="secondary" onClick={handleCancel}>Cancel</Button>
-          </div>
-        </Card>
-      )}
-
-      {loadError && courses.length === 0 && !showForm ? (
+      {loadError && courses.length === 0 ? (
         <ErrorState message="Couldn’t load your courses." onRetry={fetchCourses} />
-      ) : courses.length === 0 && !showForm ? (
+      ) : courses.length === 0 ? (
         <EmptyState icon={Video} title="No courses yet" description='Click "Add Course" to create your first video course.' />
       ) : (
         <ul className="space-y-3">
@@ -368,9 +221,8 @@ const Courses = () => {
       )}
 
       <ConfirmSheet open={!!confirmDelete} title="Delete course?" message={confirmDelete ? `"${confirmDelete.title}" and its lessons will be permanently deleted. This cannot be undone.` : ""} confirmLabel="Delete" danger onConfirm={doDelete} onClose={() => setConfirmDelete(null)} />
-      <ConfirmSheet open={confirmDiscard} title="Discard changes?" message="Your unsaved changes will be lost." confirmLabel="Discard" danger onConfirm={doDiscard} onClose={() => setConfirmDiscard(false)} />
 
-      {canCreate && !showForm && <Fab onClick={openCreate} icon={Plus} label="New course" iconOnly className="sm:hidden" />}
+      {canCreate && <Fab onClick={openCreate} icon={Plus} label="New course" iconOnly className="sm:hidden" />}
     </div>
   );
 };
