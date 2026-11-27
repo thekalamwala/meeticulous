@@ -287,6 +287,9 @@ export const ProfileMenu = ({
   identity = false,
   menuPlacement = 'down',
   menuAlign = 'right',
+  // Guest space (/user/*): same menu, guest rows — Profile and Help only. No plan,
+  // verification, public page or account manager (a guest has none of those).
+  guest = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -311,7 +314,7 @@ export const ProfileMenu = ({
   // a call on every page load). Soft-fails to null → falls back to generic support.
   const mgrFetched = useRef(false);
   useEffect(() => {
-    if (!open || mgrFetched.current) return;
+    if (!open || guest || mgrFetched.current) return;
     mgrFetched.current = true;
     getMyAccountManager().then((d) => setAcctMgr(d?.account_manager || null));
   }, [open]);
@@ -367,8 +370,8 @@ export const ProfileMenu = ({
         <Avatar size="h-9 w-9 text-sm" />
         {identity && (
           <span className="min-w-0 flex-1 text-left">
-            <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || 'Host'}</span>
-            <span className="block truncate text-[12px] text-faint">{user?.username ? `@${user.username}` : (user?.email || '')}</span>
+            <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || (guest ? 'You' : 'Host')}</span>
+            <span className="block truncate text-[12px] text-faint">{!guest && user?.username ? `@${user.username}` : (user?.email || '')}</span>
           </span>
         )}
         <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />
@@ -387,8 +390,8 @@ export const ProfileMenu = ({
               own row below. */}
           <div className="relative flex flex-col items-center">
             <Avatar size="h-16 w-16 text-lg ring-4 ring-white" />
-            <p className="mb-0 mt-2.5 max-w-full truncate text-[15px] font-bold text-ink">{user?.name || 'Host'}</p>
-            <p className="mb-0 mt-0.5 max-w-full truncate text-[13px] font-medium text-maroon/70">{user?.username ? `@${user.username}` : category}</p>
+            <p className="mb-0 mt-2.5 max-w-full truncate text-[15px] font-bold text-ink">{user?.name || (guest ? 'You' : 'Host')}</p>
+            <p className="mb-0 mt-0.5 max-w-full truncate text-[13px] font-medium text-maroon/70">{guest ? (user?.email || user?.phone || '') : (user?.username ? `@${user.username}` : category)}</p>
           </div>
         </div>
 
@@ -404,6 +407,18 @@ export const ProfileMenu = ({
           </div>
         )}
 
+        {guest ? (
+          <div className="border-t border-neutral-200/50 py-1.5">
+            <Link to="/user/profile" onClick={close} className={MENU_ROW}>
+              <span className={ROW_TILE}><User className="h-4 w-4" strokeWidth={1.8} /></span>
+              <span className="flex-1">Profile</span>
+            </Link>
+            <Link to="/user/chat" onClick={close} className={MENU_ROW}>
+              <span className={ROW_TILE}><LifeBuoy className="h-4 w-4" strokeWidth={1.8} /></span>
+              <span className="flex-1">Help</span>
+            </Link>
+          </div>
+        ) : (<>
         {/* Account */}
         <div className="border-t border-neutral-200/50 py-1.5">
           {/* Kept: straight to the Account pane (on phones /dashboard/profile is the
@@ -478,6 +493,7 @@ export const ProfileMenu = ({
             </a>
           )}
         </div>
+        </>)}
 
         {/* Logout */}
         <div className="border-t border-neutral-200/50 py-1.5">

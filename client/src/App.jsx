@@ -52,9 +52,6 @@ const OpeningTakeover = lazy(() => import('./components/opening/OpeningTakeover'
 // Every page component is lazy — only downloaded when the route is visited.
 
 // Public pages
-// Styling exploration (explore/console-restyle): a no-login, clickable prototype
-// of the restyled guest console at /preview/guest. Public + noindex, sample data.
-const GuestConsolePreview = lazy(() => import('./pages/GuestConsolePreview'));
 const Home           = lazy(() => import('./pages/Home'));
 // Pre-compaction homepage snapshot — parked at /_attic (hidden, noindex) so the
 // sections cut from the live homepage stay reachable for future reuse.
@@ -632,12 +629,10 @@ function App() {
     location.pathname.startsWith('/dashboard') ||
     // Host Lab prototype ships its own rail + topbar, same as the real console.
     location.pathname.startsWith('/host-lab') ||
-    // Guest console (/user/*) ships its own sidebar shell + topbar (GuestLayout),
+    // Guest console (/user/*) ships its own shell + topbar (GuestLayout → Kept shell),
     // so the global navbar must not also render — otherwise two headers stack and
     // the guest sees two identity blocks (account name vs booking name).
     location.pathname.startsWith('/user') ||
-    // The restyle prototype ships its own guest shell — same reasoning as /user.
-    location.pathname.startsWith('/preview/guest') ||
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/vendor-register') ||
@@ -764,7 +759,6 @@ function App() {
           <Route path="/glossary/:slug" element={<GlossaryTerm />} />
           <Route path="/press" element={<Press />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/preview/guest/*" element={<GuestConsolePreview />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           {/* Customers never register — accounts are created automatically
               during booking (phone OTP). Old signup URL redirects home. */}
@@ -1115,9 +1109,9 @@ function App() {
           <Route path="/:profileSlug/:serviceSlug" element={<ServiceDetail />} />
           <Route path="/:profileSlug" element={<HostProfile />} />
 
-          {/* Guest (customer) space — /user/* . A host hitting these is bounced to
-              /dashboard by GuestRoute; a guest hitting /dashboard/* is bounced here.
-              GuestLayout wraps them in the single-level guest console shell. */}
+          {/* Guest (customer) space — /user/* . GuestRoute admits any signed-in user
+              (a dual-login host can visit their guest space). GuestLayout wraps them
+              in the shared Kept shell with the guest nav model. */}
           <Route element={<GuestRoute><GuestLayout /></GuestRoute>}>
             <Route path="/user" element={<GuestOverview />} />
             <Route path="/user/my-bookings" element={<CustomerBookings />} />
