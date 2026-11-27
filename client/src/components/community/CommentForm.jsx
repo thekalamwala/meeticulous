@@ -115,12 +115,13 @@ export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, 
         )}
         <div className="mt-composer-inline__box">
           <label className="sr-only" htmlFor="reply-body">Your reply</label>
+          {/* One word everywhere: the box, the button and the count all say "reply". */}
           <textarea
             ref={box}
             id="reply-body"
             rows={open ? 3 : 1}
             value={body}
-            placeholder={parent ? 'Write a reply…' : 'Add a comment…'}
+            placeholder="Write a reply…"
             aria-describedby={err ? 'reply-err' : undefined}
             onFocus={() => setOpen(true)}
             {...bodyProps}

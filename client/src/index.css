@@ -460,6 +460,23 @@ select:focus {
   box-shadow: none;
 }
 
+/* Same rule for the community's inline reply box: its wrapper owns the frame
+   (focus-within, brand.css). Without this the app-wide textarea ring stacked on the
+   box's own border — a pink ring wider than the box, with Reply straddling its edge. */
+.mt-composer-inline textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Phones: a fixed bottom tab bar steps aside while someone types. With the keyboard
+   up it otherwise sits on top of it and eats ~150px of a ~500px writing area.
+   Pure CSS — no keyboard detection is reliable across browsers, but focus is. */
+@media (pointer: coarse) {
+  html:has(textarea:focus, input:focus:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"]), [contenteditable="true"]:focus) .mt-hide-while-typing {
+    display: none;
+  }
+}
+
 /* MeetDropdown's search box is a bare line inside the open list: the row's one
    underline is its frame, so focus turns that line brand-coloured instead of
    drawing a ring box around the input (founder, 2026-11-25). */

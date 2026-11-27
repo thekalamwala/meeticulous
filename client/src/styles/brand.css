@@ -184,7 +184,10 @@
 .mt-btn:hover{--_bg:var(--action-primary-hover)}
 .mt-btn:active{--_bg:var(--action-primary-press);transform:translateY(1px)}
 .mt-btn:focus-visible{outline:none;box-shadow:var(--focus-ring)}
-.mt-btn[disabled],.mt-btn[aria-disabled=true]{opacity:.45;pointer-events:none}
+.mt-btn[disabled],.mt-btn[aria-disabled=true]{--_bg:var(--bg-sunken);--_fg:var(--fg-disabled);--_bd:transparent;cursor:default;pointer-events:none}
+/* Disabled = neutral, not a faded brand fill: maroon at 45% read as a soft-pink button that was still live. Outline/ghost keep their shape. */
+.mt-btn--secondary[disabled],.mt-btn--secondary[aria-disabled=true]{--_bg:transparent;--_bd:var(--border-1)}
+.mt-btn--ghost[disabled],.mt-btn--ghost[aria-disabled=true]{--_bg:transparent}
 .mt-btn--s{height:var(--control-s);padding:0 var(--space-5);font-size:var(--text-body-s)}
 .mt-btn--l{height:var(--control-l);padding:0 var(--space-8);font-size:var(--text-body-l)}
 .mt-btn--block{display:flex;width:100%}
@@ -400,6 +403,7 @@ button.mt-slot:focus-visible{box-shadow:var(--focus-ring)}
 .mt-replybox{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);border-radius:var(--radius-xl);background:var(--bg-surface)}
 .mt-more{position:relative;display:inline-flex}
 .mt-more .mt-menu{right:0;top:calc(100% + var(--space-2));z-index:var(--z-dropdown)}
+.mt-more .mt-menu--up{top:auto;bottom:calc(100% + var(--space-2))}
 .mt-fab{position:fixed;left:var(--space-5);bottom:var(--space-5);z-index:var(--z-sticky);box-shadow:var(--shadow-md)}
 @media (max-width:480px){.mt-reasons{grid-template-columns:1fr}}
 
@@ -423,6 +427,7 @@ a.mt-post__chip:hover{border-color:var(--border-brand);color:var(--fg-brand)}
 /* The action row is the card's structural beat: equal cells, hairline above and below,
    every cell icon + label + count so the row reads as data rather than decoration. */
 .mt-actionrow{display:flex;align-items:center;padding:var(--space-1) 0;border-top:var(--stroke-hairline) solid var(--border-1);border-bottom:var(--stroke-hairline) solid var(--border-1)}
+.mt-actionrow--open{border-bottom:0}
 .mt-actionrow__cell{display:flex;flex:1 1 0;min-width:0}
 /* .mt-btn paints itself from the --_fg custom property, so a plain `color` here loses
    to the variant that set it. Set the variable the button already reads. */
@@ -443,7 +448,7 @@ a.mt-post__chip:hover{border-color:var(--border-brand);color:var(--fg-brand)}
 /* Composer: a single pill at rest, which grows its tools only once you mean to write. */
 .mt-composer-inline{display:flex;gap:var(--space-4);align-items:flex-start}
 .mt-composer-inline__box{position:relative;flex:1;min-width:0;border:var(--stroke-hairline) solid var(--border-1);border-radius:var(--radius-pill);background:var(--bg-surface);transition:border-radius var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
-.mt-composer-inline__box:focus-within{border-color:var(--border-2)}
+.mt-composer-inline__box:focus-within{border-color:var(--border-brand)}
 .mt-composer-inline--open .mt-composer-inline__box{border-radius:var(--radius-xl)}
 /* The base sheet gives every textarea a 112px min-height, which would make the resting
    composer a block instead of a pill. Collapsed keeps a 44px touch target; open grows. */
@@ -466,6 +471,10 @@ a.mt-post__chip:hover{border-color:var(--border-brand);color:var(--fg-brand)}
 .mt-identity__name{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:15px;font-weight:var(--weight-semibold);line-height:1.35;color:var(--fg-1);text-decoration:none}
 a.mt-identity__name:hover{color:var(--fg-brand);text-decoration:underline}
 .mt-identity__seal{display:inline-flex;align-items:center;flex-shrink:0}
+/* With collaborators the row wraps instead of truncating: it must never cut the author to keep a co-author whole. */
+.mt-identity--wrap{flex-wrap:wrap;row-gap:var(--space-1)}
+.mt-identity--wrap .mt-identity__name{white-space:normal;overflow:visible}
+.mt-identity__collab{font-size:15px;line-height:1.35;color:var(--fg-2)}
 .mt-identity__handle{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:var(--text-caption);font-weight:var(--weight-medium);line-height:1.35;color:var(--fg-2)}
 .mt-identity__time{flex-shrink:0;white-space:nowrap;font-size:var(--text-caption);font-weight:var(--weight-medium);line-height:1.35;color:var(--fg-2)}
 .mt-identity__time::before{content:"·";margin-right:var(--space-3);color:var(--fg-3)}

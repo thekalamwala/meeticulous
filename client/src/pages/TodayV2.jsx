@@ -215,7 +215,9 @@ export const TodayBand = ({ bookings, isFree, proPlan, username, views, onOpen, 
   return <GrowBand username={username} views={views} onCopy={onCopy} />;
 };
 
-const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[13.5px] font-semibold text-maroon transition hover:bg-pink-100';
+// -my-2: the app-wide button floor makes this 40px tall; pulled up so its text sits on
+// the panel title's line instead of hanging below it (tap target unchanged).
+const linkBtn = '-my-2 inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[13.5px] font-semibold text-maroon transition hover:bg-pink-100';
 
 /* ── ScrollStrip — a swipeable row with two modes:
  *  · 'center' (carousel): the active card sits centred and fully visible; its
@@ -457,9 +459,11 @@ const RecentBookings = ({ bookings, onOpen, go }) => {
               <button type="button" onClick={() => onOpen(b.id)}
                 className="-mx-2 flex w-[calc(100%+1rem)] items-center gap-3 rounded-[12px] px-2 py-2.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
                 <Avatar name={b.guest_name} />
+                {/* Service on its own line: joined to the guest's name, it was the part the
+                    phone truncated, and it's the part that says what the booking is. */}
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14.5px] font-semibold text-ink">{b.guest_name || 'Guest'} · {b.services?.title || 'Booking'}</span>
-                  <span className="block text-[13px] text-faint">{relDay(b.scheduled_at)} · {fmtTime(b.scheduled_at)}</span>
+                  <span className="block truncate text-[14.5px] font-semibold text-ink">{b.services?.title || 'Booking'}</span>
+                  <span className="block truncate text-[13px] text-faint">{b.guest_name || 'Guest'} · {relDay(b.scheduled_at)} · {fmtTime(b.scheduled_at)}</span>
                 </span>
                 <StatusPill status={lower(b.status)} />
               </button>
@@ -539,11 +543,14 @@ const TodayV2 = () => {
   // "Waiting for you ₹1,424", not a loud ₹0 (Kept audit).
   const ready = Number(balance?.available) || 0;
   const held = (balance?.clearing || 0) + (balance?.pendingCompletion || 0);
+  // One number rule for every tile: exact rupees, shortened only from ₹1L up. Mixing
+  // "₹1,424" and "₹7.5k" in the same grid read as two different units.
+  const money = (v) => inr(v, { compact: Math.abs(Number(v) || 0) >= 1e5 });
   const moneyTile = !balance
     ? { label: 'Ready to withdraw', value: null, note: 'Balance unavailable right now' }
     : ready > 0 || held === 0
-      ? { label: 'Ready to withdraw', value: inr(ready), hint: held ? `${inr(held)} clearing or held` : 'Paid out as bookings clear' }
-      : { label: 'Waiting for you', value: inr(held), hint: balance.payoutsBlocked ? '₹0 ready right now' : '₹0 ready · clearing now' };
+      ? { label: 'Ready to withdraw', value: money(ready), hint: held ? `${inr(held)} clearing or held` : 'Paid out as bookings clear' }
+      : { label: 'Waiting for you', value: money(held), hint: balance.payoutsBlocked ? '₹0 ready right now' : '₹0 ready · clearing now' };
   // The "verify" ask lives in the setup checklist and the bell, not here (Kept: one fact, one place).
   const pageTo = user?.username ? `/${user.username}` : PROFILE_TO;
 
@@ -553,7 +560,7 @@ const TodayV2 = () => {
   const art = (who) => <img src={`/about/mascot-${who}.png`} alt="" className="h-20 w-20 object-contain lg:h-24 lg:w-24" />;
   const metrics = [
     <Tile key="money" {...moneyTile} art={art('orange')} onClick={() => go('/dashboard/payments/payouts')} />,
-    <Tile key="month" label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month"
+    <Tile key="month" label="This month" value={money(thisMonth)} delta={delta ?? undefined} deltaLabel="vs last month"
       hint="Paid bookings" art={art('purple')} onClick={() => go('/dashboard/intelligence/revenue')} />,
     <Tile key="upcoming" label="Upcoming" value={upcomingList.length} hint={next ? `Next: ${fmtDayFull(next.scheduled_at)}` : 'Nothing scheduled'}
       art={art('blue')} onClick={() => go('/dashboard/bookings')} />,
@@ -592,7 +599,9 @@ const TodayV2 = () => {
 
       <section aria-label="Your week and numbers" className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} go={go} />}
-        <div className="grid grid-cols-2 gap-3 lg:h-full lg:grid-rows-2 lg:gap-4">
+        {/* One tile per row on phones: two-up at 375px left each tile ~170px, so the
+            mascot sat on the figure and every label truncated to "Waitin…". */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:h-full lg:grid-rows-2 lg:gap-4">
           {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
         </div>
       </section>
