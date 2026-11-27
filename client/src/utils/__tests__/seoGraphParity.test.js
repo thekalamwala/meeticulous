@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import * as seo from '../seo';
-import { catalogFaqs } from '../profileFaqs';
+import { catalogFaqs, catalogSections, updatedLabel } from '../profileFaqs';
 import fx from './__fixtures__/seoGraphParity.json';
 
 const {
@@ -43,5 +43,11 @@ describe('meta templates + catalog FAQ — client matches the committed fixture'
   });
   test.each(fx.faqCases.map((c, i) => [i, c]))('faq case %i', (_i, c) => {
     expect(catalogFaqs(c.input)).toEqual(c.expected);
+  });
+  test.each(fx.sectionCases.map((c, i) => [i, c]))('section case %i', (_i, c) => {
+    expect(catalogSections(c.input)).toEqual(c.expected);
+  });
+  test('updatedLabel cases', () => {
+    for (const c of fx.updatedCases) expect(updatedLabel(c.ts)).toBe(c.expected);
   });
 });

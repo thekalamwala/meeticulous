@@ -34,6 +34,30 @@ const rupees = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 export const ProfileTabAnswer = ({ summary, C }) => (
   summary ? <p className="mb-5 text-sm leading-relaxed" style={{ color: C.secondary }}>{summary}</p> : null
 );
+// Headed, self-contained sections from utils/profileFaqs catalogSections (real
+// data only; the bot shell renders the same blocks): h2 + text + list + steps.
+export const CatalogSections = ({ sections, C }) => (sections || []).map((s) => (
+  <section key={s.key} className="mt-10" aria-labelledby={`sec-${s.key}`}>
+    <h2 id={`sec-${s.key}`} className="font-display font-bold text-xl mb-3" style={{ color: C.text }}>{s.heading}</h2>
+    {(s.paras || []).map((t, i) => <p key={i} className="text-sm leading-relaxed mb-2" style={{ color: C.secondary }}>{t}</p>)}
+    {s.list?.length > 0 && (
+      <ul className="list-disc pl-5 space-y-1 text-sm leading-relaxed" style={{ color: C.secondary }}>
+        {s.list.map((t, i) => <li key={i}>{t}</li>)}
+      </ul>
+    )}
+    {s.steps?.length > 0 && (
+      <ol className="list-decimal pl-5 space-y-1 text-sm leading-relaxed" style={{ color: C.secondary }}>
+        {s.steps.map((t, i) => <li key={i}>{t}</li>)}
+      </ol>
+    )}
+  </section>
+));
+
+// "Updated 27 Nov 2026" — visible freshness, the same date the JSON-LD carries.
+export const UpdatedNote = ({ ts, label, C }) => (
+  label ? <p className="-mt-3 mb-5 text-xs" style={{ color: C.muted }}><time dateTime={ts}>{label}</time></p> : null
+);
+
 export const ProfileTabFaq = ({ faqs, C }) => (
   faqs && faqs.length ? (
     <div className="mt-10">
@@ -58,13 +82,16 @@ export const CourseCard = ({ course: c, profileSlug, C }) => {
           : <span className="absolute inset-0 flex items-center justify-center" style={{ color: ACCENT }}><PlayCircle className="w-10 h-10" strokeWidth={1.6} /></span>}
       </Link>
       <div className="flex flex-col gap-1.5 p-4 flex-1 min-w-0">
-        <Link to={url} className="font-display font-bold leading-snug line-clamp-2 hover:opacity-60 transition-opacity" style={{ color: C.text, fontSize: 15 }}>
-          {c.title}
-        </Link>
+        <h3 className="m-0 font-display font-bold leading-snug line-clamp-2" style={{ fontSize: 15 }}>
+          <Link to={url} className="hover:opacity-60 transition-opacity" style={{ color: C.text }}>{c.title}</Link>
+        </h3>
         <div className="flex items-center gap-1.5 text-xs" style={{ color: C.muted }}>
           <PlayCircle className="w-3.5 h-3.5" strokeWidth={2} />
           {lessons} {lessons === 1 ? 'lesson' : 'lessons'}
         </div>
+        {c.lessons?.length > 0 && (
+          <p className="text-xs leading-relaxed line-clamp-2" style={{ color: C.secondary }}>Lessons: {c.lessons.join(', ')}</p>
+        )}
         {c.description && <p className="hidden sm:block text-sm leading-relaxed line-clamp-2" style={{ color: C.secondary }}>{c.description}</p>}
         <div className="flex items-center justify-between mt-auto pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
           <div className="font-display font-extrabold leading-none" style={{ color: C.text, fontSize: 20 }}>{isFree ? 'Free' : rupees(c.price)}</div>

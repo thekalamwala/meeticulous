@@ -25,6 +25,13 @@ describe('FaqAccordion', () => {
     expect(buttons[0]).toHaveAttribute('aria-expanded', 'false');
   });
 
+  test('each question is a real heading (h3 by default) wrapping its toggle', () => {
+    render(<FaqAccordion faqs={faqs} />);
+    const h = screen.getByRole('heading', { level: 3, name: 'How do I book?' });
+    expect(h.querySelector('button')).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'How do I book?' })).toBeTruthy();
+  });
+
   test('renders nothing when no faqs', () => {
     const { container } = render(<FaqAccordion faqs={[]} />);
     expect(container).toBeEmptyDOMElement();

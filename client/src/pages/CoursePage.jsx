@@ -11,10 +11,11 @@ import { Play, Lock, CheckCircle } from "lucide-react";
 import Seo from "../components/common/Seo";
 import FaqAccordion from "../components/FaqAccordion";
 import { SITE_URL, courseMeta, courseGraphJsonLd, coursePath, catalogRobots } from "../utils/seo";
-import { catalogFaqs } from "../utils/profileFaqs";
+import { catalogFaqs, catalogSections, updatedLabel } from "../utils/profileFaqs";
+import { CatalogSections } from "../components/profile/ProfileTabs";
 
 // FaqAccordion chrome in brand tokens (ink text, cream card, neutral border).
-const FAQ_COLORS = { text: "var(--fg-1)", secondary: "var(--fg-2)", card: "var(--bg-page)", border: "var(--border-1)" };
+const FAQ_COLORS = { text: "var(--fg-1)", secondary: "var(--fg-2)", card: "var(--bg-page)", border: "var(--border-1)", muted: "var(--fg-3)" };
 
 // Only http(s) links are safe to embed / open.
 const safeUrl = (u) => (/^https?:\/\//i.test(String(u || "")) ? u : null);
@@ -108,6 +109,8 @@ const CoursePage = () => {
   const owned = !!content;
   const meta = courseMeta({ course, host: host || {} });
   const faqs = catalogFaqs({ kind: "course", host: host || {}, item: course });
+  const sections = catalogSections({ kind: "course", host: host || {}, item: course });
+  const updated = updatedLabel(course.updated_at);
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -122,7 +125,8 @@ const CoursePage = () => {
       <div className="app-container max-w-4xl py-8">
         <Link to={`/${username}`} className="mb-6 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">← Back to {host?.name}'s profile</Link>
         {/* Answer-first summary (AEO/GEO) — the data-built meta description. */}
-        <p className="-mt-2 mb-5 text-sm leading-relaxed text-ink/70">{meta.description}</p>
+        <p className="-mt-2 mb-1 text-sm leading-relaxed text-ink/70">{meta.description}</p>
+        {updated && <p className="mb-5 text-xs text-ink/50"><time dateTime={course.updated_at}>{updated}</time></p>}
 
         <div className="grid gap-6 md:grid-cols-[1fr_320px]">
           {/* Main: player (owned) or cover + description */}
@@ -191,6 +195,11 @@ const CoursePage = () => {
               </ul>
             </div>
           </div>
+        </div>
+
+        {/* What you'll learn · Who made it · How access works (real data, same as the bot shell). */}
+        <div className="fb-card mt-6 p-5 sm:p-6 [&>section:first-child]:mt-0">
+          <CatalogSections sections={sections} C={FAQ_COLORS} />
         </div>
 
         {/* Visible FAQ — the same Q&A the FAQPage JSON-LD carries. */}

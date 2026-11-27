@@ -113,3 +113,158 @@ export function catalogFaqs({ kind, host = {}, items = [], item = null, program 
   }
   return [];
 }
+
+// ── Catalog + profile sections (answer-first, self-contained, real data only) ──
+// Clearly headed blocks a reader or an answer engine can lift on their own: what
+// the item is, who made it, how you get it (the real purchase flow), and on the
+// profile an "About" block of real stats. A section is omitted when its data is
+// missing; nothing is invented. MIRROR: catalogSections + updatedLabel in
+// server/services/seo/pageContentModel.js (the bot shell renders the same blocks);
+// the parity fixture asserts both.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// "Updated 27 Nov 2026" from an ISO timestamp (UTC date, so build box and browser agree).
+export function updatedLabel(ts) {
+  const d = new Date(ts || '');
+  if (!ts || Number.isNaN(d.getTime())) return '';
+  return `Updated ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+// Newest updated_at among rows (ISO string) or ''.
+export function latestUpdate(rows = []) {
+  return (rows || []).map((r) => r && r.updated_at).filter(Boolean).sort().pop() || '';
+}
+
+const an = (w) => (/^[aeiou]/i.test(String(w || '')) ? 'an' : 'a');
+const TYPE_WORD = { pdf: 'PDF', template: 'template', ebook: 'eBook', prompt_pack: 'prompt pack', resource: 'resource', other: 'digital product' };
+const DOWNLOAD_STEPS = (paid) => [
+  'Enter your name, email and WhatsApp number.',
+  'Verify with the one-time code sent to your WhatsApp.',
+  ...(paid ? ['Pay securely with UPI, card or wallet through Razorpay.'] : []),
+  'Download straight away: the secure link shows on screen and arrives by email.',
+  'Each link works for 24 hours and up to 3 downloads, and you can request a fresh one from the product page.',
+];
+const COURSE_STEPS = (paid) => [
+  'Log in to your Meeticulous account.',
+  paid ? 'Buy the course once, paying securely through Razorpay.' : 'Unlock the course for free.',
+  'Every lesson unlocks on the course page straight away.',
+  'The course stays in your account under My courses, so you can watch it anytime.',
+];
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const rupee = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
+
+// Who made it: only when there is something beyond a bare name to say.
+function creatorSection(host = {}) {
+  const name = host.name || 'The host';
+  const prof = String(host.profession || '').trim();
+  if (!prof && !host.tagline) return null;
+  return {
+    key: 'creator',
+    heading: 'Who made it',
+    paras: [
+      `${name}${prof ? ` is ${an(prof)} ${prof}` : ''}${host.location ? ` based in ${host.location}` : ''}, selling on Meeticulous.`,
+      ...(host.tagline ? [String(host.tagline).trim()] : []),
+    ],
+  };
+}
+
+// kind: 'profile' | 'products' | 'courses' | 'membership' | 'product' | 'course'
+// Section shape: { key, heading, paras?: string[], list?: string[], steps?: string[] }
+export function catalogSections({ kind, host = {}, items = [], item = null, services = [], rating = null } = {}) {
+  const name = host.name || 'this host';
+  const list = (items || []).filter((i) => i && (i.title || i.name));
+  const paidPrices = list.map((i) => Number(i.price)).filter((p) => p > 0);
+
+  if (kind === 'profile') {
+    const facts = [];
+    const svc = (services || []).filter((s) => s && s.title);
+    if (svc.length) facts.push(plural(svc.length, 'bookable service'));
+    if (Number(host.booking_count) > 0) facts.push(`${plural(Number(host.booking_count), 'booking')} on Meeticulous`);
+    if (rating && rating.count > 0 && rating.avg > 0) facts.push(`Rated ${Number(rating.avg).toFixed(1)} out of 5 from ${plural(rating.count, 'review')}`);
+    if (Number(host.product_count) > 0) facts.push(plural(Number(host.product_count), 'digital product'));
+    if (Number(host.course_count) > 0) facts.push(plural(Number(host.course_count), 'online course'));
+    const since = host.created_at && !Number.isNaN(new Date(host.created_at).getTime()) ? new Date(host.created_at).getUTCFullYear() : null;
+    if (since) facts.push(`On Meeticulous since ${since}`);
+    if (!facts.length) return [];
+    const prof = String(host.profession || '').trim();
+    return [{
+      key: 'about',
+      heading: `About ${name}`,
+      paras: [`${name}${prof ? ` is ${an(prof)} ${prof}` : ' takes bookings on Meeticulous'}${host.location ? ` based in ${host.location}` : ''}.`],
+      list: facts.map((f) => f.charAt(0).toUpperCase() + f.slice(1)),
+    }];
+  }
+
+  if (kind === 'products' || kind === 'courses') {
+    if (!list.length) return [];
+    const products = kind === 'products';
+    const from = paidPrices.length ? `, from ${rupee(Math.min(...paidPrices))}` : '';
+    return [
+      {
+        key: 'intro',
+        heading: products ? `About ${name}'s digital products` : `About ${name}'s online courses`,
+        paras: [
+          `${name} sells ${plural(list.length, products ? 'digital product' : 'online course')} on Meeticulous${from}.`,
+          products
+            ? 'Every product is a download: pay once and the link is yours, with nothing to subscribe to.'
+            : 'Every course is a set of video lessons you buy once and keep, with nothing to subscribe to.',
+        ],
+      },
+      products
+        ? { key: 'access', heading: 'How buying works', steps: DOWNLOAD_STEPS(paidPrices.length > 0) }
+        : { key: 'access', heading: 'How access works', steps: COURSE_STEPS(paidPrices.length > 0) },
+    ];
+  }
+
+  if (kind === 'membership') {
+    if (!list.length) return [];
+    const anyPaid = list.some((t) => t.type !== 'free' && Number(t.price_inr) > 0);
+    const anyFree = list.some((t) => t.type === 'free' || !(Number(t.price_inr) > 0));
+    return [{
+      key: 'how',
+      heading: 'How membership works',
+      steps: [
+        'Log in and pick a tier.',
+        ...(anyFree ? ['Free tiers open instantly.'] : []),
+        ...(anyPaid ? ['Paid tiers are billed monthly through Razorpay and open as soon as the payment goes through.'] : []),
+        `Member posts from ${name} unlock on this page as soon as you join.`,
+        ...(anyPaid ? [
+          'Move up a tier any time: you pay only the difference for the days left on your current one.',
+          'Cancel anytime from My memberships; your access stays on until the end of the month you have paid for.',
+        ] : []),
+      ],
+    }];
+  }
+
+  if (kind === 'product' && item) {
+    const t = item.title || 'This product';
+    const type = TYPE_WORD[item.type] || TYPE_WORD.other;
+    const paid = Number(item.price) > 0;
+    const creator = creatorSection(host);
+    return [
+      {
+        key: 'included',
+        heading: "What's included",
+        paras: [`${t} is ${an(type)} ${type} by ${name}.`, ...(item.description ? [String(item.description).trim()] : [])],
+        list: [`Format: ${type.charAt(0).toUpperCase()}${type.slice(1)}`, `Price: ${paid ? rupee(item.price) : 'Free'}`, 'Delivery: instant download'],
+      },
+      ...(creator ? [creator] : []),
+      { key: 'access', heading: 'How you get it', steps: DOWNLOAD_STEPS(paid) },
+    ];
+  }
+
+  if (kind === 'course' && item) {
+    const lessons = (item.course_lessons || []).map((l) => l && l.title).filter(Boolean);
+    const paid = Number(item.price) > 0;
+    const creator = creatorSection(host);
+    return [
+      ...(lessons.length || item.description ? [{
+        key: 'learn',
+        heading: "What you'll learn",
+        paras: item.description ? [String(item.description).trim()] : [],
+        steps: lessons,
+      }] : []),
+      ...(creator ? [creator] : []),
+      { key: 'access', heading: 'How access works', steps: COURSE_STEPS(paid) },
+    ];
+  }
+  return [];
+}

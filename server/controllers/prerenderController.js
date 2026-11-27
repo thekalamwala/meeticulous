@@ -15,7 +15,9 @@
 
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
-const { profileFaqs, serviceFaqs, catalogFaqs, sameAsFrom } = require('../services/seo/pageContentModel');
+const {
+  profileFaqs, serviceFaqs, catalogFaqs, catalogSections, updatedLabel, latestUpdate, sameAsFrom,
+} = require('../services/seo/pageContentModel');
 const {
   cityForSeo, profileMeta, serviceDescription, profileTabMeta, productMeta, courseMeta,
   tierAnchors, catalogRobots, productPath, coursePath, productType, capFirst,
@@ -112,11 +114,37 @@ function reviewSection(reviews, heading) {
   const items = (reviews || []).map((r) => r && (r.comment || r.text)).filter(Boolean).slice(0, 3);
   if (!items.length) return '';
   return `<section><h2>${esc(heading)}</h2>${
-    items.map((t) => `<blockquote>${esc(t)}</blockquote>`).join('')
+    items.map((t) => `<blockquote>“${esc(t)}”</blockquote>`).join('')
   }</section>`;
 }
 
-function hostBody(payload, summary) {
+// Headed, self-contained sections (catalogSections in pageContentModel — the
+// same blocks the SPA renders): h2 + paragraphs + bullet list + ordered steps.
+function sectionsHtml(sections) {
+  return (sections || []).map((sec) => [
+    `<section><h2>${esc(sec.heading)}</h2>`,
+    ...(sec.paras || []).map((t) => `<p>${esc(t)}</p>`),
+    (sec.list || []).length ? `<ul>${sec.list.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : '',
+    (sec.steps || []).length ? `<ol>${sec.steps.map((t) => `<li>${esc(t)}</li>`).join('')}</ol>` : '',
+    '</section>',
+  ].join('')).join('\n');
+}
+
+// Published catalog counts for the profile "About" stats (head counts, never throws).
+async function catalogCounts(hostId) {
+  const count = async (table) => {
+    try {
+      const { supabaseAdmin } = require('../config/supabase');
+      const { count: n } = await supabaseAdmin.from(table).select('id', { count: 'exact', head: true })
+        .eq('host_id', hostId).eq('is_active', true);
+      return n || 0;
+    } catch (_) { return 0; }
+  };
+  const [product_count, course_count] = await Promise.all([count('products'), count('courses')]);
+  return { product_count, course_count };
+}
+
+function hostBody(payload, summary, counts = {}) {
   const { host = {}, services = [], reviews = [] } = payload || {};
   const site = trimSlash(SITE_URL);
   const name = host.name || 'Host';
@@ -125,6 +153,11 @@ function hostBody(payload, summary) {
   if (summary) out.push(`<p>${esc(summary)}</p>`);
   if (host.profession) out.push(`<p>${esc(host.profession)}${host.location ? ` · ${esc(host.location)}` : ''}</p>`);
   if (host.bio) out.push(`<p>${esc(host.bio)}</p>`);
+  // About: real stats only (sessions booked, reviews, catalog, member since).
+  const avg = Number(payload && payload.avgRating) || 0;
+  out.push(sectionsHtml(catalogSections({
+    kind: 'profile', host: { ...host, ...counts }, services, rating: { avg, count: (reviews || []).length },
+  })));
 
   const bookable = (services || []).filter((s) => s && s.title);
   if (bookable.length) {
@@ -435,7 +468,8 @@ const renderProfileMeta = async (req, res) => {
     if (m.status === 404) return res.status(404).send('Not found');
     if (m.status === 301) return res.redirect(301, m.redirectTo);
 
-    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload, m.summary) });
+    const counts = await catalogCounts(m.payload.host.id);
+    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload, m.summary, counts) });
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
     res.send(html);
@@ -452,6 +486,12 @@ const renderProfileMeta = async (req, res) => {
 // Deep-equal to the client builders (parity fixture); change one, change both.
 const TAB_CRUMB = { products: 'Products', courses: 'Courses', membership: 'Membership' };
 const IN_STOCK = 'https://schema.org/InStock';
+// datePublished / dateModified from a row's created_at / updated_at (freshness).
+const rowDates = (row = {}) => ({
+  ...(row.created_at ? { datePublished: row.created_at } : {}),
+  ...(row.updated_at ? { dateModified: row.updated_at } : {}),
+});
+const newest = (rows = []) => (rows || []).map((r) => r && r.updated_at).filter(Boolean).sort().pop();
 
 const catalogCrumbs = (host, tab, item) => [
   { name: 'Home', path: '/' },
@@ -486,8 +526,13 @@ function buildProductGraph({ product = {}, username, site, faqs = [] } = {}) {
       seller: { '@id': `${hostUrl}#person` },
     },
   };
+  const pageNode = {
+    '@type': 'ItemPage', '@id': `${url}#webpage`, url, name: productNode.name, inLanguage: 'en-IN',
+    isPartOf: { '@id': `${site}/#website` }, breadcrumb: { '@id': `${url}#breadcrumb` },
+    mainEntity: { '@id': productNode['@id'] }, ...rowDates(product),
+  };
   return withFaq([
-    websiteNode(site), orgNode(site), productNode, personStubNode({ host, site }),
+    websiteNode(site), orgNode(site), pageNode, productNode, personStubNode({ host, site }),
     breadcrumbNode(catalogCrumbs(host, 'products', product.slug && { name: productNode.name, path: productPath(host.username, product.slug) }), site, `${url}#breadcrumb`),
   ], faqs, url);
 }
@@ -508,6 +553,7 @@ function buildCourseGraph({ course = {}, username, site, faqs = [] } = {}) {
     provider: { '@id': `${hostUrl}#person` },
     inLanguage: 'en',
     hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online' },
+    ...rowDates(course),
     offers: {
       '@type': 'Offer',
       category: price > 0 ? 'Paid' : 'Free',
@@ -535,6 +581,7 @@ function buildProfileTabGraph({ tab, host = {}, items = [], site, name, descript
       ...(name ? { name } : {}),
       ...(description ? { description } : {}),
       inLanguage: 'en-IN',
+      ...(newest(listed) ? { dateModified: newest(listed) } : {}),
       isPartOf: { '@id': `${site}/#website` },
       about: { '@id': `${hostUrl}#person` },
       mainEntity: { '@id': `${url}#list` },
@@ -562,6 +609,7 @@ function buildMembershipGraph({ host = {}, program = {}, tiers = [], site, name,
       ...(name ? { name } : {}),
       ...(description ? { description } : {}),
       inLanguage: 'en-IN',
+      ...rowDates(program || {}),
       isPartOf: { '@id': `${site}/#website` },
       about: { '@id': `${hostUrl}#person` },
       mainEntity: { '@id': `${url}#list` },
@@ -615,16 +663,20 @@ async function loadTabItems(hostId, tab) {
         .eq('host_id', hostId).eq('status', 'live').maybeSingle();
       if (!data) return { items: [] };
       const tiers = (data.tiers || []).filter((t) => t.status === 'live').sort((a, b) => (a.position || 0) - (b.position || 0));
-      return { items: tiers, program: { name: data.name, blurb: data.blurb, cover_url: data.cover_url } };
+      return { items: tiers, program: { name: data.name, blurb: data.blurb, cover_url: data.cover_url, created_at: data.created_at || null, updated_at: data.updated_at || null } };
     }
     const { applyHostOrder } = require('../services/catalogOrder');
     const cols = tab === 'courses'
-      ? 'id, title, description, price, thumbnail_url, slug, course_lessons(id)'
-      : 'id, title, description, type, price, thumbnail_url, slug';
+      ? 'id, title, description, price, thumbnail_url, slug, created_at, updated_at, course_lessons(id, title, sort_order)'
+      : 'id, title, description, type, price, thumbnail_url, slug, created_at, updated_at';
     const { data, error } = await supabaseAdmin.from(tab).select(cols).eq('host_id', hostId).eq('is_active', true);
     if (error || !data) return { items: [] };
     const rows = tab === 'courses'
-      ? data.map(({ course_lessons: l, ...c }) => ({ ...c, lesson_count: (l || []).length }))
+      ? data.map(({ course_lessons: l, ...c }) => ({
+        ...c,
+        lesson_count: (l || []).length,
+        lessons: [...(l || [])].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((x) => x.title).filter(Boolean),
+      }))
       : data;
     return { items: await applyHostOrder(tab, hostId, rows) };
   } catch (_) {
@@ -667,28 +719,41 @@ function tabBody(m) {
   const site = trimSlash(SITE_URL);
   const name = host.name || 'Host';
   const u = esc(host.username);
+  const updated = updatedLabel(m.tab === 'membership' ? (m.program && m.program.updated_at) : latestUpdate(m.items));
+  const sections = catalogSections({ kind: m.tab, host, items: m.items, program: m.program });
   const out = [];
   if (m.tab === 'membership') {
     const prog = (m.program && m.program.name) || '';
     out.push(`<h1>${esc(prog ? `${prog} — membership by ${name}` : `Membership by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`);
+    if (updated) out.push(`<p>${esc(updated)}</p>`);
+    if (m.program && m.program.blurb) out.push(`<p>${esc(m.program.blurb)}</p>`);
     const anchors = tierAnchors(m.items);
     m.items.forEach((t, i) => {
       const price = t.type === 'free' || !(Number(t.price_inr) > 0) ? 'Free' : `${inr(t.price_inr)}/month`;
       const perks = (Array.isArray(t.perks) ? t.perks : []).filter(Boolean);
-      out.push(`<section id="${esc(anchors[i])}"><h2>${esc(t.name)}</h2><p>${esc(price)}</p>${t.description ? `<p>${esc(t.description)}</p>` : ''}${perks.length ? `<ul>${perks.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</section>`);
+      out.push(`<section id="${esc(anchors[i])}"><h3>${esc(t.name)}</h3><p>${esc(price)}</p>${t.description ? `<p>${esc(t.description)}</p>` : ''}${perks.length ? `<ul>${perks.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</section>`);
     });
+    out.push(sectionsHtml(sections));
   } else {
     const label = m.tab === 'courses' ? 'Online courses' : 'Digital products';
-    out.push(`<h1>${esc(`${label} by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`, '<ul>');
+    out.push(`<h1>${esc(`${label} by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`);
+    if (updated) out.push(`<p>${esc(updated)}</p>`);
+    out.push(sectionsHtml(sections.filter((x) => x.key === 'intro')));
     for (const i of m.items) {
       if (!i.slug || !i.title) continue;
       const path = (m.tab === 'courses' ? coursePath : productPath)(host.username, i.slug);
       const price = Number(i.price) > 0 ? inr(i.price) : 'Free';
       const extra = m.tab === 'courses' ? ` · ${i.lesson_count || 0} lessons` : '';
-      out.push(`<li><a href="${site}${esc(path)}">${esc(i.title)}</a> — ${esc(price)}${esc(extra)}${i.description ? `: ${esc(i.description)}` : ''}</li>`);
+      const lessons = (i.lessons || []).length ? `<p>Lessons: ${esc(i.lessons.join(', '))}</p>` : '';
+      out.push(`<article><h3><a href="${site}${esc(path)}">${esc(i.title)}</a></h3><p>${esc(price)}${esc(extra)}</p>${i.description ? `<p>${esc(i.description)}</p>` : ''}${lessons}</article>`);
     }
-    out.push('</ul>');
+    out.push(sectionsHtml(sections.filter((x) => x.key !== 'intro')));
   }
+  // The host's own About block (real stats), as on the SPA tab.
+  out.push(sectionsHtml(catalogSections({
+    kind: 'profile', host: { ...host, ...(m.counts || {}) }, services: (m.payload && m.payload.services) || [],
+    rating: { avg: Number(m.payload && m.payload.avgRating) || 0, count: ((m.payload && m.payload.reviews) || []).length },
+  })));
   out.push(faqSection(m.faqs));
   out.push(`<p><a href="${site}/${u}">See everything ${esc(name)} offers</a></p>`);
   return out.filter(Boolean).join('\n');
@@ -699,6 +764,7 @@ const renderProfileTabMeta = async (req, res) => {
     const m = await resolveProfileTabMeta(req.params.username, req.params.tab);
     if (m.status === 404) return res.status(404).send('Not found');
     if (m.status === 301) return res.redirect(301, m.redirectTo);
+    m.counts = await catalogCounts(m.payload.host.id);
     const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: tabBody(m) });
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
@@ -712,8 +778,8 @@ const renderProfileTabMeta = async (req, res) => {
 // ── Catalog items (/:username/products|courses/:slug) ────────────────────────
 
 const CATALOG_COLS = {
-  products: 'id, title, description, type, price, thumbnail_url, slug',
-  courses: 'id, title, description, price, thumbnail_url, slug, course_lessons(id, title, sort_order)',
+  products: 'id, title, description, type, price, thumbnail_url, slug, created_at, updated_at',
+  courses: 'id, title, description, price, thumbnail_url, slug, created_at, updated_at, course_lessons(id, title, sort_order)',
 };
 
 // kind: 'products' | 'courses'. key: slug, old id or legacy slug. Returns
@@ -768,13 +834,11 @@ function itemBody(m) {
   const { item } = m;
   const name = host.name || 'Host';
   const out = [`<h1>${esc(item.title)}</h1>`, `<p>${esc(m.summary)}</p>`];
+  const updated = updatedLabel(item.updated_at);
+  if (updated) out.push(`<p>${esc(updated)}</p>`);
   out.push(`<p>By <a href="${site}/${esc(host.username)}">${esc(name)}</a>${host.profession ? `, ${esc(host.profession)}` : ''}</p>`);
-  const price = Number(item.price) > 0 ? inr(item.price) : 'Free';
-  out.push(`<p>${esc(m.kind === 'courses' ? `${price} · ${item.lesson_count} lessons · lifetime access` : `${price} · ${capFirst(productType(item.type))} · instant download`)}</p>`);
-  if (item.description) out.push(`<p>${esc(item.description)}</p>`);
-  if (m.kind === 'courses' && item.course_lessons.length) {
-    out.push(`<section><h2>Lessons</h2><ol>${item.course_lessons.map((l) => `<li>${esc(l.title)}</li>`).join('')}</ol></section>`);
-  }
+  // What's included / What you'll learn · Who made it · How you get it (same blocks as the SPA).
+  out.push(sectionsHtml(catalogSections({ kind: m.kind === 'courses' ? 'course' : 'product', host, item })));
   out.push(faqSection(m.faqs));
   out.push(`<p><a href="${site}/${esc(host.username)}/${m.kind}">More ${m.kind === 'courses' ? 'courses' : 'digital products'} by ${esc(name)}</a></p>`);
   return out.filter(Boolean).join('\n');
