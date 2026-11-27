@@ -342,6 +342,15 @@ Items previously listed here as pending are now live:
   (nullable text, `tier_description_len` check ≤ 600). Tier cover + description on the Kept tier
   cards (PR #461). Additive; `membershipController` keeps a schema fallback (writeTier retries
   without the two columns). Rollback: `DROP COLUMN IF EXISTS` on both.
+- **v3.229** (`v3.229_clean_catalog_slugs.sql`) — applied (verified 2026-11-27 on the Meeticulous DB:
+  `legacy_slugs` present on `products` + `courses`, 0 `demo-` product slugs left). From the profile SEO
+  overhaul (`feat/profile-seo-overhaul`). **Filename note:** number collides with `v3.229_pricing_v2.sql`
+  (pricing v2) — cosmetic only, both applied. Adds `legacy_slugs text[] NOT NULL DEFAULT '{}'` to
+  `products` + `courses` and strips the `demo-` prefix from their slugs (old slug moved into
+  `legacy_slugs`; per-host clash → `-2`, `-3`). Idempotent + additive. Old URLs keep resolving:
+  `services/catalogSlug.js` looks up slug → id → legacy_slugs and the page / bot shell 301s to
+  `/:username/products|courses/<slug>`. Code is schema-fallback safe (no column = the legacy lookup
+  is "not found"). Verify + rollback queries are in the file header.
 - **v3.229** (`v3.229_pricing_v2.sql`) — applied 2026-11-27 on the Meeticulous DB (`spquowzrefozmrzoszkf`),
   SCHEMA ONLY, and verified: `subscription_plans.commission_rates` (jsonb, all 8 rows NULL) and
   `bookings.platform_fee_gross` (numeric 10,2); no anon/authenticated write grants. Dormant until
@@ -423,8 +432,11 @@ Payments
 - Verify signatures server-side.
 
 Withholding (TDS / TCS) — when CA sign-off is required
-  Ruled by the founder-CA on 2026-11-17 (PR #371). Cite this when the
-  tax-legal-signoff gate fires, instead of re-litigating it.
+  Ruled by the founder-CA on 2026-11-17 (PR #371). The automated
+  tax-legal-signoff CI gate (label / "Sign-off:" line) was REMOVED on
+  2026-11-27 at the founder's request: no label or Sign-off line is needed to
+  merge any more. The rule below still decides when a change should get the
+  founder-CA's review before it ships; flag such lines in the PR description.
 
   Sign-off IS required where a change determines a withheld amount OR ITS
   ATTRIBUTION: rate, threshold, section, PAN/GSTIN condition, no-PAN floor,

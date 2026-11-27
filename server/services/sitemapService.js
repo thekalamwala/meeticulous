@@ -312,6 +312,37 @@ const hostTabEntries = (hosts, tabs, siteUrl) => {
     });
 };
 
+// Product + course detail pages (/:username/products|courses/:slug). Same
+// "listed host" rule as the tabs (filtered in catalogItemEntries); slug-only URLs,
+// never an id. Never throws — a read failure just drops these entries.
+const fetchCatalogItems = async () => {
+  const rows = async (table, kind) => {
+    const { data, error } = await supabaseAdmin.from(table)
+      .select('host_id, slug, updated_at').eq('is_active', true).not('slug', 'is', null);
+    return error ? [] : (data || []).map((r) => ({ ...r, kind }));
+  };
+  try {
+    const [products, courses] = await Promise.all([rows('products', 'products'), rows('courses', 'courses')]);
+    return [...products, ...courses];
+  } catch (e) {
+    logger.error({ event: 'sitemap.catalog_items_error', message: e.message });
+    return [];
+  }
+};
+
+// Item rows -> entries under each LISTED host (hosts already filtered).
+const catalogItemEntries = (hosts, items, siteUrl) => {
+  const byId = new Map((hosts || []).map((h) => [h.id, h]));
+  return (items || [])
+    .filter((i) => i && i.slug && byId.has(i.host_id) && PROFILE_TABS.includes(i.kind) && i.kind !== 'membership')
+    .map((i) => ({
+      loc: `${hostUrl(siteUrl, byId.get(i.host_id).username)}/${i.kind}/${i.slug}`,
+      lastmod: toLastmod(i.updated_at),
+      changefreq: 'weekly',
+      priority: '0.6',
+    }));
+};
+
 // All listable service rows joined to their host (for the username path segment),
 // then filtered in JS so a noindexed/unverified host removes its services too.
 const fetchServices = async () => {
@@ -407,7 +438,7 @@ const fetchCommunity = async () => {
 
 module.exports = {
   // pure
-  trimSlash, hostUrl, serviceUrl, toLastmod, STATIC_ROUTES, staticEntries, hostEntries, hostTabEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
+  trimSlash, hostUrl, serviceUrl, toLastmod, STATIC_ROUTES, staticEntries, hostEntries, hostTabEntries, catalogItemEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
   // db
-  fetchHosts, fetchHostTabs, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
+  fetchHosts, fetchHostTabs, fetchCatalogItems, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
 };

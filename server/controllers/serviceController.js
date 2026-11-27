@@ -59,33 +59,30 @@ const slugify = (text) =>
     .replace(/--+/g, '-')
     .slice(0, 80);
 
-// Generate a random letter-digit-letter suffix, e.g. "a3b"
-const randomSuffix = () => {
-  const l = 'abcdefghijklmnopqrstuvwxyz';
-  const d = '0123456789';
-  return l[Math.floor(Math.random() * 26)] + d[Math.floor(Math.random() * 10)] + l[Math.floor(Math.random() * 26)];
-};
-
 // Words that are public profile routes (/:username/<word>), so a service slug can
 // never take them — /:username/:slug is the service detail route and would be
 // shadowed. products/courses/membership are the profile tabs; badges + booking
 // were already routes. Keep in sync with the /:profileSlug/* block in App.jsx.
 const RESERVED_SERVICE_SLUGS = new Set(['products', 'courses', 'membership', 'badges', 'booking']);
 
-// Per-host unique slug: same title on different hosts can share slug;
-// same host can't have duplicates — fallback adds letter-digit-letter suffix.
-// A reserved word is treated as taken, so it gets the suffix too ("products-a3b").
+// Per-host unique slug: same title on different hosts can share slug; the same
+// host gets readable -2, -3 … suffixes (never random letters — the slug is the
+// public URL). A reserved word is treated as taken, so it starts at -2
+// ("products-2"). One maybeSingle() probe per candidate.
 const uniqueSlug = async (baseSlug, hostId, excludeId = null) => {
-  let slug = RESERVED_SERVICE_SLUGS.has(baseSlug) ? `${baseSlug}-${randomSuffix()}` : baseSlug;
-  let attempts = 0;
-  while (true) {
+  const taken = async (slug) => {
     let q = supabaseAdmin.from('services').select('id').eq('slug', slug).eq('host_id', hostId);
     if (excludeId) q = q.neq('id', excludeId);
     const { data } = await q.maybeSingle();
-    if (!data) return slug;
-    slug = `${baseSlug}-${randomSuffix()}`;
-    if (++attempts > 10) slug = `${baseSlug}-${Date.now().toString(36)}`; // ultimate fallback
+    return !!data;
+  };
+  // ponytail: linear probe, capped — a host with 50 same-titled services gets a
+  // numeric timestamp suffix (still digits only) instead of more round trips.
+  for (let n = RESERVED_SERVICE_SLUGS.has(baseSlug) ? 2 : 1; n <= 50; n += 1) {
+    const slug = n === 1 ? baseSlug : `${baseSlug}-${n}`;
+    if (!(await taken(slug))) return slug;
   }
+  return `${baseSlug}-${Date.now()}`;
 };
 
 // ─── Offline-venue guard ─────────────────────────────────────────────────────

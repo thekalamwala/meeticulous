@@ -12,6 +12,7 @@ import useLiveNotifications from '../../hooks/useLiveNotifications';
 import { getNotifications, markAllNotificationsRead, markNotificationRead, markLinkShared, getMyAccountManager } from '../../services/api';
 import { normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
+import { HostCover } from './HostAvatar';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
 import MobileTabBar from './MobileTabBar';
@@ -45,7 +46,7 @@ const humanizeCategory = (raw) => {
 // edge-to-edge band) so the menu reads as a stack of objects, with a rounded
 // icon tile that lifts on hover.
 const MENU_ROW =
-  'group mx-2 flex w-[calc(100%-16px)] items-center gap-2.5 rounded-xl px-2 py-2 text-left text-sm font-medium text-neutral-700 transition-colors hover:bg-blush hover:text-ink';
+  'group mx-2 flex w-[calc(100%-16px)] items-center gap-2.5 rounded-xl px-2 py-1.5 text-left text-sm font-medium text-neutral-700 transition-colors hover:bg-blush hover:text-ink';
 const ROW_TILE =
   'grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-neutral-100 text-neutral-500 transition group-hover:bg-white group-hover:text-maroon';
 
@@ -79,8 +80,11 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
           role={role}
           aria-label={title}
           className={cn(
-            'absolute inset-y-0 right-0 flex w-[86%] max-w-[340px] flex-col overflow-y-auto bg-white shadow-[0_0_48px_-8px_rgba(43,10,20,0.45)] transition-transform duration-300 ease-out',
-            open ? 'translate-x-0' : 'translate-x-full',
+            'absolute inset-y-0 right-0 flex w-[86%] max-w-[340px] flex-col overflow-y-auto bg-white shadow-[0_0_48px_-8px_rgba(43,10,20,0.45)] transition-[transform,visibility] duration-300 ease-out',
+            // Closed = invisible, not just off-screen: parked at translate-x-full, its 48px
+            // shadow still bled back over the right edge of every page as a white strip.
+            // visibility flips after the slide-out, so the exit still animates.
+            open ? 'visible translate-x-0' : 'invisible translate-x-full',
           )}
         >
           <div className="flex items-center justify-between border-b border-neutral-200/60 px-5 py-3">
@@ -121,7 +125,9 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
   return (
     <div
       className={cn(
-        'absolute z-50 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]',
+        // Capped to the window: a tall menu scrolls inside instead of running off
+        // the bottom of the screen (founder screenshot, 2026-11-27).
+        'absolute z-50 max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]',
         placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2',
         align === 'right' ? 'right-0' : 'left-0',
         width,
@@ -287,6 +293,9 @@ export const ProfileMenu = ({
   identity = false,
   menuPlacement = 'down',
   menuAlign = 'right',
+  // Guest space (/user/*): same menu, guest rows — Profile only (Help is the topbar lifebuoy). No plan,
+  // verification, public page or account manager (a guest has none of those).
+  guest = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -311,7 +320,7 @@ export const ProfileMenu = ({
   // a call on every page load). Soft-fails to null → falls back to generic support.
   const mgrFetched = useRef(false);
   useEffect(() => {
-    if (!open || mgrFetched.current) return;
+    if (!open || guest || mgrFetched.current) return;
     mgrFetched.current = true;
     getMyAccountManager().then((d) => setAcctMgr(d?.account_manager || null));
   }, [open]);
@@ -367,45 +376,55 @@ export const ProfileMenu = ({
         <Avatar size="h-9 w-9 text-sm" />
         {identity && (
           <span className="min-w-0 flex-1 text-left">
-            <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || 'Host'}</span>
-            <span className="block truncate text-[12px] text-faint">{user?.username ? `@${user.username}` : (user?.email || '')}</span>
+            <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || (guest ? 'You' : 'Host')}</span>
+            <span className="block truncate text-[12px] text-faint">{!guest && user?.username ? `@${user.username}` : (user?.email || '')}</span>
           </span>
         )}
         <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />
       </button>
 
       <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72" variant="drawer" placement={menuPlacement} align={menuAlign}>
-        {/* Identity — a blush ground gives the menu a head instead of a first
-            row; the two tone-on-tone arcs are the ee-thread brand motif, one per
-            surface. Name + verify tick + plan badge, email beneath. */}
-        <div className="relative overflow-hidden bg-blush px-4 pb-5 pt-5 text-center">
-          <span aria-hidden="true" className="absolute -left-6 -top-8 h-20 w-20 rounded-full border-[3px] border-maroon/10" />
-          <span aria-hidden="true" className="absolute -right-7 top-5 h-16 w-16 rounded-full border-[3px] border-maroon/10" />
-          {/* Centred identity (founder screenshot, 2026-11-25): avatar, name, then
-              @username or category. The email and plan badge stay out of this block
-              (earlier decision, pinned by DashboardSidebar.test). Verification has its
-              own row below. */}
-          <div className="relative flex flex-col items-center">
-            <Avatar size="h-16 w-16 text-lg ring-4 ring-white" />
-            <p className="mb-0 mt-2.5 max-w-full truncate text-[15px] font-bold text-ink">{user?.name || 'Host'}</p>
-            <p className="mb-0 mt-0.5 max-w-full truncate text-[13px] font-medium text-maroon/70">{user?.username ? `@${user.username}` : category}</p>
+        {/* Identity — the public page's aside card in small (founder, 2026-11-27):
+            the cover band with the photo overlapping it, then name and @username
+            (or category). Email and plan badge stay out of this block (earlier
+            decision, pinned by DashboardSidebar.test); verification has its own row. */}
+        <div>
+          {/* No cover yet: a plain maroon band. The default cover's centred wordmark
+              would sit right behind the photo at this height. */}
+          {user?.cover_image
+            ? <HostCover src={user.cover_image} themeColor={user?.theme_color} className="w-full" style={{ height: 56, aspectRatio: 'auto' }} />
+            : <div aria-hidden="true" className="h-14 bg-maroon" />}
+          <div className="relative -mt-7 flex flex-col items-center px-4 pb-3 text-center">
+            <Avatar size="h-14 w-14 bg-white text-lg ring-4 ring-white" />
+            <p className="mb-0 mt-1.5 max-w-full truncate text-[15px] font-bold text-ink">{user?.name || (guest ? 'You' : 'Host')}</p>
+            <p className="mb-0 max-w-full truncate text-[13px] font-medium text-maroon/70">{guest ? (user?.email || user?.phone || '') : (user?.username ? `@${user.username}` : category)}</p>
           </div>
         </div>
 
         {/* Mode switch (dual-capability accounts only), as the founder's screenshot:
             say which side you're on, then one row that takes you to the other. */}
         {isHost(user) && (
-          <div className="border-t border-neutral-200/50 pb-1.5 pt-2.5">
-            <p className="mb-1 px-4 text-[12px] text-muted">Viewing as: <b className="font-semibold text-ink">{mode === 'traveling' ? 'Guest' : 'Host'}</b></p>
+          <div className="border-t border-neutral-200/50 py-1">
             <button type="button" onClick={() => switchMode(mode === 'traveling' ? 'hosting' : 'traveling')} className={MENU_ROW}>
               <span className={ROW_TILE}><ArrowLeftRight className="h-4 w-4" strokeWidth={1.8} /></span>
-              <span className="flex-1">Switch to {mode === 'traveling' ? 'Host' : 'Guest'}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">Switch to {mode === 'traveling' ? 'Host' : 'Guest'}</span>
+                <span className="block truncate text-[12px] font-normal text-muted">Viewing as: <b className="font-semibold text-ink">{mode === 'traveling' ? 'Guest' : 'Host'}</b></span>
+              </span>
             </button>
           </div>
         )}
 
+        {guest ? (
+          <div className="border-t border-neutral-200/50 py-1">
+            <Link to="/user/profile" onClick={close} className={MENU_ROW}>
+              <span className={ROW_TILE}><User className="h-4 w-4" strokeWidth={1.8} /></span>
+              <span className="flex-1">Profile</span>
+            </Link>
+          </div>
+        ) : (<>
         {/* Account */}
-        <div className="border-t border-neutral-200/50 py-1.5">
+        <div className="border-t border-neutral-200/50 py-1">
           {/* Kept: straight to the Account pane (on phones /dashboard/profile is the
               Settings list). Off-flag this route redirects back to /dashboard/profile. */}
           <Link to="/dashboard/settings/account" onClick={close} className={MENU_ROW}>
@@ -428,7 +447,7 @@ export const ProfileMenu = ({
         </div>
 
         {/* Your page */}
-        <div className="border-t border-neutral-200/50 py-1.5">
+        <div className="border-t border-neutral-200/50 py-1">
           {user?.username && (
             <a href={`/${user.username}`} target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
               <span className={ROW_TILE}><ExternalLink className="h-4 w-4" strokeWidth={1.8} /></span>
@@ -447,15 +466,11 @@ export const ProfileMenu = ({
           )}
         </div>
 
-        {/* Support — Help (also the topbar lifebuoy), then the human line.
+        {/* Support — the human line (Help is the topbar lifebuoy).
             Show the assigned account manager's contact when one exists; otherwise
             fall back to the generic support line. */}
-        <div className="border-t border-neutral-200/50 py-1.5">
-          {/* Help (Kept, 2026-11-26): Tithi, help articles and Send feedback on one screen. */}
-          <Link to="/dashboard/chat" onClick={close} className={MENU_ROW}>
-            <span className={ROW_TILE}><LifeBuoy className="h-4 w-4" strokeWidth={1.8} /></span>
-            <span className="flex-1">Help</span>
-          </Link>
+        <div className="border-t border-neutral-200/50 py-1">
+          {/* No Help row (founder, 2026-11-27): the topbar lifebuoy already opens Help. */}
           {acctMgr ? (
             <a
               href={acctMgr.email ? `mailto:${acctMgr.email}` : (acctMgr.phone ? `tel:${acctMgr.phone}` : '/bolt958')}
@@ -478,9 +493,10 @@ export const ProfileMenu = ({
             </a>
           )}
         </div>
+        </>)}
 
         {/* Logout */}
-        <div className="border-t border-neutral-200/50 py-1.5">
+        <div className="border-t border-neutral-200/50 py-1">
           <button
             type="button"
             onClick={() => { close(); logout?.(); }}

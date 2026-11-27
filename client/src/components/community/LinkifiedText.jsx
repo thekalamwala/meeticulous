@@ -9,6 +9,9 @@ import { Link } from 'react-router-dom';
 const URL_RE = /\b(?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?/gi;
 const BARE_TLDS = new Set(['com', 'in', 'io', 'me', 'co', 'org', 'net', 'app', 'ly', 'tv', 'xyz', 'ai', 'dev', 'info', 'biz', 'link', 'site', 'online', 'store', 'shop', 'page', 'to', 'gg', 'us', 'uk']);
 const TRAILING = /[.,;:!?)\]}'"]+$/;
+// A placeholder path ("meeticulous.com/your-name", from the help copy) stays plain text:
+// as a link it 404s. The server swaps in the member's own username where it knows it.
+const PLACEHOLDER = /\/(?:your-name|yourname|your-username)\b/i;
 
 // Mentions. MIRRORS the capture in server/services/community/text.js extractMentions
 // (@ + a-z0-9 start, then a-z0-9-). The server guards the left edge with a lookbehind
@@ -50,7 +53,7 @@ function linkify(line, keyBase) {
   let last = 0;
   for (const m of line.matchAll(URL_RE)) {
     const url = m[0].replace(TRAILING, '');
-    if (!url || !isLink(url)) continue;
+    if (!url || !isLink(url) || PLACEHOLDER.test(url)) continue;
     if (m.index > last) out.push(...mentionize(line.slice(last, m.index), `${keyBase}-${m.index}t`));
     const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
     out.push(<a key={`${keyBase}-${m.index}`} href={href} rel="ugc nofollow noopener" target="_blank">{url}</a>);

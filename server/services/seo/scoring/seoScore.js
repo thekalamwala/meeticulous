@@ -99,7 +99,11 @@ const DIMS = [
     fn: (s) => {
       const imgs = s.images || [];
       if (!imgs.length) return { score: 1, reason: 'No images to caption.', fix: null };
-      const withAlt = imgs.filter((i) => i.alt && i.alt.trim()).length;
+      // Covered = the alt attribute is present. alt="" is the explicit "decorative"
+      // marker (an icon beside its own text label) and is correct, not a miss; only a
+      // MISSING attribute (alt === null from seoParse) is uncovered. Same rule as the
+      // images.missing_alt detection (rules/images.js).
+      const withAlt = imgs.filter((i) => i.alt !== null && i.alt !== undefined).length;
       const cov = withAlt / imgs.length;
       return { score: cov, reason: cov === 1 ? 'All images have alt text.' : `${imgs.length - withAlt} of ${imgs.length} images missing alt text.`, fix: cov === 1 ? null : 'Add descriptive alt text to every meaningful image.' };
     },

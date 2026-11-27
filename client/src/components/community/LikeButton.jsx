@@ -56,7 +56,8 @@ export default function LikeButton({ targetType, id, liked, count }) {
       >
         {layers}
         <Heart size={16} aria-hidden="true" fill={state.liked ? 'currentColor' : 'none'} />
-        {n}
+        {/* A "0" next to the heart reads as "nobody cares"; the aria-label still says it. */}
+        {n > 0 && n}
       </button>
       {termsDialog}
     </>

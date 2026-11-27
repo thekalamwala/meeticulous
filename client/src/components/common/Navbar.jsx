@@ -448,7 +448,7 @@ const MegaItem = ({ item, tone, compact }) => {
       <span className={`relative flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg ${c.tile}`}>
         <Icon size={16} strokeWidth={2} />
         {NAV_PNG[item.label] && (
-          <img src={NAV_PNG[item.label]} alt="" width="20" height="20" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-5 w-5 object-contain" />
+          <img src={NAV_PNG[item.label]} alt="" aria-hidden="true" width="20" height="20" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-5 w-5 object-contain" />
         )}
       </span>
       <span className="min-w-0">
@@ -521,7 +521,7 @@ const CompareItem = ({ item, active }) => {
         {/* Only fetch the competitor favicon once the menu is actually open — the
             panel now always renders (for crawlable links), so gate the network here. */}
         {active && imgOk ? (
-          <img src={COMPARE_PNG[item.name] || favicon} alt="" width="36" height="36" loading="lazy" onError={() => setImgOk(false)} className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
+          <img src={COMPARE_PNG[item.name] || favicon} alt="" aria-hidden="true" width="36" height="36" loading="lazy" onError={() => setImgOk(false)} className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
         ) : (
           <span className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] font-bold text-white" style={{ backgroundColor: item.color }}>
             {item.name[0]}

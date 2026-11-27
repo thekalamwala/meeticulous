@@ -81,9 +81,8 @@ export const resolveServiceSeo = ({ service = {}, vendor = {}, siteUrl = SITE_UR
     return baseTitle;
   };
   const title = service.seo_title || composeTitle();
-  const description = service.seo_description
-    || truncate(service.short_description || service.description
-      || `Book ${baseTitle}${city ? ` in ${city}` : ''} on Meeticulous.`);
+  // Answer-first template (serviceDescription) unless the admin set one.
+  const description = service.seo_description || serviceDescription({ service, vendor });
 
   const canonical = username && service.slug
     ? `${site}/${username}/${service.slug}`
@@ -92,7 +91,8 @@ export const resolveServiceSeo = ({ service = {}, vendor = {}, siteUrl = SITE_UR
   return {
     title,
     description,
-    ogTitle: service.og_title || service.seo_title || baseTitle,
+    // Share title carries the host name ("{Service} with {Name}").
+    ogTitle: service.og_title || service.seo_title || (vendor.name ? `${baseTitle} with ${vendor.name}` : baseTitle),
     ogDescription: service.og_description || description,
     // Ordered fallback: generated service card -> admin override -> host
     // thumbnail -> the static /service-og-default.png floor (Phase 1). See v3.154.
@@ -111,31 +111,258 @@ export const resolveServiceSeo = ({ service = {}, vendor = {}, siteUrl = SITE_UR
 // serviceGraphJsonLd / profileGraphJsonLd (single @graph, @id-linked) further below
 // — see docs/seo/profile-schema-guide.md. The server prerender path mirrors them.
 
+/// ── Catalog meta templates (profile, service, tabs, product, course) ────────
+//
+// Answer-first <title> / meta description built ONLY from real data, with graceful
+// fallbacks. Titles stay <= 60 chars (host-authored names are never cut — the
+// shortest candidate wins); descriptions land in 140–160 chars: the factual head
+// always, host-authored text (bio / summary) clipped to fit, then true filler
+// sentences until the floor. MIRRORED verbatim in
+// server/controllers/prerenderController.js (bot shell); the committed parity
+// fixture (__fixtures__/seoGraphParity.json) proves both paths agree.
+
+const TITLE_MAX = 60;
+const DESC_MAX = 160;
+const DESC_MIN = 140;
+const inr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+// a/an for the word that follows ("an online", "an 8-min", "a PDF", "an SEO …").
+// An all-caps acronym is read letter by letter, so F/H/L/M/N/R/S/X take "an".
+const article = (w) => {
+  const s = String(w || '');
+  if (/^[A-Z]{2,}\b/.test(s)) return /^[AEFHILMNORSX]/.test(s) ? 'an' : 'a';
+  return /^([aeiou]|8|11\b|18\b)/i.test(s) ? 'an' : 'a';
+};
+const firstFit = (cands, max = TITLE_MAX) => {
+  const list = cands.filter(Boolean);
+  return list.find((c) => c.length <= max) || list[list.length - 1];
+};
+const joinS = (...parts) => parts.filter(Boolean).join(' ');
+// Cut at a word boundary with an ellipsis; '' when there is no useful room.
+const clip = (s, n) => {
+  const str = String(s || '');
+  if (str.length <= n) return str;
+  if (n < 24) return '';
+  const cut = str.slice(0, n - 1);
+  const sp = cut.lastIndexOf(' ');
+  return `${(sp > 12 ? cut.slice(0, sp) : cut).replace(/[\s,;:.—-]+$/, '')}…`;
+};
+// First sentence of free text, always ending in terminal punctuation ('' if none).
+export const firstSentence = (text) => {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!t) return '';
+  const m = t.match(/^.+?[.!?](?=\s|$)/);
+  const s = (m ? m[0] : t).trim();
+  return /[.!?…]$/.test(s) ? s : `${s}.`;
+};
+// Whole sentences of free text that fit in n chars; if not even the first fits,
+// that sentence cut at a word boundary.
+const clipSentences = (text, n) => {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!t || n <= 0) return '';
+  const sentences = t.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [t];
+  let out = '';
+  for (const raw of sentences) {
+    const next = joinS(out, /[.!?…]$/.test(raw.trim()) ? raw.trim() : `${raw.trim()}.`);
+    if (next.length > n) break;
+    out = next;
+  }
+  return out || clip(firstSentence(t), n);
+};
+// head (always) + flex (whole sentences, clipped to fit) + fillers (only to reach
+// DESC_MIN) + tail. A filler may be [long, short] alternatives: the first that
+// still fits is used, so one data-true sentence lands the 140–160 window. `flex`
+// may be alternatives too (e.g. 3 item names, then 2, then 1): the first that
+// fits whole wins, else the last one is clipped.
+export const fitDescription = ({ head = [], flex = '', tail = '', fillers = [] } = {}) => {
+  const base = joinS(...head);
+  const build = (mid) => joinS(base, mid, tail);
+  const room = DESC_MAX - build('').length - 1;
+  const alts = (Array.isArray(flex) ? flex : [flex]).filter(Boolean);
+  let mid = alts.slice(0, -1).find((a) => a.length <= room) || clipSentences(alts[alts.length - 1], room);
+  for (const f of fillers) {
+    if (build(mid).length >= DESC_MIN) break;
+    const pick = (Array.isArray(f) ? f : [f]).filter(Boolean).find((alt) => build(joinS(mid, alt)).length <= DESC_MAX);
+    if (pick) mid = joinS(mid, pick);
+  }
+  return clip(build(mid), DESC_MAX);
+};
+// "from ₹199" (cheapest paid) · "free" (all free) · '' (no prices).
+const priceFrom = (prices = []) => {
+  const p = prices.map(Number).filter((x) => Number.isFinite(x));
+  const paid = p.filter((x) => x > 0);
+  if (paid.length) return `from ${inr(Math.min(...paid))}`;
+  return p.length ? 'free' : '';
+};
+const capFirst = (s) => String(s || '').replace(/^\w/, (c) => c.toUpperCase());
+
+// Digital product types → human labels (lower-case for running text).
+const PRODUCT_TYPE = { pdf: 'PDF', template: 'template', ebook: 'eBook', prompt_pack: 'prompt pack', resource: 'resource', other: 'digital product' };
+const productType = (t) => PRODUCT_TYPE[t] || PRODUCT_TYPE.other;
+
+// Profile: "{Name} — {Profession} in {City} | Meeticulous", parts dropped to fit.
+export const profileMeta = ({ host = {}, services = [], rating = null } = {}) => {
+  const name = host.name || 'Host';
+  const prof = String(host.profession || '').trim();
+  const city = cityForSeo(host.location);
+  const withProf = prof ? `${name} — ${prof}` : name;
+  const withCity = city ? `${withProf} in ${city}` : withProf;
+  const title = firstFit([`${withCity} | Meeticulous`, withCity, `${withProf} | Meeticulous`, withProf, `${name} | Meeticulous`, name]);
+  const who = prof ? `${name} is ${article(prof)} ${prof}${city ? ` in ${city}` : ''}.`
+    : city ? `${name} is based in ${city}.` : `${name} takes bookings on Meeticulous.`;
+  const list = (services || []).filter((s) => s && s.title);
+  const from = priceFrom(list.filter((s) => !s.price_on_request).map((s) => s.price));
+  const offer = !list.length ? ''
+    : from === 'free' ? `${list.length} free ${list.length === 1 ? 'service' : 'services'}`
+    : `${plural(list.length, 'service')}${from ? ` ${from}` : ''}`;
+  // Rating clause ONLY for real reviews of this host (never a platform default).
+  const stars = rating && rating.count > 0 && rating.avg > 0
+    ? `${Number(rating.avg).toFixed(1)}★ (${plural(rating.count, 'review')})` : '';
+  const facts = [offer, stars].filter(Boolean).join(' · ');
+  return {
+    title,
+    description: fitDescription({
+      head: [who, facts && `${facts}.`],
+      flex: firstSentence(host.bio),
+      tail: 'Book online.',
+      fillers: [['Pick a time that suits you and pay securely online.', 'Pay securely online.'], ['Instant confirmation and reminders.', 'Instant confirmation.']],
+    }),
+  };
+};
+
+// Service: "Book a 30-min online {Service} with {Name} for ₹{price}. {summary}"
+export const serviceDescription = ({ service = {}, vendor = {} } = {}) => {
+  const t = service.title || 'Service';
+  const dur = Number(service.duration) > 0 ? `${Number(service.duration)}-min ` : '';
+  const lead = `${dur}${service.meeting_mode === 'offline' ? 'in-person' : 'online'}`;
+  const price = service.price_on_request ? ''
+    : Number(service.price) > 0 ? ` for ${inr(service.price)}`
+    : service.price != null && Number(service.price) === 0 ? ' for free' : '';
+  return fitDescription({
+    head: [`Book ${article(lead)} ${lead} ${t}${vendor.name ? ` with ${vendor.name}` : ''}${price}.`],
+    flex: firstSentence(service.short_description || service.description),
+    fillers: [
+      ['Pick a time that suits you and pay securely online.', 'Pay securely online.'],
+      ['Instant confirmation and reminders.', 'Instant confirmation.'],
+      service.price_on_request ? 'Price on request.' : '',
+    ],
+  });
+};
+
+// Profile tabs (/:username/products|courses|membership).
+const TAB_TITLE = { products: 'Digital products', courses: 'Online courses' };
+export const profileTabMeta = ({ tab, host = {}, items = [], program = null } = {}) => {
+  const name = host.name || 'Host';
+  const list = (items || []).filter((i) => i && (i.title || i.name));
+  const n = list.length;
+  // Top item names, 3 → 2 → 1, whichever fits whole.
+  const namesFit = (prefix) => [3, 2, 1].filter((k) => k <= n)
+    .map((k) => `${prefix} ${list.slice(0, k).map((i) => i.title || i.name).join(', ')}.`);
+  if (tab === 'membership') {
+    const prog = (program && program.name) || '';
+    const title = prog
+      ? firstFit([`${prog} — membership by ${name}`, `${prog} — membership`, prog])
+      : firstFit([`Membership by ${name}`, 'Membership']);
+    const paid = list.filter((t) => t.type !== 'free').map((t) => t.price_inr);
+    const from = priceFrom(paid.length ? paid : list.map(() => 0));
+    const fromTxt = from === 'free' ? 'free to join' : from ? `${from}/month` : '';
+    return {
+      title,
+      description: fitDescription({
+        head: [`Join ${prog ? `${prog}, ${name}'s membership` : `${name}'s membership`}${n ? ` — ${plural(n, 'tier')}${fromTxt ? ` ${fromTxt}` : ''}` : ''}.`],
+        flex: namesFit('Tiers:'),
+        tail: 'Cancel anytime.',
+        fillers: [
+          firstSentence(program && program.blurb),
+          ['Members-only posts unlock as soon as you join.', 'Member posts unlock on joining.'],
+          paid.length ? 'Billed monthly.' : '',
+        ],
+      }),
+    };
+  }
+  const label = TAB_TITLE[tab];
+  if (!label) return { title: '', description: '' };
+  const noun = tab === 'products' ? 'digital product' : 'online course';
+  const from = priceFrom(list.map((i) => i.price));
+  const fromTxt = from === 'free' ? (n > 1 ? 'all free' : 'free') : from;
+  return {
+    title: firstFit([`${label} by ${name} (${n})`, `${label} by ${name}`, label]),
+    description: fitDescription({
+      head: [`${plural(n, noun)} by ${name}${fromTxt ? `, ${fromTxt}` : ''}.`],
+      flex: namesFit('Includes'),
+      tail: tab === 'products' ? 'Instant download after secure payment.' : 'Buy once, lifetime access.',
+      fillers: tab === 'products'
+        ? [['Pay with UPI, card or wallet.', 'UPI, card or wallet.'], `More on ${name}'s profile.`]
+        : [['Watch every lesson anytime, on any device.', 'Watch anytime.'], 'Pay securely online.'],
+    }),
+  };
+};
+
+// Product: "{Product} — {Type} by {Name}" (type dropped first when it won't fit).
+export const productMeta = ({ product = {}, host = {} } = {}) => {
+  const t = product.title || 'Digital product';
+  const name = host.name || 'Host';
+  const type = productType(product.type);
+  const free = Number(product.price) === 0;
+  return {
+    title: firstFit([`${t} — ${capFirst(type)} by ${name}`, `${t} — ${name}`, t]),
+    description: fitDescription({
+      head: [`${capFirst(type)} by ${name}.`],
+      flex: product.description,
+      tail: free ? 'Free, instant download.' : `${inr(product.price)}, instant download.`,
+      fillers: [
+        free ? 'Verify with a one-time code to get it.' : ['Pay securely with UPI, card or wallet.', 'UPI, card or wallet.'],
+        [`Sold by ${name} on Meeticulous.`, `Sold by ${name}.`],
+        [`More digital products on ${name}'s profile.`, `More on ${name}'s profile.`],
+      ],
+    }),
+  };
+};
+
+// Course: "{Course} — course by {Name}". Lessons carry no duration today, so
+// hours are omitted rather than guessed.
+export const courseMeta = ({ course = {}, host = {} } = {}) => {
+  const t = course.title || 'Course';
+  const name = host.name || 'Host';
+  const lessons = Number(course.lesson_count ?? (course.course_lessons || []).length) || 0;
+  const free = Number(course.price) === 0;
+  return {
+    title: firstFit([`${t} — course by ${name}`, `${t} — ${name}`, t]),
+    description: fitDescription({
+      head: [lessons ? `${plural(lessons, 'video lesson')} by ${name}.` : `Online course by ${name}.`],
+      flex: course.description,
+      tail: free ? 'Free, lifetime access.' : `${inr(course.price)}, lifetime access.`,
+      fillers: [['Buy once, watch every lesson anytime, on any device.', 'Buy once, watch anytime.'], 'Pay securely online.'],
+    }),
+  };
+};
+
+// Readable, unique anchors for membership tiers (#<tier-slug>, -2 on a clash).
+export const tierAnchors = (tiers = []) => {
+  const used = new Set();
+  return (tiers || []).map((t) => {
+    const base = String((t && t.name) || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'tier';
+    let slug = base;
+    for (let n = 2; used.has(slug); n += 1) slug = `${base}-${n}`;
+    used.add(slug);
+    return slug;
+  });
+};
+
 // ── Profile (host) ───────────────────────────────────────────────────────────
 
-export const resolveProfileSeo = ({ host = {}, services = [], siteUrl = SITE_URL } = {}) => {
+export const resolveProfileSeo = ({ host = {}, services = [], rating = null, siteUrl = SITE_URL } = {}) => {
   const site = trimSlash(siteUrl);
   const name = host.name || 'Host';
-
-  // A city in the profile title only earns local intent if the host actually
-  // offers an in-person (offline) service; a fully-online host has no locality.
-  const hasOffline = (services || []).some((s) => s && s.meeting_mode === 'offline');
-  const city = hasOffline ? cityForSeo(host.location) : null;
-  const composeTitle = () => {
-    const base = `${name}${host.profession ? ` — ${host.profession}` : ''}`;
-    const withCity = city ? `${base} in ${city}` : base;
-    const full = `${withCity} | Meeticulous`;
-    if (full.length <= 60) return full;
-    if (withCity.length <= 60) return withCity;
-    return base;
-  };
-  const title = host.seo_title || composeTitle();
-  const description = host.seo_description
-    || truncate(host.bio || `Book sessions with ${name}${city ? ` in ${city}` : ''} on Meeticulous.`);
+  const meta = profileMeta({ host, services, rating });
+  const title = host.seo_title || meta.title;
+  const description = host.seo_description || meta.description;
 
   return {
     title,
     description,
+    // The template line (real data) is also the visible answer-first summary.
+    summary: meta.description,
     ogTitle: host.og_title || host.seo_title || name,
     ogDescription: host.og_description || description,
     image: host.seo_image || host.profile_image || brandCard(site),
@@ -152,24 +379,25 @@ export const resolveProfileSeo = ({ host = {}, services = [], siteUrl = SITE_URL
 
 // Profile tab pages (/:username/products|courses|membership): their own title,
 // description and canonical on top of resolveProfileSeo (robots/image unchanged).
-// MIRRORS server prerenderController PROFILE_TAB_COPY / profileTabTitle.
-const PROFILE_TAB_COPY = {
-  products:   { label: 'Digital products', desc: (n) => `Browse digital products by ${n} on Meeticulous.` },
-  courses:    { label: 'Courses',          desc: (n) => `Browse video courses by ${n} on Meeticulous.` },
-  membership: { label: 'Membership',       desc: (n) => `Join ${n}'s membership on Meeticulous.` },
-};
-export const profileTabSeo = ({ tab, host = {}, siteUrl = SITE_URL } = {}) => {
-  const copy = PROFILE_TAB_COPY[tab];
-  if (!copy) return {};
-  const name = host.name || 'Host';
-  const full = `${copy.label} by ${name} | Meeticulous`;
-  const title = full.length <= 60 ? full : `${copy.label} by ${name}`;
-  const description = copy.desc(name);
+// MIRRORS server prerenderController resolveProfileTabMeta (profileTabMeta).
+export const profileTabSeo = ({ tab, host = {}, items = [], program = null, siteUrl = SITE_URL } = {}) => {
+  if (!['products', 'courses', 'membership'].includes(tab)) return {};
+  const { title, description } = profileTabMeta({ tab, host, items, program });
   return {
-    title, description, ogTitle: title, ogDescription: description,
+    title, description, summary: description, ogTitle: title, ogDescription: description,
     canonical: `${trimSlash(siteUrl)}/${host.username}/${tab}`,
   };
 };
+
+// Robots for a catalog item page (product/course): follows the host's listability
+// (the same gate as the profile + sitemap); noindex inside the ?preview=1 frame.
+export const catalogRobots = (host = {}, preview = false) => (preview ? 'noindex'
+  : host.is_indexable === false ? 'noindex,nofollow'
+  : host.is_verified === true ? 'index,follow' : 'noindex,follow');
+
+// Public catalog item URLs — slug only, never a UUID.
+export const productPath = (username, slug) => `/${username}/products/${slug}`;
+export const coursePath = (username, slug) => `/${username}/courses/${slug}`;
 
 // Identity links backing schema.org sameAs — mirrors server sameAsFrom()
 // (server/services/seo/pageContentModel.js). Reads host.social_links (JSONB),
@@ -275,11 +503,14 @@ const profilePersonNode = ({ host = {}, services = [], rating = null, site } = {
   };
 };
 
-// Minimal Person stub for a service/product page, so the `provider`/`brand` @id
-// resolves without the full profile page. The full Person lives on the profile.
+// Minimal Person stub for a service/product/course/tab page, so the `provider` /
+// `seller` @id resolves without the full profile page (the full Person lives on
+// the profile). Carries sameAs when the payload has social_links, so the SAME
+// Person @id is identified the same way on every page of the host.
 const personStubNode = ({ host = {}, site } = {}) => {
   const url = host.username ? `${site}/${host.username}` : site;
-  return { '@type': 'Person', '@id': `${url}#person`, name: host.name || 'Host', url };
+  const sameAs = sameAsFromSocials(host.social_links || {});
+  return { '@type': 'Person', '@id': `${url}#person`, name: host.name || 'Host', url, ...(sameAs.length ? { sameAs } : {}) };
 };
 
 /**
@@ -376,38 +607,186 @@ export const serviceGraphJsonLd = ({ service = {}, vendor = {}, siteUrl = SITE_U
 };
 
 /**
- * productGraphJsonLd — digital product page (`/:username/product/:id`). Graph:
- * WebSite, Organization, Product (+ Offer), host Person stub as the brand. No
- * aggregateRating (products have no real reviews). Client-only: product pages are
- * not in the bot prerender shell. `product` is the public product payload
- * (profiles{name,username,...} nested); `username` comes from the route.
+ * Catalog graphs — product, course, profile tabs, membership. Each is ONE @graph:
+ * WebSite, Organization, the page's entity, the host Person stub (same @id as the
+ * profile), BreadcrumbList (Home › {Name} › {Tab} › {Item}) and a FAQPage only
+ * when the caller passes the FAQ the page visibly renders. URLs are slug-only
+ * (never a UUID). No aggregateRating: these items have no reviews of their own.
+ * MIRRORED in server/controllers/prerenderController.js (parity fixture).
  */
-export const productGraphJsonLd = ({ product = {}, username, siteUrl = SITE_URL } = {}) => {
+const TAB_CRUMB = { products: 'Products', courses: 'Courses', membership: 'Membership' };
+const IN_STOCK = 'https://schema.org/InStock';
+// datePublished / dateModified from a row's created_at / updated_at (freshness).
+const rowDates = (row = {}) => ({
+  ...(row.created_at ? { datePublished: row.created_at } : {}),
+  ...(row.updated_at ? { dateModified: row.updated_at } : {}),
+});
+const newest = (rows = []) => (rows || []).map((r) => r && r.updated_at).filter(Boolean).sort().pop();
+
+const catalogCrumbs = (host, tab, item) => [
+  { name: 'Home', path: '/' },
+  { name: host.name || host.username, path: `/${host.username}` },
+  { name: TAB_CRUMB[tab], path: `/${host.username}/${tab}` },
+  ...(item ? [{ name: item.name, path: item.path }] : []),
+];
+
+const withFaq = (graph, faqs, url) => {
+  if (faqs && faqs.length) graph.push(faqGraphNode(faqs, `${url}#faq`));
+  return { '@context': 'https://schema.org', '@graph': graph };
+};
+
+// Product page (/:username/products/:slug). `product` is the public payload with
+// the host nested as `profiles`; `username` comes from the route.
+export const productGraphJsonLd = ({ product = {}, username, siteUrl = SITE_URL, faqs = [] } = {}) => {
   const site = trimSlash(siteUrl);
-  const host = product.profiles || {};
-  const user = username || host.username;
-  const hostUrl = user ? `${site}/${user}` : site;
-  const url = user && product.id ? `${site}/${user}/product/${product.id}` : site;
+  const host = { ...(product.profiles || {}), username: username || (product.profiles || {}).username };
+  const hostUrl = `${site}/${host.username}`;
+  const url = product.slug ? `${site}${productPath(host.username, product.slug)}` : `${hostUrl}/products`;
   const productNode = {
     '@type': 'Product',
     '@id': `${url}#product`,
     name: product.title || 'Digital product',
     url,
     description: product.description || undefined,
+    category: capFirst(productType(product.type)),
     ...(product.thumbnail_url ? { image: product.thumbnail_url } : {}),
-    brand: { '@id': `${hostUrl}#person` },
     offers: {
       '@type': 'Offer',
       price: String(product.price ?? 0),
       priceCurrency: product.currency || 'INR',
-      availability: 'https://schema.org/InStock',
+      availability: IN_STOCK,
+      url,
+      seller: { '@id': `${hostUrl}#person` },
+    },
+  };
+  const pageNode = {
+    '@type': 'ItemPage', '@id': `${url}#webpage`, url, name: productNode.name, inLanguage: 'en-IN',
+    isPartOf: { '@id': `${site}/#website` }, breadcrumb: { '@id': `${url}#breadcrumb` },
+    mainEntity: { '@id': productNode['@id'] }, ...rowDates(product),
+  };
+  return withFaq([
+    websiteNode(site), orgNode(site), pageNode, productNode, personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, 'products', product.slug && { name: productNode.name, path: productPath(host.username, product.slug) }), site, `${url}#breadcrumb`),
+  ], faqs, url);
+};
+
+// Course page (/:username/courses/:slug).
+export const courseGraphJsonLd = ({ course = {}, username, siteUrl = SITE_URL, faqs = [] } = {}) => {
+  const site = trimSlash(siteUrl);
+  const host = { ...(course.profiles || {}), username: username || (course.profiles || {}).username };
+  const hostUrl = `${site}/${host.username}`;
+  const url = course.slug ? `${site}${coursePath(host.username, course.slug)}` : `${hostUrl}/courses`;
+  const name = course.title || 'Course';
+  const price = Number(course.price ?? 0);
+  const courseNode = {
+    '@type': 'Course',
+    '@id': `${url}#course`,
+    name,
+    url,
+    // Course rich results REQUIRE a description; fall back to a factual line.
+    description: course.description || `${name} — an online course by ${host.name || 'the host'}.`,
+    ...(course.thumbnail_url ? { image: course.thumbnail_url } : {}),
+    provider: { '@id': `${hostUrl}#person` },
+    inLanguage: 'en',
+    // Lessons carry no duration, so no courseWorkload is claimed.
+    hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online' },
+    ...rowDates(course),
+    offers: {
+      '@type': 'Offer',
+      category: price > 0 ? 'Paid' : 'Free',
+      price: String(price),
+      priceCurrency: course.currency || 'INR',
+      availability: IN_STOCK,
       url,
     },
   };
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [websiteNode(site), orgNode(site), productNode, personStubNode({ host: { ...host, username: user }, site })],
-  };
+  return withFaq([
+    websiteNode(site), orgNode(site), courseNode, personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, 'courses', course.slug && { name, path: coursePath(host.username, course.slug) }), site, `${url}#breadcrumb`),
+  ], faqs, url);
+};
+
+// Products / courses tab: CollectionPage + ItemList of the items (url + name).
+export const profileTabGraphJsonLd = ({ tab, host = {}, items = [], siteUrl = SITE_URL, name, description, faqs = [] } = {}) => {
+  const site = trimSlash(siteUrl);
+  const hostUrl = `${site}/${host.username}`;
+  const url = `${hostUrl}/${tab}`;
+  const toPath = tab === 'courses' ? coursePath : productPath;
+  const listed = (items || []).filter((i) => i && i.slug && i.title);
+  return withFaq([
+    websiteNode(site), orgNode(site),
+    {
+      '@type': 'CollectionPage', '@id': url, url,
+      ...(name ? { name } : {}),
+      ...(description ? { description } : {}),
+      inLanguage: 'en-IN',
+      ...(newest(listed) ? { dateModified: newest(listed) } : {}),
+      isPartOf: { '@id': `${site}/#website` },
+      about: { '@id': `${hostUrl}#person` },
+      mainEntity: { '@id': `${url}#list` },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+    },
+    {
+      '@type': 'ItemList', '@id': `${url}#list`, numberOfItems: listed.length,
+      itemListElement: listed.map((i, n) => ({ '@type': 'ListItem', position: n + 1, url: `${site}${toPath(host.username, i.slug)}`, name: i.title })),
+    },
+    personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, tab), site, `${url}#breadcrumb`),
+  ], faqs, url);
+};
+
+// Membership tab: CollectionPage + ItemList whose items ARE the tiers — one
+// Product per tier (all on this page, addressed by #<tier-slug>) with a monthly
+// UnitPriceSpecification (P1M / MON). Free tiers carry a ₹0 Offer, no billing spec.
+export const membershipGraphJsonLd = ({ host = {}, program = {}, tiers = [], siteUrl = SITE_URL, name, description, faqs = [] } = {}) => {
+  const site = trimSlash(siteUrl);
+  const hostUrl = `${site}/${host.username}`;
+  const url = `${hostUrl}/membership`;
+  const live = (tiers || []).filter((t) => t && t.name);
+  const anchors = tierAnchors(live);
+  const prog = (program && program.name) || 'Membership';
+  return withFaq([
+    websiteNode(site), orgNode(site),
+    {
+      '@type': 'CollectionPage', '@id': url, url,
+      ...(name ? { name } : {}),
+      ...(description ? { description } : {}),
+      inLanguage: 'en-IN',
+      ...rowDates(program || {}),
+      isPartOf: { '@id': `${site}/#website` },
+      about: { '@id': `${hostUrl}#person` },
+      mainEntity: { '@id': `${url}#list` },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+    },
+    {
+      '@type': 'ItemList', '@id': `${url}#list`, numberOfItems: live.length,
+      itemListElement: live.map((t, i) => {
+        const tierUrl = `${url}#${anchors[i]}`;
+        const price = t.type === 'free' ? 0 : Number(t.price_inr) || 0;
+        const perks = (Array.isArray(t.perks) ? t.perks : []).filter(Boolean);
+        return {
+          '@type': 'ListItem', position: i + 1,
+          item: {
+            '@type': 'Product', '@id': tierUrl, name: `${prog} — ${t.name}`, url: tierUrl,
+            ...(t.description || perks.length ? { description: t.description || perks.join('; ') } : {}),
+            ...(t.cover_url ? { image: t.cover_url } : {}),
+            offers: {
+              '@type': 'Offer', price: String(price), priceCurrency: 'INR', availability: IN_STOCK, url: tierUrl,
+              seller: { '@id': `${hostUrl}#person` },
+              ...(price > 0 ? {
+                priceSpecification: {
+                  '@type': 'UnitPriceSpecification', price: String(price), priceCurrency: 'INR',
+                  billingDuration: 'P1M', unitCode: 'MON',
+                },
+              } : {}),
+            },
+          },
+        };
+      }),
+    },
+    personStubNode({ host, site }),
+    breadcrumbNode(catalogCrumbs(host, 'membership'), site, `${url}#breadcrumb`),
+  ], faqs, url);
 };
 
 // ── Blog post ────────────────────────────────────────────────────────────────

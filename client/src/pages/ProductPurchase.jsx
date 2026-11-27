@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, useLocation, Link, Navigate } from "react-router-dom";
 import {
   getProductPublic,
   sendOtp,
@@ -18,7 +18,10 @@ import { INDIAN_STATES } from "../lib/indianStates";
 import { useMinimalFooter } from "../context/ChromeContext";
 import loadRazorpay from "../utils/loadRazorpay";
 import Seo from "../components/common/Seo";
-import { SITE_URL, productGraphJsonLd } from "../utils/seo";
+import { SITE_URL, productGraphJsonLd, productMeta, productPath, catalogRobots } from "../utils/seo";
+import { catalogFaqs, catalogSections, updatedLabel } from "../utils/profileFaqs";
+import { CatalogSections } from "../components/profile/ProfileTabs";
+import FaqAccordion from "../components/FaqAccordion";
 import toast from "react-hot-toast";
 
 const TYPE_ICONS = {
@@ -38,14 +41,20 @@ const TYPE_LABELS = {
   other: "Digital Product",
 };
 
+// FaqAccordion chrome in brand tokens (ink text, cream card, line border).
+const FAQ_COLORS = { text: "var(--fg-1)", secondary: "var(--fg-2)", card: "var(--bg-page)", border: "var(--border-1)", muted: "var(--fg-3)" };
+
 // Only treat http(s) URLs as navigable. Anything else (javascript:, data:, …)
 // is rejected so a malicious stored URL can't be opened as a link.
 const safeUrl = (url) =>
   /^https?:\/\//i.test(String(url || "")) ? url : null;
 
 const ProductPurchase = () => {
-  const { profileSlug: username, productId } = useParams();
+  // productSlug may be an old id / legacy slug — the payload's slug is canonical
+  // and the page replaces the URL with it (below).
+  const { profileSlug: username, productSlug: productKey } = useParams();
   const [searchParams] = useSearchParams();
+  const { search } = useLocation();
   const { user } = useAuth();
 
   const [product, setProduct] = useState(null);
@@ -78,11 +87,11 @@ const ProductPurchase = () => {
   const [resending, setResending] = useState(false);
 
   useEffect(() => {
-    getProductPublic(username, productId)
+    getProductPublic(username, productKey)
       .then(({ data }) => setProduct(data))
       .catch(() => toast.error("Product not found"))
       .finally(() => setLoading(false));
-  }, [productId, username]);
+  }, [productKey, username]);
 
   // Deep link from the download email (?dl=<token>) jumps straight to download.
   useEffect(() => {
@@ -308,7 +317,18 @@ const ProductPurchase = () => {
       <div className="text-center py-20 text-gray-400">Product not found</div>
     );
 
+  // An id or legacy slug in the URL → the canonical slug URL (keeps ?dl=…).
+  if (product.slug && product.slug !== productKey) {
+    return <Navigate to={`${productPath(username, product.slug)}${search}`} replace />;
+  }
+
   const host = product.profiles;
+  const meta = productMeta({ product, host: host || {} });
+  const faqs = catalogFaqs({ kind: "product", host: host || {}, item: product });
+  const sections = catalogSections({ kind: "product", host: host || {}, item: product });
+  const updated = updatedLabel(product.updated_at);
+  const canonical = `${SITE_URL}${productPath(username, product.slug || productKey)}`;
+  const isPreview = searchParams.get("preview") === "1";
 
   return (
     <div className="pp-page min-h-screen bg-canvas">
@@ -333,12 +353,12 @@ const ProductPurchase = () => {
         }
       `}</style>
       <Seo
-        title={`${product.title} — ${host?.name || "Meeticulous"}`}
-        description={(product.description || `Buy ${product.title} from ${host?.name || "this creator"} on Meeticulous.`).slice(0, 160)}
-        canonical={`${SITE_URL}/${username}/product/${productId}`}
-        image={product.cover_image || host?.profile_image || undefined}
-        robots="noindex"
-        jsonLd={[productGraphJsonLd({ product, username, siteUrl: SITE_URL })]}
+        title={meta.title}
+        description={meta.description}
+        canonical={canonical}
+        image={product.thumbnail_url || host?.profile_image || `${SITE_URL}/og-image.png`}
+        robots={catalogRobots(host || {}, isPreview)}
+        jsonLd={[productGraphJsonLd({ product, username, siteUrl: SITE_URL, faqs })]}
       />
       <div className="app-container py-8 max-w-2xl">
         <Link
@@ -361,13 +381,17 @@ const ProductPurchase = () => {
           Back to {host?.name}'s profile
         </Link>
 
+        {/* Answer-first summary (AEO/GEO) — the data-built meta description. */}
+        <p className="text-sm leading-relaxed text-ink/70 mb-1">{meta.description}</p>
+        {updated && <p className="text-xs text-ink/50 mb-4"><time dateTime={product.updated_at}>{updated}</time></p>}
+
         {/* Product card */}
         <div className="fb-card overflow-hidden mb-6">
           {product.thumbnail_url && (
             <div className="aspect-[16/9] w-full">
               <img
                 src={product.thumbnail_url}
-                alt={product.title}
+                alt={`${product.title} cover`}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -403,7 +427,7 @@ const ProductPurchase = () => {
               {host?.profile_image ? (
                 <img
                   src={host.profile_image}
-                  alt={host.name}
+                  alt={[host.name, host.profession].filter(Boolean).join(", ")}
                   className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
@@ -787,6 +811,19 @@ const ProductPurchase = () => {
             </div>
           )}
         </div>
+
+        {/* What's included · Who made it · How you get it (real data, same as the bot shell). */}
+        <div className="fb-card p-5 sm:p-6 mt-6 [&>section:first-child]:mt-0">
+          <CatalogSections sections={sections} C={FAQ_COLORS} />
+        </div>
+
+        {/* Visible FAQ — the same Q&A the FAQPage JSON-LD carries. */}
+        {faqs.length > 0 && (
+          <section className="fb-card p-5 sm:p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">Frequently asked questions</h2>
+            <FaqAccordion faqs={faqs} colors={FAQ_COLORS} />
+          </section>
+        )}
       </div>
     </div>
   );

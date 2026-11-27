@@ -13,9 +13,9 @@ import Seo from "../components/common/Seo";
 import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
 import { isNotFoundError } from "../utils/fetchError";
-import { resolveProfileSeo, profileTabSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
-import { CourseCard, ProfileMembership, ProfileTabHeading } from "../components/profile/ProfileTabs";
-import { profileFaqs } from "../utils/profileFaqs";
+import { resolveProfileSeo, profileTabSeo, profileGraphJsonLd, profileTabGraphJsonLd, membershipGraphJsonLd, productPath, SITE_URL } from "../utils/seo";
+import { CourseCard, ProfileMembership, ProfileTabHeading, ProfileTabAnswer, ProfileTabFaq, CatalogSections, UpdatedNote } from "../components/profile/ProfileTabs";
+import { profileFaqs, catalogFaqs, catalogSections, updatedLabel, latestUpdate } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import ItemCard from "../components/community/ItemCard";
 import { prerendered } from "../services/prerenderData";
@@ -199,9 +199,11 @@ const ServiceCard = ({ service: s, profileSlug }) => {
         )}
       </div>
 
-      {detailUrl
-        ? <Link to={detailUrl} className="font-display font-bold text-base leading-snug hover:opacity-60 transition-opacity line-clamp-2" style={{ color: C.text }}>{s.title}</Link>
-        : <span className="font-display font-bold text-base leading-snug line-clamp-2" style={{ color: C.text }}>{s.title}</span>}
+      <h3 className="m-0 font-display font-bold text-base leading-snug line-clamp-2">
+        {detailUrl
+          ? <Link to={detailUrl} className="hover:opacity-60 transition-opacity" style={{ color: C.text }}>{s.title}</Link>
+          : <span style={{ color: C.text }}>{s.title}</span>}
+      </h3>
 
       {desc && <p className="text-sm leading-relaxed line-clamp-2 mt-2" style={{ color: C.secondary }}>{desc}</p>}
 
@@ -260,7 +262,8 @@ const ProductCard = ({ product: p, profileSlug }) => {
   const typeLabel = String(p.type || 'other').replace(/_/g, ' ');
   const buys      = p.purchase_count || 0;
   const proof     = buys > 0 ? `${buys} ${isFree ? 'downloaded' : 'bought'}` : null;
-  const detailUrl = `/${profileSlug}/product/${p.slug || p.id}`;
+  // Slug-only public URL (an id would 301 to the slug anyway; every product has one).
+  const detailUrl = productPath(profileSlug, p.slug || p.id);
 
   return (
     <div className="flex flex-row sm:flex-col bg-white rounded-2xl overflow-hidden"
@@ -270,7 +273,7 @@ const ProductCard = ({ product: p, profileSlug }) => {
         className="relative flex-shrink-0 w-28 self-stretch sm:w-full sm:self-auto aspect-[16/9] overflow-hidden"
         style={{ background: 'linear-gradient(135deg, var(--profile-accent-light, #FFE4EA), var(--profile-accent, #960D32))' }}>
         {p.thumbnail_url
-          ? <img src={p.thumbnail_url} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          ? <img src={p.thumbnail_url} alt={`${p.title} cover`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center text-4xl opacity-50">{TYPE_ICONS[p.type] || '📦'}</span>}
         <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full"
           style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--profile-accent, #960D32)' }}>
@@ -279,11 +282,9 @@ const ProductCard = ({ product: p, profileSlug }) => {
       </Link>
 
       <div className="flex flex-col gap-1.5 p-4 flex-1 min-w-0">
-        <Link to={detailUrl}
-          className="font-display font-bold leading-snug line-clamp-2 hover:opacity-60 transition-opacity"
-          style={{ color: C.text, fontSize: 15 }}>
-          {p.title}
-        </Link>
+        <h3 className="m-0 font-display font-bold leading-snug line-clamp-2" style={{ fontSize: 15 }}>
+          <Link to={detailUrl} className="hover:opacity-60 transition-opacity" style={{ color: C.text }}>{p.title}</Link>
+        </h3>
         {proof && <div className="text-xs" style={{ color: C.muted }}>{proof}</div>}
         {p.description && (
           <p className="hidden sm:block text-sm leading-relaxed line-clamp-2" style={{ color: C.secondary }}>{p.description}</p>
@@ -645,6 +646,8 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   const bio       = host?.bio || '';
   const badges    = badgeList;
   const firstName = (host?.name || '').trim().split(/\s+/)[0] || 'the host';
+  // Descriptive avatar alt: "{Name}, {profession}".
+  const hostAlt = [host?.name, host?.profession].filter(Boolean).join(', ');
 
   const SOCIAL_ORDER = ['instagram', 'youtube', 'linkedin', 'facebook', 'twitter', 'whatsapp', 'website', 'github', 'email'];
   const socialLinks  = SOCIAL_ORDER
@@ -669,19 +672,41 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
   // A tab keeps the profile's robots/image but gets its own title, description and
   // canonical (profileTabSeo; MIRRORS the server profile-tab meta shell).
-  const baseSeo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
-  const seo = baseSeo && tab !== 'services' ? { ...baseSeo, ...profileTabSeo({ tab, host, siteUrl: SEO_SITE }) } : baseSeo;
+  const rating = { avg: reviewData.avg, count: reviewData.count };
+  const tabItems = { products, courses, membership: membership?.tiers || [] }[tab] || [];
+  const tabProgram = tab === 'membership' ? membership?.program || null : null;
+  const baseSeo = host ? resolveProfileSeo({ host, services, rating, siteUrl: SEO_SITE }) : null;
+  const seo = baseSeo && tab !== 'services'
+    ? { ...baseSeo, ...profileTabSeo({ tab, host, items: tabItems, program: tabProgram, siteUrl: SEO_SITE }) } : baseSeo;
   // Template FAQs are emitted as FAQPage ONLY when the host has host-specific facts
   // (services or a profession) — otherwise they're generic and thin (guide §5.3).
   // MIRROR this gate in server prerenderController resolveProfileMeta.
   const faqs = host ? profileFaqs({ host, services }) : [];
   const faqsHostSpecific = host && (services.length > 0 || !!host.profession);
-  const jsonLd = host ? [profileGraphJsonLd({
-    host, siteUrl: SEO_SITE, services, name: seo?.title,
-    rating: { avg: reviewData.avg, count: reviewData.count },
-    // FAQs render (and are marked up) on the services page only, not repeated per tab.
-    faqs: faqsHostSpecific && tab === 'services' ? faqs : [],
-  })] : null;
+  // Headed, self-contained sections (real data only) + visible freshness.
+  const sections = !host ? []
+    : tab === 'services'
+      ? catalogSections({ kind: 'profile', host: { ...host, product_count: products.length, course_count: courses.length }, services, rating })
+      : catalogSections({ kind: tab, host, items: tabItems });
+  // On a tab, the host's own About block (real stats) closes the page.
+  const hostAbout = host && tab !== 'services'
+    ? catalogSections({ kind: 'profile', host: { ...host, product_count: products.length, course_count: courses.length }, services, rating })
+    : [];
+  const tabUpdatedTs = tab === 'membership' ? membership?.program?.updated_at : latestUpdate(tabItems);
+  const tabUpdated = tab !== 'services' ? updatedLabel(tabUpdatedTs) : '';
+  // A tab's own visible FAQ (and its FAQPage) only while the tab lists items.
+  const tabFaqs = host && tab !== 'services' && tabItems.length
+    ? catalogFaqs({ kind: tab, host, items: tabItems, program: tabProgram }) : [];
+  // Each URL emits ONE graph: the profile (ProfilePage + Person) on /:username, a
+  // CollectionPage + ItemList on a tab. MIRRORS the server profile/tab meta shells.
+  const jsonLd = !host ? null
+    : tab === 'membership' ? [membershipGraphJsonLd({ host, program: tabProgram || {}, tiers: tabItems, siteUrl: SEO_SITE, name: seo?.title, description: seo?.description, faqs: tabFaqs })]
+    : tab !== 'services' ? [profileTabGraphJsonLd({ tab, host, items: tabItems, siteUrl: SEO_SITE, name: seo?.title, description: seo?.description, faqs: tabFaqs })]
+    : [profileGraphJsonLd({
+      host, siteUrl: SEO_SITE, services, name: seo?.title, rating,
+      // FAQs render (and are marked up) on the services page only, not repeated per tab.
+      faqs: faqsHostSpecific ? faqs : [],
+    })];
 
   if (isVanity) return <Navigate to={`/${VANITY_TARGET}`} replace />;
 
@@ -769,7 +794,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             <span className="flex-shrink-0 overflow-hidden flex items-center justify-center"
               style={{ width: 38, height: 38, borderRadius: '50%', background: `${tc}18`, color: tc }}>
               {host.profile_image
-                ? <img src={host.profile_image} alt={host.name} width={38} height={38} decoding="async" className="w-full h-full object-cover" />
+                ? <img src={host.profile_image} alt={hostAlt} width={38} height={38} decoding="async" className="w-full h-full object-cover" />
                 : <span className="font-display font-extrabold text-sm">{host.name?.charAt(0)?.toUpperCase()}</span>}
             </span>
             <span className="font-display font-bold text-[15px] truncate" style={{ color: C.text }}>{host.name}</span>
@@ -811,7 +836,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
           className="flex items-center gap-2 min-w-0 rounded-full outline-none focus-visible:ring-2" style={{ '--tw-ring-color': tc }}>
           <span className="relative flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: '50%', background: `${tc}18`, color: tc }}>
             {host.profile_image
-              ? <img src={host.profile_image} alt={host.name} width={34} height={34} decoding="async" className="w-full h-full object-cover" />
+              ? <img src={host.profile_image} alt={hostAlt} width={34} height={34} decoding="async" className="w-full h-full object-cover" />
               : <span className="font-display font-extrabold text-sm">{host.name?.charAt(0)?.toUpperCase()}</span>}
           </span>
           <span className="font-display font-bold text-[15px] truncate" style={{ color: C.text }}>{host.name}</span>
@@ -861,7 +886,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             <div className="flex flex-col items-center text-center px-5" style={{ marginTop: -44 }}>
               <span className="flex items-center justify-center overflow-hidden flex-shrink-0" style={{ position: 'relative', zIndex: 2, width: 88, height: 88, borderRadius: '50%', background: `${tc}18`, color: tc, border: `2px solid ${C.card}` }}>
                 {host.profile_image
-                  ? <img src={host.profile_image} alt={host.name} width={88} height={88} className="w-full h-full object-cover" />
+                  ? <img src={host.profile_image} alt={hostAlt} width={88} height={88} className="w-full h-full object-cover" />
                   : <span className="font-display font-extrabold" style={{ fontSize: 34 }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
               </span>
             <span className="font-display font-extrabold text-xl flex items-center gap-1.5" style={{ color: C.text, marginTop: 12 }}>
@@ -970,7 +995,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
           <aside className="hidden lg:block w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-106px)] lg:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="rounded-3xl overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}` }}>
               {/* Cover — host's, or the branded default. 90px band; avatar overlaps in front. */}
-              <HostCover src={host.cover_image} themeColor={tc} eager className="w-full" style={{ height: 90, aspectRatio: 'auto' }} />
+              <HostCover src={host.cover_image} alt={`${host.name} cover`} themeColor={tc} eager className="w-full" style={{ height: 90, aspectRatio: 'auto' }} />
               <div className="px-6 pb-6 text-center">
 
                 {/* Avatar — overlaps the cover, in front */}
@@ -978,7 +1003,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                   <div className="relative overflow-hidden flex items-center justify-center"
                     style={{ width: 80, height: 80, borderRadius: '50%', background: `${tc}18`, border: `2px solid ${C.card}` }}>
                     {host.profile_image
-                      ? <img src={host.profile_image} alt={host.name} width={80} height={80} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
+                      ? <img src={host.profile_image} alt={hostAlt} width={80} height={80} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
                       : <span className="font-display font-extrabold text-3xl" style={{ color: tc }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
                   </div>
                 </div>
@@ -1060,6 +1085,10 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             {/* Anchor for the profile nav's scroll-to (header/intro/featured removed) */}
             <div id="offerings" style={{ scrollMarginTop: 82 }} />
 
+            {/* Answer-first summary (AEO/GEO): the data-built description of this
+                profile or tab, visible, near the top. */}
+            <ProfileTabAnswer summary={seo?.summary} C={C} />
+
             {!onServices && !tabHasItems ? (
               tabFailed[tab] ? (
                 <div className="rounded-2xl py-16 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
@@ -1070,20 +1099,35 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             ) : tab === 'products' ? (
               <>
                 <ProfileTabHeading eyebrow={`${firstName}'s`} title="Digital products" C={C} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UpdatedNote ts={tabUpdatedTs} label={tabUpdated} C={C} />
+                <CatalogSections sections={sections.filter((s) => s.key === 'intro')} C={C} />
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {products.map(p => <ProductCard key={p.id} product={p} profileSlug={profileSlug} />)}
                 </div>
+                <CatalogSections sections={sections.filter((s) => s.key !== 'intro')} C={C} />
               </>
             ) : tab === 'courses' ? (
               <>
                 <ProfileTabHeading eyebrow={`${firstName}'s`} title="Courses" C={C} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UpdatedNote ts={tabUpdatedTs} label={tabUpdated} C={C} />
+                <CatalogSections sections={sections.filter((s) => s.key === 'intro')} C={C} />
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {courses.map(c => <CourseCard key={c.id} course={c} profileSlug={profileSlug} C={C} />)}
                 </div>
+                <CatalogSections sections={sections.filter((s) => s.key !== 'intro')} C={C} />
               </>
             ) : tab === 'membership' ? (
-              membership && <ProfileMembership username={profileSlug} data={membership} onReload={reloadMembership} C={C} />
-            ) : filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
+              membership && (<>
+                <UpdatedNote ts={tabUpdatedTs} label={tabUpdated} C={C} />
+                <ProfileMembership username={profileSlug} data={membership} onReload={reloadMembership} C={C} />
+                <CatalogSections sections={sections} C={C} />
+              </>)
+            ) : null}
+
+            {!onServices && tabHasItems && <CatalogSections sections={hostAbout} C={C} />}
+            {!onServices && <ProfileTabFaq faqs={tabFaqs} C={C} />}
+
+            {onServices && (filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
 
             {/* Services grid */}
             {showServices && gridServices.length > 0 && (
@@ -1113,7 +1157,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                 hostName={host.name} profileSlug={profileSlug} tc={tc} C={C} />
             )}
 
-            </>)}
+            </>))}
 
             {/* Reviews / testimonials / FAQ belong to the services page, not every tab. */}
             {onServices && (<>
@@ -1128,9 +1172,11 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {showReviews && (
+                {/* The two newest reviews stay visible (real, quotable proof); the
+                    toggle reveals the rest. */}
+                {reviewData.reviews.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {reviewData.reviews.map(r => (
+                    {(showReviews ? reviewData.reviews : reviewData.reviews.slice(0, 2)).map(r => (
                       <div key={r.id} className="rounded-2xl p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
                         <div className="flex items-start gap-3">
                           <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
@@ -1142,7 +1188,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                               <span className="text-sm font-semibold" style={{ color: C.text }}>{r.profiles?.name || 'Anonymous'}</span>
                               <Stars avg={r.rating} count={0} />
                             </div>
-                            {r.comment && <p className="text-sm leading-relaxed" style={{ color: C.secondary }}>{r.comment}</p>}
+                            {r.comment && <blockquote className="m-0 text-sm leading-relaxed" style={{ color: C.secondary }}>“{r.comment}”</blockquote>}
                             <p className="text-xs mt-1" style={{ color: C.muted }}>
                               {new Date(r.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </p>
@@ -1190,6 +1236,9 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                 </div>
               </div>
             )}
+
+            {/* About — real stats (sessions booked, reviews, catalog, member since). */}
+            <CatalogSections sections={sections} C={C} />
 
             {/* FAQ — templated from real profile data; powers the FAQPage schema. */}
             {faqs.length > 0 && (
