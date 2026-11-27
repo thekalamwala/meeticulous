@@ -68,6 +68,20 @@ describe('SEO score', () => {
   });
 });
 
+describe('SEO media: alt="" is decorative (covered), only a missing alt counts', () => {
+  const mediaOf = (images) => v2.scorePage(goodPage({ raw_signals: { ...goodPage().raw_signals, images } }), { robots: allow })
+    .seo.dimensions.find((d) => d.key === 'media');
+  it('decorative icons with alt="" do not cost points', () => {
+    const icons = Array.from({ length: 24 }, (_, i) => ({ src: `/nav/${i}.png`, alt: '' }));
+    expect(mediaOf([...icons, { src: '/cover.png', alt: 'Brand kit cover' }]).score).toBe(100);
+  });
+  it('an image with NO alt attribute (null) is uncovered', () => {
+    const m = mediaOf([{ src: '/a.png', alt: null }, { src: '/b.png', alt: 'B' }]);
+    expect(m.score).toBe(50);
+    expect(m.reason).toMatch(/1 of 2 images missing alt/);
+  });
+});
+
 describe('GEO score', () => {
   it('nosnippet caps GEO at 40', () => {
     const r = v2.scorePage(goodPage({ robots: 'index,follow,nosnippet' }), { robots: allow });
