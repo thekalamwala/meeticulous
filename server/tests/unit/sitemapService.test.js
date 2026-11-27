@@ -4,7 +4,7 @@ jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }
 
 const { supabaseAdmin } = require('../../config/supabase');
 const {
-  toLastmod, hostUrl, serviceUrl, staticEntries, hostEntries, hostTabEntries, serviceEntries, professionEntries, blogEntries,
+  toLastmod, hostUrl, serviceUrl, staticEntries, hostEntries, hostTabEntries, catalogItemEntries, serviceEntries, professionEntries, blogEntries,
   fetchProfessions, fetchBlogs,
 } = require('../../services/sitemapService');
 
@@ -77,6 +77,26 @@ describe('hostTabEntries', () => {
   });
   test('drops tabs of unlisted hosts and unknown tab names', () => {
     expect(hostTabEntries(hosts, [{ host_id: 'h2', tab: 'courses' }, { host_id: 'h1', tab: 'badges' }], SITE)).toEqual([]);
+  });
+});
+
+describe('catalogItemEntries', () => {
+  const hosts = [{ id: 'h1', username: 'john-doe', updated_at: '2026-06-20T10:00:00Z' }];
+  test('product + course detail URLs (slug scheme) with the item lastmod', () => {
+    expect(catalogItemEntries(hosts, [
+      { host_id: 'h1', kind: 'products', slug: 'seo-checklist', updated_at: '2026-11-20T10:00:00Z' },
+      { host_id: 'h1', kind: 'courses', slug: 'seo-101', updated_at: '2026-11-21T10:00:00Z' },
+    ], SITE)).toEqual([
+      { loc: 'https://meeticulous.com/john-doe/products/seo-checklist', lastmod: '2026-11-20', changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://meeticulous.com/john-doe/courses/seo-101', lastmod: '2026-11-21', changefreq: 'weekly', priority: '0.6' },
+    ]);
+  });
+  test('drops unlisted hosts, slug-less rows and unknown kinds (never an id URL)', () => {
+    expect(catalogItemEntries(hosts, [
+      { host_id: 'h2', kind: 'products', slug: 'x' },
+      { host_id: 'h1', kind: 'products', slug: null, id: '3f2b8c1e-9d4a-4e6b-8f1a-2c3d4e5f6a7b' },
+      { host_id: 'h1', kind: 'membership', slug: 'y' },
+    ], SITE)).toEqual([]);
   });
 });
 

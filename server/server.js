@@ -236,8 +236,11 @@ app.use('/prerender', require('./routes/prerenderRoutes'));
 // /api so it bypasses the API rate limiter and maintenance-mode 503s, staying
 // reachable even while the app is in maintenance. Intentionally does NOT touch
 // the DB so a slow Supabase round-trip can't flap the platform health check.
+// `commit` = the git SHA Render built (RENDER_GIT_COMMIT): the Vercel deploy
+// workflow polls it so the client prerender never bakes against the OLD API
+// (sitemap/prerender deploy race). null off Render.
 app.get('/health', (req, res) =>
-  res.status(200).json({ status: 'ok', uptime: process.uptime(), ts: Date.now() })
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), ts: Date.now(), commit: process.env.RENDER_GIT_COMMIT || null })
 );
 
 // Readiness (DB-checked) + metrics (Prometheus text, token-gated). Mounted

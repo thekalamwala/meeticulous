@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Video } from "lucide-react";
 import { getPurchasedCourses } from "../services/api";
+import { coursePath } from "../utils/seo";
 import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
 import { KeptError } from "./catalog/KeptKit";
 import { GuestEmpty, LibraryHead, btnPrimary, ring } from "./guest/GuestKit";
@@ -32,7 +33,7 @@ const MyCourses = () => {
           <ul className="grid gap-4 sm:grid-cols-2">
             {courses.map((c) => (
               <li key={c.id} className="overflow-hidden rounded-[24px] bg-white">
-                <Link to={`/${c.profiles?.username}/course/${c.slug}`} className={`block transition hover:bg-pink-50 hover:no-underline ${ring}`}>
+                <Link to={coursePath(c.profiles?.username, c.slug)} className={`block transition hover:bg-pink-50 hover:no-underline ${ring}`}>
                   {c.thumbnail_url ? (
                     <img src={c.thumbnail_url} alt="" className="aspect-video w-full object-cover" />
                   ) : (

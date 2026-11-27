@@ -36,6 +36,5 @@ describe('guest nav', () => {
     const ids = GUEST_SECTIONS.map((s) => s.id);
     expect(GUEST_GROUPS.flatMap((g) => g.ids).sort()).toEqual([...ids].sort());
     expect(GUEST_TAB_BAR.order.every((id) => ids.includes(id))).toBe(true);
-    expect(GUEST_TAB_BAR.order).toContain(GUEST_TAB_BAR.centreId);
   });
 });

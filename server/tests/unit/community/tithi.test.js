@@ -414,3 +414,17 @@ describe('publishReleaseNote happy path', () => {
     expect(store.refreshIndexable).toHaveBeenCalledWith('new-post-id');
   });
 });
+
+describe('personalizeLinks', () => {
+  test("swaps the help copy's placeholder link for the member's own username", () => {
+    expect(tithi.personalizeLinks('share meeticulous.com/your-name everywhere', { username: 'aastha' }))
+      .toBe('share meeticulous.com/aastha everywhere');
+  });
+  test('no username (most guests) → text untouched', () => {
+    expect(tithi.personalizeLinks('see meeticulous.com/your-name', { username: null })).toBe('see meeticulous.com/your-name');
+    expect(tithi.personalizeLinks('see meeticulous.com/your-name', null)).toBe('see meeticulous.com/your-name');
+  });
+  test('a real path is never rewritten', () => {
+    expect(tithi.personalizeLinks('meeticulous.com/pricing', { username: 'aastha' })).toBe('meeticulous.com/pricing');
+  });
+});

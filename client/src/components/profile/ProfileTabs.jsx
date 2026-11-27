@@ -11,6 +11,8 @@ import { joinMembership, createMembershipSubscription, syncMembershipSubscriptio
 import loadRazorpay from "../../utils/loadRazorpay";
 import { useAuth } from "../../context/AuthContext";
 import ItemCard from "../community/ItemCard";
+import FaqAccordion from "../FaqAccordion";
+import { coursePath, tierAnchors } from "../../utils/seo";
 
 const ACCENT = 'var(--profile-accent, #960D32)';
 const ACCENT_LIGHT = 'var(--profile-accent-light, #FFE4EA)';
@@ -26,10 +28,25 @@ export const ProfileTabHeading = ({ eyebrow, title, C }) => (
 
 const rupees = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 
+// Answer-first summary + visible FAQ for a profile tab (and its FAQPage schema —
+// HostProfile emits the FAQ only while this renders it). Copy comes from the
+// data-built templates in utils/seo.js + utils/profileFaqs.js.
+export const ProfileTabAnswer = ({ summary, C }) => (
+  summary ? <p className="mb-5 text-sm leading-relaxed" style={{ color: C.secondary }}>{summary}</p> : null
+);
+export const ProfileTabFaq = ({ faqs, C }) => (
+  faqs && faqs.length ? (
+    <div className="mt-10">
+      <h2 className="font-display font-bold text-xl mb-4" style={{ color: C.text }}>Frequently asked questions</h2>
+      <FaqAccordion faqs={faqs} colors={C} />
+    </div>
+  ) : null
+);
+
 // ─── Course card — cover, title, lesson count, price. Duration is not tracked
 // on lessons, so the card shows only what we have. ─────────────────────────────
 export const CourseCard = ({ course: c, profileSlug, C }) => {
-  const url = `/${profileSlug}/course/${c.slug}`;
+  const url = coursePath(profileSlug, c.slug);
   const isFree = Number(c.price) === 0;
   const lessons = Number(c.lesson_count) || 0;
   return (
@@ -37,7 +54,7 @@ export const CourseCard = ({ course: c, profileSlug, C }) => {
       <Link to={url} className="relative flex-shrink-0 w-28 self-stretch sm:w-full sm:self-auto aspect-[16/9] overflow-hidden" style={{ background: ACCENT_LIGHT }}
         aria-label={c.title}>
         {c.thumbnail_url
-          ? <img src={c.thumbnail_url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          ? <img src={c.thumbnail_url} alt={`${c.title} cover`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center" style={{ color: ACCENT }}><PlayCircle className="w-10 h-10" strokeWidth={1.6} /></span>}
       </Link>
       <div className="flex flex-col gap-1.5 p-4 flex-1 min-w-0">
@@ -69,6 +86,8 @@ export const ProfileMembership = ({ username, data, onReload, C }) => {
   const { user } = useAuth();
   const [joining, setJoining] = useState(null);
   const { host, program, tiers = [], posts = [], viewer_membership: mine } = data;
+  // #<tier-slug> anchors — the membership JSON-LD addresses each tier by them.
+  const anchors = tierAnchors(tiers);
 
   const join = async (tier) => {
     if (!user) { navigate(`/login?next=/${username}/membership`); return; }
@@ -135,13 +154,13 @@ export const ProfileMembership = ({ username, data, onReload, C }) => {
   return (
     <div>
       {program.cover_url && (
-        <img src={program.cover_url} alt="" className="mb-5 w-full rounded-3xl object-cover" style={{ height: 180, background: ACCENT_LIGHT }} />
+        <img src={program.cover_url} alt={`${program.name || 'Membership'} cover`} className="mb-5 w-full rounded-3xl object-cover" style={{ height: 180, background: ACCENT_LIGHT }} />
       )}
       <ProfileTabHeading eyebrow="Join the" title={program.name || 'Membership'} C={C} />
       {program.blurb && <p className="-mt-3 mb-5 text-sm leading-relaxed" style={{ color: C.secondary }}>{program.blurb}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {tiers.map((t) => {
+        {tiers.map((t, i) => {
           const current = mine?.tier_id === t.id;
           // What the member holds now decides whether another tier is a move up
           // (allowed, prorated) or down (cancel first — they keep the paid period).
@@ -150,9 +169,9 @@ export const ProfileMembership = ({ username, data, onReload, C }) => {
           const isUpgrade = !!mine && !current && price > heldPrice;
           const isDowngrade = !!mine && !current && price <= heldPrice;
           return (
-            <article key={t.id} className="flex flex-col bg-white rounded-2xl overflow-hidden" style={{ border: `1px solid ${C.border}` }}>
+            <article key={t.id} id={anchors[i]} className="flex flex-col bg-white rounded-2xl overflow-hidden" style={{ border: `1px solid ${C.border}`, scrollMarginTop: 90 }}>
               {t.cover_url
-                ? <img src={t.cover_url} alt="" loading="lazy" decoding="async" className="w-full aspect-[16/9] object-cover" />
+                ? <img src={t.cover_url} alt={`${t.name} tier cover`} loading="lazy" decoding="async" className="w-full aspect-[16/9] object-cover" />
                 : <div className="w-full flex items-center justify-center" style={{ height: 72, background: ACCENT_LIGHT, color: ACCENT }}><Crown className="w-7 h-7" strokeWidth={1.8} /></div>}
               <div className="flex flex-col gap-3 p-5 flex-1">
                 <div className="flex items-baseline justify-between gap-3">

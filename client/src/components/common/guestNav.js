@@ -31,11 +31,11 @@ export const GUEST_ICONS = {
   reviews: Star, rewards: Gift, profile: User, help: LifeBuoy,
 };
 
-// Phone: Home · Library · ( Bookings ) · Invoices · More. Sheet = the rest.
+// Phone: Home · Library · Bookings · Invoices · More (flat: the raised centre is for
+// create actions only, founder 2026-11-27). Sheet = the rest.
 export const GUEST_TAB_BAR = {
   sections: GUEST_SECTIONS,
   order: ['home', 'library', 'bookings', 'invoices'],
-  centreId: 'bookings',
   sheet: [
     'reviews',
     'rewards',

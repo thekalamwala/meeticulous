@@ -164,6 +164,29 @@ async function route(request) {
     }
   }
 
+  // ── Catalog items: /:username/products|courses/:slug ──────────────────────
+  // The OLD singular URLs (/:username/product|course/:key) 301 for everyone, no
+  // API call, keeping the query (emailed ?dl= links); the page / prerender then
+  // swaps an id or legacy slug for the canonical slug. On the new URLs crawlers
+  // get the prerender's real status: social/AI bots the shell (or its 301/404);
+  // Googlebot/bingbot ONLY a 301/404 — a 200 falls through to the baked page.
+  if (segments.length === 3 && !SKIP.has(segments[0].toLowerCase())) {
+    const kind = segments[1];
+    if (kind === 'product' || kind === 'course') {
+      url.pathname = `/${segments[0]}/${kind}s/${segments[2]}`;
+      return Response.redirect(url.toString(), 301);
+    }
+    if (kind === 'products' || kind === 'courses') {
+      const ua = request.headers.get('user-agent') || '';
+      const bot = BOT_UA_RE.test(ua);
+      if (bot || SEARCH_BOT_RE.test(ua)) {
+        const prerenderResponse = await fetchPrerender(url.pathname, { passStatus: true });
+        if (prerenderResponse && (bot || prerenderResponse.status !== 200)) return prerenderResponse;
+      }
+      return;
+    }
+  }
+
   // ── Bot prerender for dynamic profile/service routes ──────────────────────
   // /:username (1 segment, not a reserved route)
   // /:username/:serviceSlug (2 segments, not a reserved route)
