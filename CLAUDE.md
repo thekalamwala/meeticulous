@@ -414,8 +414,11 @@ Payments
 - Verify signatures server-side.
 
 Withholding (TDS / TCS) — when CA sign-off is required
-  Ruled by the founder-CA on 2026-11-17 (PR #371). Cite this when the
-  tax-legal-signoff gate fires, instead of re-litigating it.
+  Ruled by the founder-CA on 2026-11-17 (PR #371). The automated
+  tax-legal-signoff CI gate (label / "Sign-off:" line) was REMOVED on
+  2026-11-27 at the founder's request: no label or Sign-off line is needed to
+  merge any more. The rule below still decides when a change should get the
+  founder-CA's review before it ships; flag such lines in the PR description.
 
   Sign-off IS required where a change determines a withheld amount OR ITS
   ATTRIBUTION: rate, threshold, section, PAN/GSTIN condition, no-PAN floor,
