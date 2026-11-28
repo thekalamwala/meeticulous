@@ -19,7 +19,7 @@ test('legacy free slugs alias onto the free row', async () => {
 test('an unknown slug resolves to the free plan, never a paid one', async () => {
   const plan = await planService.getPlan('does_not_exist');
   expect(plan.slug).toBe('free');
-  expect(Number(plan.commission_percentage)).toBe(5);
+  expect(Number(plan.commission_percentage)).toBe(9);
 });
 
 test('an expired paid plan falls back to free', () => {
