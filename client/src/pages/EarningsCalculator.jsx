@@ -69,7 +69,7 @@ function useCountUp(value, ms = 500) {
 }
 
 // Numbered input: value + −/+ steppers + a slider, with min/max rails.
-function StepperInput({ n, title, sublabel, value, min, max, step, prefix, presets, onChange }) {
+function StepperInput({ n, title, sublabel, value, min, max, step, prefix, onChange }) {
   const num = Number(value) || 0;
   const clamp = (v) => Math.min(max, Math.max(min, v));
   const sliderValue = min + Math.round((clamp(num) - min) / step) * step;
@@ -125,15 +125,6 @@ function StepperInput({ n, title, sublabel, value, min, max, step, prefix, prese
         <span>{format(min)}</span>
         <span className="text-center">{format(midpoint)}</span>
         <span className="text-right">{format(max)}</span>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label={`${title} presets`}>
-        <span className="mr-1 text-[11px] text-neutral-500">Quick set</span>
-        {presets.map((preset) => (
-          <button key={preset} type="button" aria-pressed={num === preset} onClick={() => onChange(preset)}
-            className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-medium text-ink hover:border-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary aria-pressed:border-primary/30 aria-pressed:bg-primary/5 aria-pressed:text-primary">
-            {format(preset)}
-          </button>
-        ))}
       </div>
     </div>
   );
@@ -300,16 +291,16 @@ export default function EarningsCalculator() {
             {/* Inputs */}
             <div className="rounded-2xl bg-white p-6 sm:p-8">
               <StepperInput n={1} title="Set your price per session" sublabel="How much do you charge for each session?"
-                prefix="₹" value={earning} min={500} max={50000} step={500} presets={[1500, 5000, 15000, 30000]}
+                prefix="₹" value={earning} min={500} max={50000} step={500}
                 onChange={(v) => setEarning(v)} />
               <div className="mt-7">
                 <StepperInput n={2} title="Set your sessions per month" sublabel="How many sessions do you conduct?"
-                  value={bookings} min={1} max={50} step={1} presets={[5, 12, 25, 40]}
+                  value={bookings} min={1} max={50} step={1}
                   onChange={(v) => setBookings(v)} />
               </div>
               <div className="mt-7">
                 <StepperInput n={3} title="Monthly product, course & membership sales" sublabel="Downloads, video courses and memberships you sell a month (₹)."
-                  prefix="₹" value={goods} min={0} max={200000} step={1000} presets={[0, 5000, 20000, 50000]}
+                  prefix="₹" value={goods} min={0} max={200000} step={1000}
                   onChange={(v) => setGoods(v)} />
               </div>
             </div>
