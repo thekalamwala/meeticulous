@@ -21,4 +21,11 @@ describe('profileFaqs', () => {
     const noProf = profileFaqs({ host: { name: 'Jane' }, services: [] });
     expect(noProf.some((f) => /what does jane do/i.test(f.q))).toBe(false);
   });
+
+  test('leads with "What is {name} all about?" when given the profile summary, replacing "What does"', () => {
+    const summary = 'Jane is a therapist in Pune. 2 services from ₹500. Book online.';
+    const faqs = profileFaqs({ host: { name: 'Jane', profession: 'Therapist', location: 'Pune' }, services: [], summary });
+    expect(faqs[0]).toEqual({ q: 'What is Jane all about?', a: summary });
+    expect(faqs.some((f) => /what does jane do/i.test(f.q))).toBe(false);
+  });
 });
