@@ -9,7 +9,7 @@ let loaded = false;
 
 export default {
   name: 'ga4',
-  needsConsent: true,
+  consent: 'analytics',
   init() {
     if (loaded || !MEASUREMENT_ID || typeof document === 'undefined') return;
     loaded = true;

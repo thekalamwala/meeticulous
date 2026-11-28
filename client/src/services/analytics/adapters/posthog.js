@@ -40,7 +40,7 @@ function call(fn, args) {
 
 export default {
   name: 'posthog',
-  needsConsent: false, // always-on, first-party
+  consent: null, // always-on, first-party (listed under Necessary in the banner)
 
   init() {
     if (loading) return loading;

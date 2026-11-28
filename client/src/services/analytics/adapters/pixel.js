@@ -28,11 +28,10 @@ let loaded = false;
 
 export default {
   name: 'pixel',
-  // Fires pre-consent (base pixel + PageView) so retargeting audiences
-  // (e.g. "Website Visitors") fill from all prod visitors, not only those who
-  // accept the marketing banner. Deliberate business decision — DPDP/GDPR risk
-  // accepted by founder. Still prod-host gated in the bus (meeticulous.com only).
-  needsConsent: false,
+  // Loads only after the visitor allows Marketing cookies (founder decision
+  // 2026-11-28 — it used to fire pre-consent to fill retargeting audiences).
+  // Still prod-host gated in the bus (meeticulous.com only).
+  consent: 'marketing',
   init() {
     if (loaded || !PIXEL_ID || typeof window === 'undefined') return;
     loaded = true;
