@@ -54,9 +54,13 @@ describe('resolveCatalogMeta — slug canonical, everything else 301s', () => {
     expect((await resolveCatalogMeta('products', 'jane', UUID)).status).toBe(404);
   });
 
-  test('renamed host → 301 under the new username', async () => {
-    buildHostProfile.mockResolvedValueOnce({ redirect: true, username: 'jane-new' });
-    expect(await resolveCatalogMeta('courses', 'jane', 'ux-101'))
+  test('renamed host → ONE 301 to the canonical URL under the new username', async () => {
+    buildHostProfile
+      .mockResolvedValueOnce({ redirect: true, username: 'jane-new' })
+      .mockResolvedValueOnce({ payload: { ...HOST.payload, host: { ...HOST.payload.host, username: 'jane-new' } } });
+    resolveCatalogItem.mockResolvedValueOnce({ data: COURSE });
+    // old username AND a legacy slug: still a single hop to the canonical slug URL
+    expect(await resolveCatalogMeta('courses', 'jane', 'demo-ux-101'))
       .toEqual({ status: 301, redirectTo: 'https://meeticulous.com/jane-new/courses/ux-101' });
   });
 

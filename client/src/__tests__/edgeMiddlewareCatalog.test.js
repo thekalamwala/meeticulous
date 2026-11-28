@@ -7,26 +7,51 @@ const req = (path, ua) => new Request(`https://meeticulous.com${path}`, { header
 const prerenderCalls = (fetchMock) => fetchMock.mock.calls.map(([u]) => String(u)).filter((u) => u.includes('/prerender/'));
 
 let prerender; // what the prerender answers this test
+let resolver; // what /api/username/resolve answers
 let fetchMock;
 beforeEach(() => {
   prerender = () => new Response('<html>shell</html>', { status: 200 });
-  fetchMock = vi.fn(async (url) => (String(url).includes('/prerender/') ? prerender() : new Response('{}', { status: 200 })));
+  resolver = (slug) => new Response(JSON.stringify({ found: true, current: slug }), { status: 200 });
+  fetchMock = vi.fn(async (url) => {
+    const u = String(url);
+    if (u.includes('/prerender/')) return prerender();
+    const m = u.match(/\/api\/username\/resolve\/([^/?]+)/);
+    if (m) return resolver(decodeURIComponent(m[1]));
+    return new Response('{}', { status: 200 });
+  });
   vi.stubGlobal('fetch', fetchMock);
 });
+const moved = (location) => () => new Response(null, { status: 301, headers: { Location: location } });
 afterEach(() => vi.unstubAllGlobals());
 
 describe('edge: catalog item URLs', () => {
-  it('old /:u/product/:key 301s to /:u/products/:key for everyone, keeping the query, no API call', async () => {
+  it('old /:u/product/<id> 301s in ONE hop to the canonical slug URL, keeping ?dl=', async () => {
+    prerender = moved('https://meeticulous.com/jane/products/brand-kit');
     const res = await middleware(req('/jane/product/3f2b8c1e-9d4a-4e6b-8f1a-2c3d4e5f6a7b?dl=tok', CHROME));
+    expect(prerenderCalls(fetchMock)).toEqual(['https://meeticulous-api.onrender.com/prerender/jane/product/3f2b8c1e-9d4a-4e6b-8f1a-2c3d4e5f6a7b']);
     expect(res.status).toBe(301);
-    expect(res.headers.get('location')).toBe('https://meeticulous.com/jane/products/3f2b8c1e-9d4a-4e6b-8f1a-2c3d4e5f6a7b?dl=tok');
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(res.headers.get('location')).toBe('https://meeticulous.com/jane/products/brand-kit?dl=tok');
   });
 
-  it('old /:u/course/:key 301s to /:u/courses/:key', async () => {
+  it('old /:u/course/demo-x 301s straight to /:u/courses/x (legacy slug, one hop)', async () => {
+    prerender = moved('https://meeticulous.com/jane/courses/ux-101');
     const res = await middleware(req('/jane/course/demo-ux-101', GOOGLEBOT));
     expect(res.status).toBe(301);
-    expect(res.headers.get('location')).toBe('https://meeticulous.com/jane/courses/demo-ux-101');
+    expect(res.headers.get('location')).toBe('https://meeticulous.com/jane/courses/ux-101');
+  });
+
+  it('API down → falls back to the plain path rewrite (still a 301)', async () => {
+    prerender = () => { throw new Error('network'); };
+    const res = await middleware(req('/jane/product/brand-kit?dl=t', CHROME));
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe('https://meeticulous.com/jane/products/brand-kit?dl=t');
+  });
+
+  it('an unknown old key: crawlers get the 404, people fall back to the SPA path', async () => {
+    prerender = () => new Response('Not found', { status: 404 });
+    expect((await middleware(req('/jane/product/gone', GOOGLEBOT))).status).toBe(404);
+    prerender = () => new Response('Not found', { status: 404 });
+    expect((await middleware(req('/jane/product/gone', CHROME))).status).toBe(301);
   });
 
   it('a reserved first segment is never treated as a host (dashboard/product/add-new)', async () => {
@@ -58,5 +83,40 @@ describe('edge: catalog item URLs', () => {
     const res = await middleware(req('/jane/products/brand-kit', CHROME));
     expect(prerenderCalls(fetchMock)).toEqual([]);
     expect(res).toBeUndefined();
+  });
+});
+
+describe('edge: renamed host — one 301 for everything under the profile', () => {
+  beforeEach(() => {
+    resolver = (slug) => new Response(JSON.stringify(slug === 'old-jane' ? { found: true, current: 'jane' } : { found: true, current: slug }), { status: 200 });
+  });
+
+  it.each([
+    ['/old-jane/seo-consultation', '/jane/seo-consultation'],
+    ['/old-jane/products', '/jane/products'],
+    ['/old-jane/membership', '/jane/membership'],
+    ['/old-jane/products/brand-kit', '/jane/products/brand-kit'],
+    ['/old-jane/courses/ux-101', '/jane/courses/ux-101'],
+  ])('crawler on %s → %s', async (from, to) => {
+    const res = await middleware(req(from, GOOGLEBOT));
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe(`https://meeticulous.com${to}`);
+  });
+
+  it('the profile itself 301s for everyone (unchanged)', async () => {
+    const res = await middleware(req('/old-jane', CHROME));
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toBe('https://meeticulous.com/jane');
+  });
+
+  it('people on a sub-page are left to the SPA redirect (no extra API call per view)', async () => {
+    const res = await middleware(req('/old-jane/seo-consultation', CHROME));
+    expect(res).toBeUndefined();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('a current username is not redirected', async () => {
+    const res = await middleware(req('/jane/seo-consultation', GOOGLEBOT));
+    expect(res?.status).not.toBe(301);
   });
 });

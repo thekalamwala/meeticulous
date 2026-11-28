@@ -762,10 +762,18 @@ const CATALOG_COLS = {
 // { status: 200, buildHtmlArgs, ... } | { status: 404 } | { status: 301, redirectTo }
 // — a 301 whenever the key is not the canonical slug, so an id / old slug never
 // stays the public URL.
-async function resolveCatalogMeta(kind, username, key) {
+async function resolveCatalogMeta(kind, username, key, depth = 0) {
   const m = await resolveProfileMeta(username);
   if (m.status === 404) return m;
-  if (m.status === 301) return { status: 301, redirectTo: `${m.redirectTo}/${kind}/${encodeURIComponent(key)}` };
+  if (m.status === 301) {
+    // Renamed host: resolve the item under the CURRENT username too, so the
+    // redirect lands on the canonical slug URL in one hop (not /new/kind/<old key>).
+    const current = String(m.redirectTo).split('/').pop();
+    if (depth > 0 || !current) return { status: 301, redirectTo: `${m.redirectTo}/${kind}/${encodeURIComponent(key)}` };
+    const next = await resolveCatalogMeta(kind, current, key, depth + 1);
+    if (next.status === 404) return next;
+    return { status: 301, redirectTo: next.status === 301 ? next.redirectTo : next.buildHtmlArgs.canonical };
+  }
   const { host } = m.payload;
   const site = trimSlash(SITE_URL);
   const { resolveCatalogItem } = require('../services/catalogSlug');

@@ -568,7 +568,8 @@ const HostProfile = ({ tab = 'services' } = {}) => {
         const { data } = await getHostProfile(profileSlug);
         if (!alive) return;
         if (data.redirect && data.username) {
-          navigate(`/${data.username}`, { replace: true });
+          // Renamed host: keep the tab (/old/products → /new/products).
+          navigate(`/${data.username}${tab !== 'services' ? `/${tab}` : ''}`, { replace: true });
           return;
         }
         if (data.host?.username === DEMO_USERNAME) {

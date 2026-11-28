@@ -8,6 +8,7 @@ import DOMPurify from 'dompurify';
 import { svcGetPublicByProfile, getAvailableSlots } from '../services/api';
 import { applyProfileTheme, isValidHex, DEFAULT_THEME_COLOR } from '../utils/themeUtils';
 import Seo from '../components/common/Seo';
+import RenamedHostRedirect from '../components/common/RenamedHostRedirect';
 import ErrorPage from './ErrorPage';
 import TransientError from '../components/error/TransientError';
 import { isNotFoundError } from '../utils/fetchError';
@@ -862,7 +863,10 @@ export default function ServiceDetail() {
   // non-noindex fallback. A genuinely gone service (404, or an empty payload) still
   // renders the branded noindex ErrorPage, avoiding the thin-200 "soft 404".
   if (error === 'transient') return <TransientError message="This service didn’t load. Please try again." />;
-  if (error === 'notfound' || !data) return <ErrorPage code={404} />;
+  // A 404 may just be an OLD username: RenamedHostRedirect sends /old/<service>
+  // to /new/<service>, else shows the real 404.
+  if (error === 'notfound') return <RenamedHostRedirect username={profileSlug}><ErrorPage code={404} /></RenamedHostRedirect>;
+  if (!data) return <ErrorPage code={404} />;
 
   const { service, vendor, totalServices, totalBookings, reviews, avgRating, ratingBreakdown, bookingFee, bookingFeeBreakdown } = data;
 

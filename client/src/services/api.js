@@ -453,6 +453,8 @@ export const adminSetUserCategories = (id, data) => API.patch(`/admin/users/${id
 
 // ── Host ──────────────────────────────────────────────────────
 export const getHostProfile   = (username)       => API.get(`/host/${username}`);
+// Old/current username lookup (username_history) — { found, current } or 404.
+export const resolveUsername  = (slug)           => API.get(`/username/resolve/${encodeURIComponent(slug)}`);
 export const getServiceBySlug = (username, slug) => API.get(`/host/${username}/${slug}`);
 export const updateProfile    = (data)           => API.put('/host/profile', data);
 // Permanent username (gated: WhatsApp-verified, max 2/365d, 6-month gap).

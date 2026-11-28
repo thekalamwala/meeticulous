@@ -11,13 +11,14 @@ vi.mock('../services/api', () => ({
   getProductPublic: vi.fn(),
   getCoursePublic: vi.fn(),
   getCourseContent: vi.fn().mockRejectedValue(new Error('not owned')),
+  resolveUsername: vi.fn().mockResolvedValue({ data: { found: true, current: 'jane' } }),
   sendOtp: vi.fn(), createProductOrder: vi.fn(), verifyProductPayment: vi.fn(),
   freeDownloadProduct: vi.fn(), downloadProduct: vi.fn(), resendProductLink: vi.fn(),
   createCourseOrder: vi.fn(), verifyCoursePayment: vi.fn(),
 }));
 vi.mock('../context/AuthContext', () => ({ useAuth: () => ({ user: null }) }));
 
-import { getProductPublic, getCoursePublic } from '../services/api';
+import { getProductPublic, getCoursePublic, resolveUsername } from '../services/api';
 import ProductPurchase from '../pages/ProductPurchase';
 import CoursePage from '../pages/CoursePage';
 
@@ -32,6 +33,8 @@ const renderAt = (path) => render(
     <Routes>
       <Route path="/:profileSlug/products/:productSlug" element={<><ProductPurchase /><Where /></>} />
       <Route path="/:username/courses/:slug" element={<><CoursePage /><Where /></>} />
+      <Route path="/:profileSlug/product/:productSlug" element={<><ProductPurchase /><Where /></>} />
+      <Route path="/:username/course/:slug" element={<><CoursePage /><Where /></>} />
     </Routes>
   </MemoryRouter>,
 );
@@ -92,5 +95,36 @@ describe('course page', () => {
     expect(screen.getByText("What's included in UX 101?")).toBeTruthy();
     expect(screen.getByRole('heading', { level: 2, name: "What you'll learn" })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 2, name: 'How access works' })).toBeTruthy();
+  });
+});
+
+describe('one-hop redirects in the SPA', () => {
+  test('old /:u/product/<id>?dl= → /:u/products/<slug>?dl= directly', async () => {
+    getProductPublic.mockResolvedValue({ data: PRODUCT });
+    renderAt(`/jane/product/${UUID}?dl=tok`);
+    await waitFor(() => expect(screen.getByTestId('where').textContent).toBe('/jane/products/brand-kit?dl=tok'));
+  });
+
+  test('old /:u/course/<canonical slug> still moves to /:u/courses/<slug>', async () => {
+    getCoursePublic.mockResolvedValue({ data: COURSE });
+    renderAt('/jane/course/ux-101');
+    await waitFor(() => expect(screen.getByTestId('where').textContent).toBe('/jane/courses/ux-101'));
+  });
+
+  test('a renamed host: /old/products/x 404s, then lands on /new/products/x', async () => {
+    getProductPublic.mockImplementation(async (u) => {
+      if (u === 'old-jane') throw Object.assign(new Error('nf'), { response: { status: 404 } });
+      return { data: PRODUCT };
+    });
+    resolveUsername.mockResolvedValueOnce({ data: { found: true, current: 'jane' } });
+    renderAt('/old-jane/products/brand-kit');
+    await waitFor(() => expect(screen.getByTestId('where').textContent).toBe('/jane/products/brand-kit'));
+  });
+
+  test('a genuinely unknown product still shows not-found', async () => {
+    getProductPublic.mockRejectedValue(Object.assign(new Error('nf'), { response: { status: 404 } }));
+    resolveUsername.mockResolvedValueOnce({ data: { found: true, current: 'jane' } });
+    renderAt('/jane/products/nope');
+    await waitFor(() => expect(screen.getByText('Product not found')).toBeTruthy());
   });
 });

@@ -1,54 +1,61 @@
 const {
-  baseFromEmail, generateCandidate, generateUnique, randomSuffix,
+  baseFromEmail, baseFromName, baseFor, generateUnique,
 } = require('../../utils/usernameGenerator');
 const { isReserved } = require('../../utils/reservedUsernames');
 
+// Usernames are public URLs: readable, from the name, -2/-3 on a clash, never random.
+const takenSet = (...taken) => jest.fn(async (slug) => taken.includes(slug));
+
 describe('usernameGenerator', () => {
-  it('uses the email handle + 4 random base36 chars', () => {
-    for (let i = 0; i < 50; i++) {
-      const u = generateCandidate('Priya.Sharma+work@gmail.com');
-      expect(u).toMatch(/^priya-sharma-[a-z0-9]{4}$/);
-    }
+  it('derives the base from the NAME first', () => {
+    expect(baseFor({ name: 'Mohini Daf', email: 'mohinidaf5@gmail.com' })).toBe('mohini-daf');
+    expect(baseFromName('José  Álvarez')).toBe('jose-alvarez');
+    expect(baseFromName('Dr. Asha R. Rao')).toBe('dr-asha-r-rao');
   });
 
-  it('two people with the same handle get different usernames', () => {
-    const seen = new Set();
-    for (let i = 0; i < 50; i++) seen.add(generateCandidate('priya@gmail.com'));
-    expect(seen.size).toBeGreaterThan(45);
+  it('falls back to the email handle, then "user"', () => {
+    expect(baseFor({ name: 'Guest', email: 'Priya.Sharma+work@gmail.com' })).toBe('priya-sharma');
+    expect(baseFor({ name: '', email: 'rahul@gmail.com' })).toBe('rahul');
+    expect(baseFor({ name: 'Al', email: 'ab@x.com' })).toBe('user'); // both too short
+    expect(baseFor({})).toBe('user');
   });
 
-  it('baseFromEmail strips junk, caps length, falls back to "user"', () => {
+  it('baseFromEmail strips junk, caps length, rejects reserved/short', () => {
     expect(baseFromEmail('a_b__c@x.com')).toBe('a-b-c');
-    expect(baseFromEmail('ab@x.com')).toBe('user');          // too short
-    expect(baseFromEmail('admin@x.com')).toBe('user');       // reserved
-    expect(baseFromEmail(undefined)).toBe('user');           // phone-only / no email
-    expect(baseFromEmail('---@x.com')).toBe('user');
-    expect(baseFromEmail(`${'abcd'.repeat(10)}@x.com`)).toHaveLength(25);
-    expect(generateCandidate(`${'abcd'.repeat(10)}@x.com`).length).toBeLessThanOrEqual(30);
+    expect(baseFromEmail('ab@x.com')).toBeNull();
+    expect(baseFromEmail('admin@x.com')).toBeNull();
+    expect(baseFromEmail(undefined)).toBeNull();
+    expect(baseFromEmail('---@x.com')).toBeNull();
+    expect(baseFromEmail(`${'abcd'.repeat(10)}@x.com`)).toHaveLength(26);
   });
 
-  it('randomSuffix is lowercase base36 of the requested length', () => {
-    const s = randomSuffix(4);
-    expect(s).toHaveLength(4);
-    expect(s).toMatch(/^[a-z0-9]+$/);
+  it('a reserved or placeholder name never becomes the base', () => {
+    expect(baseFromName('Admin')).toBeNull();
+    expect(baseFromName('Guest')).toBeNull();
+    expect(baseFromName('someone@example.com')).toBeNull();
   });
 
-  it('generateUnique returns the first candidate not already used', async () => {
-    const existsFn = jest.fn().mockResolvedValue(false);
-    const u = await generateUnique(existsFn, 'rahul@gmail.com');
+  it('generateUnique returns the bare base when it is free', async () => {
+    const existsFn = takenSet();
+    const u = await generateUnique(existsFn, { name: 'Mohini Daf', email: 'mohinidaf5@gmail.com' });
+    expect(u).toBe('mohini-daf');
     expect(existsFn).toHaveBeenCalledTimes(1);
-    expect(u).toMatch(/^rahul-[a-z0-9]{4}$/);
     expect(isReserved(u)).toBe(false);
   });
 
-  it('generateUnique retries past taken candidates', async () => {
-    const existsFn = jest.fn()
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-      .mockResolvedValue(false);
-    const u = await generateUnique(existsFn, 'rahul@gmail.com');
-    expect(existsFn).toHaveBeenCalledTimes(3);
-    expect(u).toBeTruthy();
+  it('collisions take -2, -3 … (digits only, no random characters)', async () => {
+    expect(await generateUnique(takenSet('mohini-daf'), { name: 'Mohini Daf' })).toBe('mohini-daf-2');
+    expect(await generateUnique(takenSet('mohini-daf', 'mohini-daf-2'), { name: 'Mohini Daf' })).toBe('mohini-daf-3');
+  });
+
+  it('the no-name/no-email fallback starts at user-2', async () => {
+    expect(await generateUnique(takenSet(), {})).toBe('user-2');
+  });
+
+  it('every candidate fits the 3–30 char username format', async () => {
+    const u = await generateUnique(takenSet(), { name: 'A'.repeat(60) });
+    expect(u.length).toBeLessThanOrEqual(30);
+    expect(u).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
   });
 });
 

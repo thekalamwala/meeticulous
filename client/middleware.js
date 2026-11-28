@@ -68,11 +68,6 @@ export const config = {
   matcher: ['/((?!api/|assets/|_next/|favicon|.*\\.).*)'],
 };
 
-function isBot(request) {
-  const ua = request.headers.get('user-agent') || '';
-  return BOT_UA_RE.test(ua);
-}
-
 // Community crawlers: Googlebot/Bing included HERE ONLY (see the /community branch in route()).
 const SEARCH_BOT_RE = /Googlebot|bingbot/i;
 
@@ -164,75 +159,106 @@ async function route(request) {
     }
   }
 
-  // ── Catalog items: /:username/products|courses/:slug ──────────────────────
-  // The OLD singular URLs (/:username/product|course/:key) 301 for everyone, no
-  // API call, keeping the query (emailed ?dl= links); the page / prerender then
-  // swaps an id or legacy slug for the canonical slug. On the new URLs crawlers
-  // get the prerender's real status: social/AI bots the shell (or its 301/404);
-  // Googlebot/bingbot ONLY a 301/404 — a 200 falls through to the baked page.
-  if (segments.length === 3 && !SKIP.has(segments[0].toLowerCase())) {
-    const kind = segments[1];
-    if (kind === 'product' || kind === 'course') {
-      url.pathname = `/${segments[0]}/${kind}s/${segments[2]}`;
+  const first = (segments[0] || '').toLowerCase();
+  const hostPath = segments.length >= 1 && !SKIP.has(first);
+  const ua = request.headers.get('user-agent') || '';
+  const bot = BOT_UA_RE.test(ua);
+  const crawler = bot || SEARCH_BOT_RE.test(ua);
+
+  // ── Old catalog URLs → the canonical slug URL in ONE hop ──────────────────
+  // /:username/product|course/:key (key = slug, old id or legacy slug; username
+  // may be a renamed one): the prerender endpoint resolves all of it and answers
+  // a 301 straight to /:current/products|courses/<slug>. The query is kept
+  // (emailed ?dl= links). If the API is unreachable, fall back to the plain path
+  // rewrite (the page then finishes the job); a 404 is passed to crawlers only.
+  if (hostPath && segments.length === 3 && (segments[1] === 'product' || segments[1] === 'course')) {
+    const resolved = await fetchPrerender(url.pathname, { passStatus: true });
+    if (resolved && resolved.status === 301) return withSearch(resolved, url.search);
+    if (resolved && resolved.status === 404 && crawler) return resolved;
+    url.pathname = `/${segments[0]}/${segments[1]}s/${segments[2]}`;
+    return Response.redirect(url.toString(), 301);
+  }
+
+  // ── Renamed host: crawlers get ONE 301 for everything under the profile ───
+  // /old/<service>, /old/products|courses/<slug>, /old/membership … → /new/…
+  // (the single-segment profile is handled below, for everyone). People are
+  // redirected by the SPA (RenamedHostRedirect / HostProfile), which avoids an
+  // extra API round trip on every human page view.
+  if (hostPath && segments.length >= 2 && crawler) {
+    const r = await resolveUsername(first);
+    if (r && r.found && r.current && r.current.toLowerCase() !== first) {
+      url.pathname = `/${[r.current, ...segments.slice(1)].join('/')}`;
       return Response.redirect(url.toString(), 301);
     }
-    if (kind === 'products' || kind === 'courses') {
-      const ua = request.headers.get('user-agent') || '';
-      const bot = BOT_UA_RE.test(ua);
-      if (bot || SEARCH_BOT_RE.test(ua)) {
-        const prerenderResponse = await fetchPrerender(url.pathname, { passStatus: true });
-        if (prerenderResponse && (bot || prerenderResponse.status !== 200)) return prerenderResponse;
-      }
-      return;
+  }
+
+  // ── Catalog items: /:username/products|courses/:slug ──────────────────────
+  // On the new URLs crawlers get the prerender's real status: social/AI bots the
+  // shell (or its 301/404); Googlebot/bingbot ONLY a 301/404 — a 200 falls
+  // through to the baked page.
+  if (hostPath && segments.length === 3 && (segments[1] === 'products' || segments[1] === 'courses')) {
+    if (crawler) {
+      const prerenderResponse = await fetchPrerender(url.pathname, { passStatus: true });
+      if (prerenderResponse && (bot || prerenderResponse.status !== 200)) return prerenderResponse;
     }
+    return;
   }
 
   // ── Bot prerender for dynamic profile/service routes ──────────────────────
   // /:username (1 segment, not a reserved route)
   // /:username/:serviceSlug (2 segments, not a reserved route)
-  if (isBot(request) && segments.length >= 1 && segments.length <= 2) {
-    const first = segments[0].toLowerCase();
-    if (!SKIP.has(first)) {
-      const prerenderResponse = await fetchPrerender(url.pathname);
-      if (prerenderResponse) return prerenderResponse;
-      // Fall through to SPA on prerender failure
-    }
+  if (bot && hostPath && segments.length <= 2) {
+    const prerenderResponse = await fetchPrerender(url.pathname);
+    if (prerenderResponse) return prerenderResponse;
+    // Fall through to SPA on prerender failure
   }
 
   // ── Username redirect (human + bot traffic) ───────────────────────────────
-  if (segments.length !== 1) return;
+  if (segments.length !== 1 || !hostPath) return;
 
-  const slug = segments[0].toLowerCase();
-  if (SKIP.has(slug)) return;
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
-    let res;
-    try {
-      res = await fetch(`${API_ORIGIN}/api/username/resolve/${encodeURIComponent(slug)}`, {
-        headers: { accept: 'application/json' },
-        signal: controller.signal,
-      });
-    } finally {
-      clearTimeout(timeout);
-    }
-    if (res.status === 404) {
-      // Resolver is explicit: this username never existed. Real 404, noindex —
-      // humans get a link out, crawlers drop the URL instead of indexing the
-      // 200 homepage shell.
-      return new Response(renderProfile404Html(slug), {
-        status: 404,
-        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
-      });
-    }
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data.found && data.current && data.current !== slug) {
-      url.pathname = `/${data.current}`;
-      return Response.redirect(url.toString(), 301);
-    }
-  } catch (_) {
-    // fail open
+  const slug = first;
+  const r = await resolveUsername(slug);
+  if (!r) return; // fail open
+  if (r.notFound) {
+    // Resolver is explicit: this username never existed. Real 404, noindex —
+    // humans get a link out, crawlers drop the URL instead of indexing the
+    // 200 homepage shell.
+    return new Response(renderProfile404Html(slug), {
+      status: 404,
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+    });
   }
+  if (r.found && r.current && r.current !== slug) {
+    url.pathname = `/${r.current}`;
+    return Response.redirect(url.toString(), 301);
+  }
+}
+
+// GET /api/username/resolve/:slug → { found, current } | { notFound: true } | null
+// (null = network error / timeout / 5xx: callers fail open).
+async function resolveUsername(slug) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2000);
+  try {
+    const res = await fetch(`${API_ORIGIN}/api/username/resolve/${encodeURIComponent(slug)}`, {
+      headers: { accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (res.status === 404) return { notFound: true };
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (_) {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+// A 301 from the prerender keeps the request's query string (?dl=…).
+function withSearch(res, search) {
+  const location = res.headers.get('location');
+  if (!search || !location || location.includes('?')) return res;
+  const headers = new Headers(res.headers);
+  headers.set('Location', `${location}${search}`);
+  return new Response(null, { status: 301, headers });
 }
