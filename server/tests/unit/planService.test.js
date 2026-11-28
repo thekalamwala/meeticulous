@@ -89,14 +89,26 @@ describe('getRate on a partially-migrated DB (row has no commission_rates)', () 
   });
 });
 
-describe('appointmentRateFor — the Pro 25,000/month band (acceptance test 9)', () => {
-  test('MTD-before below the band → 0%, even when this booking crosses it', async () => {
-    expect(await planService.appointmentRateFor('premium', 24000)).toBe(0);
+// Founder ruling 2026-11-28 (v3.232): Pro has no ₹25,000 band — 0% at any volume.
+// The band mechanism stays (data-driven), so it is pinned on a DB row that sets one.
+describe('appointmentRateFor', () => {
+  test('Pro is 0% on appointments however much the host has earned this month', async () => {
+    expect(await planService.appointmentRateFor('premium', 0)).toBe(0);
+    expect(await planService.appointmentRateFor('premium', 25000)).toBe(0);
+    expect(await planService.appointmentRateFor('premium', 1e7)).toBe(0);
   });
-  test('MTD-before at or above the band → 3% on the whole booking', async () => {
-    expect(await planService.appointmentRateFor('premium', 25000)).toBe(3);
-    expect(await planService.appointmentRateFor('premium', 26000)).toBe(3);
+
+  test('a plan row that sets a band: whole booking at the above rate once MTD-before reaches it', async () => {
+    const { supabaseAdmin } = require('../../config/supabase');
+    supabaseAdmin.from.mockImplementationOnce(() => ({ select: () => ({ order: () => Promise.resolve({
+      data: [{ slug: 'banded', commission_percentage: 0, limits: {},
+        commission_rates: { appointments: 0, appointment_band_inr: 25000, appointment_rate_above_band: 3 } }], error: null }) }) }));
+    planService.clearCache();
+    expect(await planService.appointmentRateFor('banded', 24000)).toBe(0);
+    expect(await planService.appointmentRateFor('banded', 25000)).toBe(3);
+    planService.clearCache();
   });
+
   test('Starter has no band — 9% at any volume', async () => {
     expect(await planService.appointmentRateFor('free', 0)).toBe(9);
     expect(await planService.appointmentRateFor('free', 1e7)).toBe(9);

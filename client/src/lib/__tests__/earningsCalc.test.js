@@ -95,32 +95,32 @@ describe('the upgrade verdict', () => {
 });
 
 describe('platformFeesPerYear', () => {
-  it('prices Topmate at 10%/20% plus GST on the fee, Starter at 9%, Pro yearly + 3% above the band', () => {
+  it('prices Topmate at 10%/20% plus GST on the fee, Starter at 9%, Pro flat (no band since 2026-11-28)', () => {
     // ₹5,000 × 12 sessions/month × 12 months = ₹7,20,000 in sales
     const rows = Object.fromEntries(platformFeesPerYear(5000, 12).map((r) => [r.key, r.fee]));
     expect(rows['topmate-own']).toBe(84960);
     expect(rows['topmate-marketplace']).toBe(169920);
     expect(rows.free).toBe(64800);
-    // ₹60,000 a month: 5 bookings under ₹25,000 at 0%, 7 at 3% (₹150 each) → ₹12,600 a year + the plan.
-    expect(rows.premium).toBe(ANNUAL_FEE.premium + 12600);
+    expect(rows.premium).toBe(ANNUAL_FEE.premium);
   });
 });
 
 // Pricing v2 (spec §4 item 11).
-describe('Pro ₹25,000 monthly band', () => {
+// The band helper stays for a plan that ever sets one; Pro has none (2026-11-28).
+describe('monthly band helper', () => {
   it('counts bookings whose month-to-date BEFORE them is under the band', () => {
     expect(bookingsBelowBand(5000, 12, 25000)).toBe(5);   // 0, 5k, 10k, 15k, 20k
     expect(bookingsBelowBand(2000, 12, 25000)).toBe(12);  // never reaches 25k before a booking
     expect(bookingsBelowBand(25000, 3, 25000)).toBe(1);   // the 2nd starts at exactly 25k → 3%
   });
-  it('a month under the band costs Pro nothing extra', () => {
+  it('Pro pays no band commission at any volume', () => {
     expect(proBandCommissionPerYear(2000, 12)).toBe(0);
+    expect(proBandCommissionPerYear(50000, 50)).toBe(0);
   });
-  it('Pro take-home reflects 3% on the whole bookings above the band', () => {
-    // ₹5,000 × 12 a month: 5 at 0% keep ₹4,894.80 (− ₹100.20 gateway − ₹5 TDS),
-    // 7 at 3% keep ₹4,744.80 (− ₹150 more). Month ₹57,687.60 → year ₹6,92,251.20.
+  it('Pro keeps 0% on every booking: ₹5,000 × 12 a month → ₹4,894.80 each, all year', () => {
+    // − ₹100.20 gateway − ₹5 TDS, no commission: 144 × ₹4,894.80 = ₹7,04,851.20.
     const pro = resultsFor(5000, 12, 'annual').find((r) => r.plan.key === 'premium');
-    expect(pro.grossAnnual).toBe(692251.2);
+    expect(pro.grossAnnual).toBe(704851.2);
   });
 });
 

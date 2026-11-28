@@ -53,6 +53,8 @@ Add `subscription_plans.commission_rates jsonb`:
 // premium  AND  premium_founding
 { "appointments": 0, "products": 4, "courses": 4, "memberships": 4,
   "appointment_band_inr": 25000, "appointment_rate_above_band": 3 }
+// FOUNDER RULING 2026-11-28 (v3.232): band removed — both keys null; Pro is 0% on
+// appointments with no ceiling.
 ```
 
 Add to `planService`:
@@ -226,7 +228,7 @@ Honesty rule from the file's own header: **never list what the server doesn't en
 |---|---|---|
 | Monthly price | ₹0 | ₹199 |
 | Yearly price | ₹0 | ₹1,199 |
-| Appointments commission | 9% | 0% (3% above ₹25,000/month) |
+| Appointments commission | 9% | 0%, no monthly limit *(founder ruling 2026-11-28; was 3% above ₹25,000/month)* |
 | Products, courses, memberships | 12% | 4% |
 | Guest booking fee | ₹10 flat on appointments, GST included · none under ₹300 · none on products, courses or memberships | same |
 | Booking page + custom URL · online & in-person · UPI/cards | ✓ | ✓ |

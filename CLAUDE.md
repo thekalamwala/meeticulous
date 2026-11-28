@@ -367,6 +367,9 @@ Items previously listed here as pending are now live:
   `commission_gst` (NOT NULL 0) / `commission_taxable` on `product_purchases` (54 rows) and
   `course_purchases` (21 rows), all existing rows at 0; no anon/authenticated write grants. Dormant until
   the pricing-v2 code deploys (it writes the product/course commission snapshot).
+- **v3.232** (`v3.232_pro_no_appointment_band.sql`) — applied 2026-11-28 on the Meeticulous DB and
+  verified: Pro + founding `commission_rates` band keys set to null — founder ruling: no ₹25,000 ceiling,
+  Pro is 0% on appointments however much the host earns (goods stay 4%). Band code stays, dormant.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

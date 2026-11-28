@@ -109,7 +109,7 @@ describe("pricing v2", () => {
   const row = (label) => rows.find((r) => r.label === label);
 
   it("commission rows match the rate maps", () => {
-    expect(row("Commission on appointments")).toMatchObject({ free: "9%", premium: "0% (3% above ₹25,000 a month)" });
+    expect(row("Commission on appointments")).toMatchObject({ free: "9%", premium: "0%, no monthly limit" });
     expect(row("Commission on products, courses & memberships")).toMatchObject({ free: "12%", premium: "4%" });
   });
 

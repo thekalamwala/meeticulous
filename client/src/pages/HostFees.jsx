@@ -71,7 +71,7 @@ const HostFees = () => (
             <tr>
               <Td><strong>{PREMIUM_PLAN.name}</strong></Td>
               <Td>₹10 incl. GST, on appointments of ₹300+</Td>
-              <Td><strong>0%</strong> of appointments up to ₹25,000 a month, then <strong>3%</strong> · <strong>4%</strong> of products, courses &amp; memberships</Td>
+              <Td><strong>0%</strong> of appointments, no monthly limit · <strong>4%</strong> of products, courses &amp; memberships</Td>
               <Td>actual gateway charge</Td>
             </tr>
             <tr>
@@ -84,8 +84,7 @@ const HostFees = () => (
       <p className="pt-1">
         The <strong>booking fee</strong> is charged to your Guest on top of your price, on appointments only — products,
         courses and memberships carry no booking fee. The <strong>commission</strong> is charged to you. On{' '}
-        {PREMIUM_PLAN.name}, the 3% applies to a whole booking once your appointment bookings that calendar month
-        (IST) have already reached ₹25,000 — a single booking is never split across the threshold. Subscription prices for {PREMIUM_PLAN.name} and Enterprise are shown
+        {PREMIUM_PLAN.name}, appointments carry no commission, however much you earn. Subscription prices for {PREMIUM_PLAN.name} and Enterprise are shown
         on the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link> and are charged
         separately with GST.
       </p>

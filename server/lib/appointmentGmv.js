@@ -1,7 +1,9 @@
 /**
  * server/lib/appointmentGmv.js — a host's appointment GMV this month (pricing v2 §2).
  *
- * Feeds planService.appointmentRateFor (Pro's ₹25,000/month band). Called INSIDE
+ * Feeds planService.appointmentRateFor for a plan with a monthly band. No plan has
+ * one since 2026-11-28 (Pro's ₹25,000 band was removed, v3.232), so this read is skipped;
+ * the mechanism stays so a band can be set from subscription_plans without code. Called INSIDE
  * the per-host booking-quota lock in bookingController.createBooking — the same
  * lock lib/bookingCaps runs in — so two concurrent bookings can't both read
  * "below band". It runs before this booking's row is inserted, so the figure is
