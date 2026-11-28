@@ -14,7 +14,7 @@
 //
 // Consent: first-party, no third-party cookie, no cross-site identifier, no PII.
 // That puts it in the always-on tier alongside PostHog and Pixel. If a later
-// decision says otherwise, flip needsConsent and the rollups simply have a gap
+// decision says otherwise, give it a `consent` category and the rollups simply have a gap
 // that the "as of" stamp already shows.
 
 const ENDPOINT = '/api/analytics/collect';
@@ -179,7 +179,7 @@ function schedule() {
 
 export default {
   name: 'firstParty',
-  needsConsent: false,
+  consent: null,
 
   init() {
     if (typeof window === 'undefined') return;

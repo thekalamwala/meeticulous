@@ -8,16 +8,16 @@
 //   import { EVENTS } from '@/services/analytics/events';
 //   analytics.track(EVENTS.BOOKING_STARTED, { service_id });
 //
-// Consent model:
-//   - PostHog + Meta Pixel (needsConsent:false) are always-on; their SDKs are
+// Consent model (per category — see consent.js):
+//   - PostHog + first-party (no `consent` category) are always-on; their SDKs are
 //     dynamically imported and initialised on first interaction / 4s after load
-//     (see AnalyticsBridge) so
-//     they stay out of the initial bundle and off the first-paint critical path.
-//     The Pixel fires pre-consent by deliberate business decision (fills
-//     retargeting audiences from all prod visitors — see adapters/pixel.js).
-//   - GA4 / Clarity / GTM (needsConsent:true) load ONLY after the user grants
-//     marketing consent. Events fired before consent are dropped for those tools
-//     (not replayed) — we never backfill pre-consent activity into those tools.
+//     (see AnalyticsBridge) so they stay out of the initial bundle and off the
+//     first-paint critical path.
+//   - GA4 / Clarity (consent: 'analytics') and Meta Pixel / GTM (consent:
+//     'marketing') load ONLY after the visitor allows that category. Events fired
+//     before consent are dropped for those tools (not replayed) — we never backfill
+//     pre-consent activity. (The Pixel used to fire pre-consent; founder moved it
+//     behind the Marketing toggle on 2026-11-28.)
 import { assertKnownEvent } from './events';
 import { getConsent, onConsentChange, setConsent, isGranted, hasDecided } from './consent';
 import posthog from './adapters/posthog';
@@ -60,19 +60,18 @@ function initAdapter(a) {
 }
 
 function activeAdapters() {
-  return ADAPTERS.filter((a) => !a.needsConsent || isGranted());
+  return ADAPTERS.filter((a) => !a.consent || isGranted(a.consent));
 }
 
 // Boot (call on first idle): always-on adapters now; gated adapters when (and if)
 // consent is granted.
 export function initAnalytics() {
   if (!analyticsEnabled()) return;
-  ADAPTERS.filter((a) => !a.needsConsent).forEach(initAdapter);
-  if (isGranted()) ADAPTERS.filter((a) => a.needsConsent).forEach(initAdapter);
-  onConsentChange((v) => {
-    if (v === 'granted') ADAPTERS.filter((a) => a.needsConsent).forEach(initAdapter);
-    // 'denied' after a prior 'granted' would need a reload to fully unload SDKs;
-    // we simply stop routing new events to them (activeAdapters() drops them).
+  ADAPTERS.filter((a) => !a.consent || isGranted(a.consent)).forEach(initAdapter);
+  onConsentChange((state) => {
+    ADAPTERS.filter((a) => a.consent && state[a.consent]).forEach(initAdapter);
+    // Withdrawing a category after it was allowed would need a reload to fully
+    // unload SDKs; we simply stop routing new events to them (activeAdapters()).
   });
 }
 
