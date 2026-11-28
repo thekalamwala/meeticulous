@@ -5,6 +5,7 @@
 
 const store = require('../services/community/store');
 const notify = require('../services/community/notify');
+const tithi = require('../services/community/tithi');
 const { validateDraft, validateComment, checkSafety, makeSlug, extractMentions } = require('../services/community/text');
 const { serializeItem, serializeComment } = require('../services/community/serialize');
 const { canView, filterVisible, filterVisibleComments } = require('../services/community/visibility');
@@ -109,6 +110,8 @@ async function recordMentions({ item, comment, text, actorId }) {
     // ponytail: exact-case username match; usernames are stored lowercase.
     const users = (await store.resolveUsernames(usernames)).filter((u) => u.id !== actorId);
     if (!users.length) return;
+    // @tithi anywhere (post, comment, reply at any depth) -> she answers or hands to the team.
+    if (users.some((u) => u.id === tithi._tithiUserId())) bg(() => tithi.replyToMention({ item, comment }));
     const target = comment ? { comment_id: comment.id } : { post_id: item.id };
     await store.insertMentions(users.map((u) => ({ ...target, mentioned_user_id: u.id })));
     bg(() => notify.onMentions({ item, comment, usernames: users.map((u) => u.username), actorId }));
