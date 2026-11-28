@@ -66,7 +66,8 @@ test('rendered tab shell: one h1, summary, item links, visible FAQ', async () =>
   expect(html).toContain('2 lessons');
   expect(html).toContain('<h3><a href="https://meeticulous.com/jane/courses/ux-101">UX 101</a></h3>');
   expect(html).toContain('<h2>How access works</h2>');
-  expect(html).toContain('<h2>About Jane Doe</h2>');
+  // No "About {name}" stats block on profile pages (founder 2026-11-28).
+  expect(html).not.toContain('<h2>About Jane Doe</h2>');
 });
 
 test('a tab the host does not have 301s to the profile', async () => {

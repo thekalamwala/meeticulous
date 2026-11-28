@@ -12,18 +12,11 @@
 
 const inr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 
-// host: { name, profession, location, social_links, ... }; services: [{ title, price }];
-// summary: resolveProfileSeo().summary (optional).
-export function profileFaqs({ host = {}, services = [], summary = '' } = {}) {
+// host: { name, profession, location, social_links, ... }; services: [{ title, price }]
+export function profileFaqs({ host = {}, services = [] } = {}) {
   const name = host.name || 'this host';
   const priced = (services || []).map((s) => Number(s?.price)).filter((p) => p > 0);
   const faqs = [];
-
-  // "What is {name} all about?" carries the data-built profile summary (who they
-  // are, what they offer, real rating). It used to sit as a line at the top of the
-  // profile; founder 2026-11-28 moved it here. It says everything "What does {name}
-  // do?" said, so that question is only asked when there is no summary.
-  if (summary) faqs.push({ q: `What is ${name} all about?`, a: summary });
 
   faqs.push({
     q: `How do I book ${name}?`,
@@ -40,7 +33,7 @@ export function profileFaqs({ host = {}, services = [], summary = '' } = {}) {
     });
   }
 
-  if (host.profession && !summary) {
+  if (host.profession) {
     faqs.push({
       q: `What does ${name} do?`,
       a: `${name} is a ${host.profession}${host.location ? ` based in ${host.location}` : ''} taking bookings on Meeticulous.`,

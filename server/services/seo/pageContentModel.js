@@ -39,19 +39,13 @@ function sameAsFrom(row = {}) {
 // Templated profile FAQ — MIRRORS client/src/utils/profileFaqs.js (kept identical
 // so the crawler's answer-coverage/structure score reflects what the page renders).
 // Only real profile data → the FAQPage schema always matches visible content.
-// summary: profileMeta().description (optional) — MIRRORS the client.
-function profileFaqs(host = {}, services = [], summary = '') {
+function profileFaqs(host = {}, services = []) {
   const name = clean(host.name) || 'this host';
   const priced = (services || []).map((s) => Number(s && s.price)).filter((p) => p > 0);
-  // "What is {name} all about?" carries the data-built profile summary (who they
-  // are, what they offer, real rating). It used to sit as a line at the top of the
-  // profile; founder 2026-11-28 moved it here. It says everything "What does {name}
-  // do?" said, so that question is only asked when there is no summary.
-  const faqs = summary ? [{ q: `What is ${name} all about?`, a: summary }] : [];
-  faqs.push({
+  const faqs = [{
     q: `How do I book ${name}?`,
     a: `Pick a service on ${name}'s page, choose a time that suits you and pay securely online. Your booking is confirmed instantly and you get reminders before the session.`,
-  });
+  }];
   if (services && services.length) {
     faqs.push(priced.length ? {
       q: `How much does ${name} charge?`,
@@ -61,7 +55,7 @@ function profileFaqs(host = {}, services = [], summary = '') {
       a: `${name} offers ${services.length} bookable service${services.length > 1 ? 's' : ''} you can schedule directly on this page.`,
     });
   }
-  if (host.profession && !summary) {
+  if (host.profession) {
     faqs.push({
       q: `What does ${name} do?`,
       a: `${name} is a ${clean(host.profession)}${host.location ? ` based in ${clean(host.location)}` : ''} taking bookings on Meeticulous.`,
@@ -350,11 +344,7 @@ function hostContent(payload) {
 
   // FAQ questions become extractable headings; answers feed body text — this is
   // what lifts the crawler's structure + answer-coverage dimensions.
-  const reviewsForMeta = payload?.reviews || [];
-  const { description: summary } = require('./catalogSeo').profileMeta({
-    host, services, rating: { avg: Number(payload?.avgRating) || 0, count: reviewsForMeta.length },
-  });
-  const faqs = profileFaqs(host, services, summary);
+  const faqs = profileFaqs(host, services);
   for (const f of faqs) headings.push({ tag: 'h3', text: f.q });
 
   const reviews = payload?.reviews || [];

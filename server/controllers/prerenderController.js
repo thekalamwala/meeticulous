@@ -130,34 +130,16 @@ function sectionsHtml(sections) {
   ].join('')).join('\n');
 }
 
-// Published catalog counts for the profile "About" stats (head counts, never throws).
-async function catalogCounts(hostId) {
-  const count = async (table) => {
-    try {
-      const { supabaseAdmin } = require('../config/supabase');
-      const { count: n } = await supabaseAdmin.from(table).select('id', { count: 'exact', head: true })
-        .eq('host_id', hostId).eq('is_active', true);
-      return n || 0;
-    } catch (_) { return 0; }
-  };
-  const [product_count, course_count] = await Promise.all([count('products'), count('courses')]);
-  return { product_count, course_count };
-}
-
-function hostBody(payload, summary, counts = {}) {
+function hostBody(payload) {
   const { host = {}, services = [], reviews = [] } = payload || {};
   const site = trimSlash(SITE_URL);
   const name = host.name || 'Host';
   const out = [`<h1>${esc(name)}</h1>`];
-  // The data-built profile summary is the first FAQ answer ("What is {name} all
-  // about?"), mirroring the SPA — no longer a line under the h1 (2026-11-28).
+  // No answer-first summary line and no "About" stats block on the profile
+  // (founder 2026-11-28), mirroring the SPA. Both facts stay in the meta
+  // description and the Person schema.
   if (host.profession) out.push(`<p>${esc(host.profession)}${host.location ? ` · ${esc(host.location)}` : ''}</p>`);
   if (host.bio) out.push(`<p>${esc(host.bio)}</p>`);
-  // About: real stats only (sessions booked, reviews, catalog, member since).
-  const avg = Number(payload && payload.avgRating) || 0;
-  out.push(sectionsHtml(catalogSections({
-    kind: 'profile', host: { ...host, ...counts }, services, rating: { avg, count: (reviews || []).length },
-  })));
 
   const bookable = (services || []).filter((s) => s && s.title);
   if (bookable.length) {
@@ -173,7 +155,7 @@ function hostBody(payload, summary, counts = {}) {
     out.push(`</ul></section>`);
   }
 
-  out.push(faqSection(profileFaqs(host, services, summary)));
+  out.push(faqSection(profileFaqs(host, services)));
   out.push(reviewSection(reviews, `What guests say about ${name}`));
   return out.filter(Boolean).join('\n');
 }
@@ -430,7 +412,7 @@ async function resolveProfileMeta(username) {
   const jsonLd = buildProfileGraph({
     host, services, site, name: title,
     rating: { avg: avgRating, count: reviewCount },
-    faqs: faqsHostSpecific ? profileFaqs(host, services, meta.description) : [],
+    faqs: faqsHostSpecific ? profileFaqs(host, services) : [],
   });
 
   const buildHtmlArgs = {
@@ -468,8 +450,7 @@ const renderProfileMeta = async (req, res) => {
     if (m.status === 404) return res.status(404).send('Not found');
     if (m.status === 301) return res.redirect(301, m.redirectTo);
 
-    const counts = await catalogCounts(m.payload.host.id);
-    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload, m.summary, counts) });
+    const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: hostBody(m.payload) });
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
     res.send(html);
@@ -724,7 +705,7 @@ function tabBody(m) {
   const out = [];
   if (m.tab === 'membership') {
     const prog = (m.program && m.program.name) || '';
-    out.push(`<h1>${esc(prog ? `${prog} — membership by ${name}` : `Membership by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`);
+    out.push(`<h1>${esc(prog ? `${prog} — membership by ${name}` : `Membership by ${name}`)}</h1>`);
     if (updated) out.push(`<p>${esc(updated)}</p>`);
     if (m.program && m.program.blurb) out.push(`<p>${esc(m.program.blurb)}</p>`);
     const anchors = tierAnchors(m.items);
@@ -736,7 +717,8 @@ function tabBody(m) {
     out.push(sectionsHtml(sections));
   } else {
     const label = m.tab === 'courses' ? 'Online courses' : 'Digital products';
-    out.push(`<h1>${esc(`${label} by ${name}`)}</h1>`, `<p>${esc(m.summary)}</p>`);
+    // No summary line under the h1 (founder 2026-11-28), mirroring the SPA tab.
+    out.push(`<h1>${esc(`${label} by ${name}`)}</h1>`);
     if (updated) out.push(`<p>${esc(updated)}</p>`);
     out.push(sectionsHtml(sections.filter((x) => x.key === 'intro')));
     for (const i of m.items) {
@@ -749,11 +731,6 @@ function tabBody(m) {
     }
     out.push(sectionsHtml(sections.filter((x) => x.key !== 'intro')));
   }
-  // The host's own About block (real stats), as on the SPA tab.
-  out.push(sectionsHtml(catalogSections({
-    kind: 'profile', host: { ...host, ...(m.counts || {}) }, services: (m.payload && m.payload.services) || [],
-    rating: { avg: Number(m.payload && m.payload.avgRating) || 0, count: ((m.payload && m.payload.reviews) || []).length },
-  })));
   out.push(faqSection(m.faqs));
   out.push(`<p><a href="${site}/${u}">See everything ${esc(name)} offers</a></p>`);
   return out.filter(Boolean).join('\n');
@@ -764,7 +741,6 @@ const renderProfileTabMeta = async (req, res) => {
     const m = await resolveProfileTabMeta(req.params.username, req.params.tab);
     if (m.status === 404) return res.status(404).send('Not found');
     if (m.status === 301) return res.redirect(301, m.redirectTo);
-    m.counts = await catalogCounts(m.payload.host.id);
     const html = buildHtml({ ...m.buildHtmlArgs, bodyHtml: tabBody(m) });
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300');
