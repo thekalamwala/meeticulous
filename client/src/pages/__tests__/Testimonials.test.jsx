@@ -33,11 +33,12 @@ it('renders the host testimonials', async () => {
   expect(screen.getByText('Author 1')).toBeInTheDocument();
 });
 
-it('shows the Pro upgrade overlay when a free host is at the 3 cap', async () => {
-  api.getMyTestimonials.mockResolvedValue({ data: rows(3) });
+// Pricing v2 §4 item 6: testimonials are unlimited on every plan — no cap, no overlay.
+it('a free host with many testimonials sees no upgrade overlay', async () => {
+  api.getMyTestimonials.mockResolvedValue({ data: rows(12) });
   renderPage();
-  const cta = await screen.findByRole('link', { name: /upgrade to pro/i });
-  expect(cta).toHaveAttribute('href', '/dashboard/upgrade?src=testimonials');
+  await screen.findByText(/Quote 0/);
+  await waitFor(() => expect(screen.queryByRole('link', { name: /upgrade to pro/i })).toBeNull());
 });
 
 it('does NOT show the upgrade overlay for a Pro host with 3 testimonials', async () => {

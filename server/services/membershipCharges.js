@@ -75,10 +75,10 @@ async function buildChargeSnapshot({ hostId, grossInr, razorpayFeeInr = 0, razor
   const { host, hasPan } = await loadHostTaxContext(hostId);
 
   // Commission % follows the host's own plan, exactly as a booking does. An expired
-  // paid plan falls back to free — resolveVendorPlan owns that judgement.
+  // paid plan falls back to free — resolveVendorPlan owns that judgement. Pricing
+  // v2: the plan's `memberships` rate (commission_rates, scalar fallback).
   const planSlug = planService.resolveVendorPlan(host || {});
-  const planRecord = await planService.getPlan(planSlug);
-  const commissionPct = Number(planRecord?.commission_percentage) || 0;
+  const commissionPct = await planService.getRate(planSlug, 'memberships');
 
   const withholdingEnabled = await featureFlags.isFeatureEnabled('tds_tcs_v2');
   const { tdsRate, tcsRate } = resolveWithholding({

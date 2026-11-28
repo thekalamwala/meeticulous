@@ -11,9 +11,13 @@
  * Meeticulous is an INTERMEDIARY. The host's listed price is the host's revenue,
  * NOT a sale on our books. We invoice only our own fee + commission.
  *
- *   Customer pays  = servicePrice + platformFee + gstOnPlatformFee
- *   platformFee    = flat, admin-configurable (default ₹10); 0 for free services
- *   gst            = gstRate × platformFee   (GST ADDED ON TOP of the fee)
+ *   Customer pays  = servicePrice + platformFeeGross
+ *   platformFeeGross = flat, admin-configurable (default ₹10), GST-INCLUSIVE
+ *                    (pricing v2): the stored setting IS what the guest pays.
+ *                    0 for free services.
+ *   platformFee    = taxable value = round2(gross / (1+gstRate))   (BACKED OUT)
+ *   gst            = gross − platformFee   (the REMAINDER, so the two always
+ *                    sum to gross exactly: ₹10 → ₹8.47 + ₹1.53)
  *   commission     = commissionPercentage × servicePrice   (from plan record).
  *                    GST-INCLUSIVE — the 5% the host bears already contains 18% GST.
  *   commissionGst  = commission − commission/(1+gstRate)   (EXTRACTED, not added)
@@ -36,6 +40,7 @@
 
 const DEFAULTS = Object.freeze({
   platformFee: 10,   // ₹ flat, overridden by platform_settings.platform_fee
+  feeFloorPrice: 300, // pricing v2 §4 item 3: no platform fee on an appointment under ₹300
   gstRate: 0.18,     // 18% GST — applied to platform fee, commission, and subscriptions
   tdsRate: 0.01,     // 194-O income-tax TDS on host gross sale; flat 1% for all (CA 2026-11-11, no §206AA 5%)
   tcsRate: 0.01,     // Sec 52 GST TCS on host gross sale
@@ -69,11 +74,16 @@ const assertNonNegative = (value, label) => {
  *   chargeFeeOnFree — when true, a ₹0 service STILL carries the flat fee. Used by the
  *   interim fee-only mode (host prices forced to ₹0, no Route yet): Meeticulous collects
  *   only its own booking fee + GST and no host money moves. Default false (₹0 → no fee).
- * @returns {number} flat platform fee in ₹ (0 for a free service unless chargeFeeOnFree)
+ *   feeFloorPrice — pricing v2: a service priced under this (default ₹300) carries no
+ *   fee. Appointments are the only surface that charges a fee, so this is the
+ *   "nothing under ₹300" rule. Fee-only mode (chargeFeeOnFree) bypasses it: there
+ *   every price is ₹0 and the fee is the whole charge.
+ * @returns {number} flat platform fee in ₹ (0 under the floor unless chargeFeeOnFree)
  */
 function calculatePlatformFee(servicePrice, opts = {}) {
   assertNonNegative(servicePrice, 'servicePrice');
-  if (servicePrice === 0 && !opts.chargeFeeOnFree) return 0;
+  const floor = opts.feeFloorPrice != null ? Number(opts.feeFloorPrice) : DEFAULTS.feeFloorPrice;
+  if (!opts.chargeFeeOnFree && (servicePrice === 0 || servicePrice < floor)) return 0;
   const fee = opts.platformFee != null ? Number(opts.platformFee) : DEFAULTS.platformFee;
   assertNonNegative(fee, 'platformFee');
   return round2(fee);
@@ -90,6 +100,25 @@ function calculateGst(platformFee, opts = {}) {
   const rate = opts.gstRate != null ? Number(opts.gstRate) : DEFAULTS.gstRate;
   assertNonNegative(rate, 'gstRate');
   return round2(platformFee * rate);
+}
+
+// ─── Platform fee split (pricing v2: the fee is GST-INCLUSIVE) ───────────────
+/**
+ * Back the GST out of a flat, GST-inclusive fee — the platform fee and the
+ * reschedule fee alike. GST is the REMAINDER, never `taxable × rate`: computed
+ * independently it can drift a paisa and the booking total stops reconciling.
+ * Mirrors calculateCommissionGst/Taxable, which already work this way.
+ * @param {number} gross   fee the guest pays (₹, GST-inclusive, ≥ 0)
+ * @param {object} [opts]  { gstRate } override (default 18%)
+ * @returns {{ gross: number, taxable: number, gst: number }}
+ */
+function splitInclusiveFee(gross, opts = {}) {
+  assertNonNegative(gross, 'platformFee');
+  const rate = opts.gstRate != null ? Number(opts.gstRate) : DEFAULTS.gstRate;
+  assertNonNegative(rate, 'gstRate');
+  const g = round2(gross);
+  const taxable = round2(g / (1 + rate));
+  return { gross: g, taxable, gst: round2(g - taxable) };
 }
 
 // ─── Commission (platform's cut, from the vendor's plan record) ──────────────
@@ -253,8 +282,10 @@ function calculateCustomerTotal(servicePrice, platformFee, gst) {
  *             razorpayFee, customerTotal, vendorPayout, platformRevenue }}
  */
 function computeBreakdown({ servicePrice, commissionPercentage, platformFee, gstRate, razorpayFee = 0, tdsRate, tcsRate, chargeFeeOnFree = false }) {
-  const fee = calculatePlatformFee(servicePrice, { platformFee, chargeFeeOnFree });
-  const gst = calculateGst(fee, { gstRate });
+  // The setting is the gross the guest pays; `fee` is its taxable value, so every
+  // existing reader of platformFee / platform_fee_amount keeps meaning "ex-GST".
+  const { gross: feeGross, taxable: fee, gst } = splitInclusiveFee(
+    calculatePlatformFee(servicePrice, { platformFee, chargeFeeOnFree }), { gstRate });
   const commission = calculateCommission(servicePrice, commissionPercentage);
   const commissionGst = calculateCommissionGst(commission, { gstRate });        // GST inside commission
   const commissionTaxable = calculateCommissionTaxable(commission, { gstRate }); // commission ex-GST
@@ -265,8 +296,9 @@ function computeBreakdown({ servicePrice, commissionPercentage, platformFee, gst
   const customerTotal = calculateCustomerTotal(servicePrice, fee, gst);
   return {
     servicePrice: round2(servicePrice),
-    platformFee: fee,
-    gst,
+    platformFee: fee,            // taxable (ex-GST)
+    platformFeeGross: feeGross,  // what the guest pays for the fee
+    gst,                         // feeGross − fee
     commission,
     commissionGst,
     commissionTaxable,
@@ -333,6 +365,7 @@ module.exports = {
   resolveWithholding,
   calculatePlatformFee,
   calculateGst,
+  splitInclusiveFee,
   calculateCommission,
   calculateCommissionGst,
   calculateCommissionTaxable,

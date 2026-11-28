@@ -105,21 +105,20 @@ describe('getContrastRatio', () => {
 // ── getColorsForPlan ──────────────────────────────────────────────────────────
 
 describe('getColorsForPlan', () => {
-  test('explorer → FREE_COLORS (the two brand colours)', () => {
+  test('explorer → FREE_COLORS (4 Starter colours)', () => {
     const colors = getColorsForPlan('explorer');
-    expect(colors).toHaveLength(2);
+    expect(colors).toHaveLength(4);
     expect(colors).toEqual(FREE_COLORS);
     expect(colors[0].hex).toBe(DEFAULT_THEME_COLOR);
   });
 
-  test('creator → CREATOR_COLORS (8 swatches)', () => {
-    const colors = getColorsForPlan('creator');
-    expect(colors).toHaveLength(8);
-    expect(colors).toEqual(CREATOR_COLORS);
+  // Legacy partner tier carries Pro entitlements (v3.165), palette included.
+  test('creator → STUDIO_COLORS (Pro palette)', () => {
+    expect(getColorsForPlan('creator')).toEqual(STUDIO_COLORS);
   });
 
-  test('premium / premium_founding (Pro) → STUDIO_COLORS (16 swatches)', () => {
-    expect(getColorsForPlan('premium')).toHaveLength(16);
+  test('premium / premium_founding (Pro) → STUDIO_COLORS (18 swatches)', () => {
+    expect(getColorsForPlan('premium')).toHaveLength(18);
     expect(getColorsForPlan('premium')).toEqual(STUDIO_COLORS);
     expect(getColorsForPlan('premium_founding')).toEqual(STUDIO_COLORS);
     expect(canUseCustomHex('premium')).toBe(false);
@@ -252,4 +251,10 @@ describe('DEFAULT_THEME_COLOR', () => {
   test('produces white contrast text (dark enough for readability)', () => {
     expect(getContrastColor(DEFAULT_THEME_COLOR)).toBe('#ffffff');
   });
+});
+
+// Pricing v2 §4 item 9: upgrading must never take a host's colour away.
+test('STUDIO_COLORS is a superset of FREE_COLORS', () => {
+  const pro = new Set(STUDIO_COLORS.map((c) => c.hex));
+  FREE_COLORS.forEach((c) => expect(pro.has(c.hex)).toBe(true));
 });

@@ -342,13 +342,31 @@ Items previously listed here as pending are now live:
   (nullable text, `tier_description_len` check ≤ 600). Tier cover + description on the Kept tier
   cards (PR #461). Additive; `membershipController` keeps a schema fallback (writeTier retries
   without the two columns). Rollback: `DROP COLUMN IF EXISTS` on both.
-- **v3.229** (`v3.229_clean_catalog_slugs.sql`) — **PENDING: apply at merge** of the profile SEO
-  overhaul (`feat/profile-seo-overhaul`). Adds `legacy_slugs text[] NOT NULL DEFAULT '{}'` to
+- **v3.229** (`v3.229_clean_catalog_slugs.sql`) — applied (verified 2026-11-27 on the Meeticulous DB:
+  `legacy_slugs` present on `products` + `courses`, 0 `demo-` product slugs left). From the profile SEO
+  overhaul (`feat/profile-seo-overhaul`). **Filename note:** number collides with `v3.229_pricing_v2.sql`
+  (pricing v2) — cosmetic only, both applied. Adds `legacy_slugs text[] NOT NULL DEFAULT '{}'` to
   `products` + `courses` and strips the `demo-` prefix from their slugs (old slug moved into
   `legacy_slugs`; per-host clash → `-2`, `-3`). Idempotent + additive. Old URLs keep resolving:
   `services/catalogSlug.js` looks up slug → id → legacy_slugs and the page / bot shell 301s to
   `/:username/products|courses/<slug>`. Code is schema-fallback safe (no column = the legacy lookup
   is "not found"). Verify + rollback queries are in the file header.
+- **v3.229** (`v3.229_pricing_v2.sql`) — applied 2026-11-27 on the Meeticulous DB (`spquowzrefozmrzoszkf`),
+  SCHEMA ONLY, and verified: `subscription_plans.commission_rates` (jsonb, all 8 rows NULL) and
+  `bookings.platform_fee_gross` (numeric 10,2); no anon/authenticated write grants. Dormant until
+  pricing-v2 code reads them (NULL rates → `planService` falls back to `commission_percentage`).
+  `bookings.platform_fee_amount` now means the TAXABLE (ex-GST) fee once the fee goes GST-inclusive;
+  the applied commission rate keeps living in the existing `bookings.commission_percentage` snapshot.
+- **v3.230** (`v3.230_pricing_v2_values.sql`) — **PENDING, apply AT RELEASE MERGE of pricing v2**, never
+  before: new prices (168.64 / 1016.10 ex-GST = ₹199 / ₹1,199; founding 761.86 = ₹898.99), §3 limits
+  (Starter `categories: 1` — founder ruling 2026-11-27, the spec said 2),
+  `commission_rates` on free + Pro rows, `insights:-1` on Pro + legacy paid. Live within 60s of apply;
+  early apply mis-prices checkout and gives Starter the reschedule alert.
+- **v3.231** (`v3.231_purchase_commission.sql`) — applied 2026-11-27 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: `commission_percentage` / `commission_applied` (NOT NULL 0) /
+  `commission_gst` (NOT NULL 0) / `commission_taxable` on `product_purchases` (54 rows) and
+  `course_purchases` (21 rows), all existing rows at 0; no anon/authenticated write grants. Dormant until
+  the pricing-v2 code deploys (it writes the product/course commission snapshot).
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

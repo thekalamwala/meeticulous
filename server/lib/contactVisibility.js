@@ -7,8 +7,10 @@
  * docs/superpowers/plans/2026-07-14-contact-visibility-gating.md).
  *
  * Policy:
- *   Guest phone → Host : hidden unless host is Studio (professional) and the
- *                        booking is imminent/past, or host is Supreme (always).
+ *   Guest phone → Host : hidden until the booking is imminent/past, on ANY plan
+ *                        (pricing v2 §4 item 2), or always for Supreme. The full
+ *                        number in the CRM client list/export stays Pro-only —
+ *                        that is crmService's maskPhone, not this module.
  *   Host phone  → Guest: hidden unless the service is offline (in-person) and
  *                        the booking is imminent/past.
  *
@@ -24,17 +26,6 @@ const GRACE_MS = 15 * 60 * 1000;
 const windowOpen = (booking, now) =>
   now >= new Date(booking.scheduled_at).getTime() - GRACE_MS;
 
-// Free tiers never see the counterparty's number; every paid tier does, once
-// the window opens. Since v3.165 that means Pro AND the legacy paid
-// rows (creator/professional), which now carry the same entitlements.
-// Kept as a local set rather than importing planService so this module stays
-// pure and DB-free — keep it in lockstep with planService.FREE_SLUGS.
-const FREE_SLUGS = new Set(['free', 'starter', 'starter_legacy', 'explorer']);
-// An absent/blank plan (a guest viewer) is NOT paid — fail closed.
-const isPaid = (slug) => {
-  const s = String(slug || '').toLowerCase().trim();
-  return !!s && !FREE_SLUGS.has(s);
-};
 const isSupreme = (slug) => slug === 'supreme';     // hidden god tier — sees all
 
 /**
@@ -51,9 +42,8 @@ function redactBookingContact(booking, viewer, now = Date.now()) {
   const mode = booking.services?.meeting_mode || 'online';
 
   if (viewer.role === 'host') {
-    // Guest's number → host: any paid plan within the window, or Supreme always.
-    const show = isSupreme(viewer.plan)
-      || (isPaid(viewer.plan) && windowOpen(booking, now));
+    // Guest's number → host: every plan within the window, or Supreme always.
+    const show = isSupreme(viewer.plan) || windowOpen(booking, now);
     if (!show) {
       booking.guest_phone = null;
       if (booking.profiles) booking.profiles.phone = null; // guest profile join

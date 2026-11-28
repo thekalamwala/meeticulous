@@ -150,7 +150,7 @@ const FAQ = [
   { q: 'Can I manage multiple doctors and services?', a: 'Yes. Create as many services as you need — consultation, acne care, laser, cosmetic procedures — each with its own duration, fee and availability, and manage every appointment from one clinic calendar.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023. Meeticulous stores appointment and contact details for booking — it is not a medical-records system, and you control what a patient provides when booking.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -581,7 +581,7 @@ export default function Dermatologists() {
                 <div className="mt-5 flex items-end gap-1">
                   <span className="pb-1 text-xl font-bold">₹</span>
                   <span className="font-heading text-4xl font-extrabold tracking-tight">0</span>
-                  <span className="pb-1.5 text-sm text-slate-500">/mo · 5% per booking</span>
+                  <span className="pb-1.5 text-sm text-slate-500">/mo · 9% per booking</span>
                 </div>
                 <ul className="mt-6 flex flex-col gap-2.5">
                   {FREE_PLAN.features.slice(0, 5).map((f) => (

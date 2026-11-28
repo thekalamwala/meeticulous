@@ -7,6 +7,8 @@ jest.mock('../../services/notificationEngine', () => ({ send: jest.fn().mockReso
 jest.mock('../../services/planService', () => ({
   rescheduleNotifyForPlan: jest.fn().mockResolvedValue(true),
   resolveVendorPlan: jest.fn(() => 'studio'),
+  // Pricing v2 §4 item 7: guest self-reschedule is gated on the HOST's plan.
+  isFreeSlug: jest.fn(() => false),
 }));
 // The handler fires an un-awaited runInBackground(catchup-reminder). Left live, it
 // runs AFTER the test ends — logging post-teardown and, on Node 22 (CI), rejecting
@@ -96,4 +98,38 @@ test('reschedule sends carry phone + 4 whatsapp params to guest and host', async
   expect(vend.data.phone).toBe('8880002222');
   expect(vend.data.templateParams).toHaveLength(4);
   expect(vend.data.templateParams[0]).toBe('Nidhi');  // [host, guest, service, newTime]
+});
+
+// Pricing v2 §4 item 7 / acceptance test 12: guest self-reschedule is a Pro perk
+// of the HOST's plan. A Starter host's guest is refused; the host can still move
+// the booking from the dashboard, and the guest is emailed the new time.
+describe('guest self-reschedule is Pro-only (host plan)', () => {
+  const planService = require('../../services/planService');
+  beforeEach(() => planService.isFreeSlug.mockReturnValue(true));
+  afterEach(() => planService.isFreeSlug.mockReturnValue(false));
+
+  test('Starter host → the guest gets 403 and nothing moves', async () => {
+    featureFlags.isFeatureEnabled.mockResolvedValue(true);
+    wire(baseBooking);
+    const r = res();
+    await rescheduleBooking({ params: { id: 'b1' }, user: { id: 'g1' }, body: { scheduled_at: futureISO } }, r);
+    expect(r.status).toHaveBeenCalledWith(403);
+    expect(r.json).toHaveBeenCalledWith(expect.objectContaining({ code: 'GUEST_RESCHEDULE_PRO_ONLY' }));
+    expect(updateCalendarEvent).not.toHaveBeenCalled();
+  });
+
+  test('Starter host can still reschedule; the guest is emailed the new time', async () => {
+    featureFlags.isFeatureEnabled.mockResolvedValue(true);
+    planService.rescheduleNotifyForPlan.mockResolvedValueOnce(false); // Starter: no paid alerts
+    wire({ ...baseBooking, guest_email: 'asha@x.com' });
+    const r = res();
+    await rescheduleBooking({
+      params: { id: 'b1' }, user: { id: 'h1' }, body: { scheduled_at: futureISO },
+      protocol: 'https', get: () => 'api.test',
+    }, r);
+    expect(r.status).not.toHaveBeenCalledWith(403);
+    const sent = NotificationEngine.send.mock.calls.map((c) => c[0]);
+    expect(sent.find((a) => a.event === 'BOOKING_RESCHEDULED_CUSTOMER')).toMatchObject({ data: { email: 'asha@x.com', phone: null } });
+    expect(sent.find((a) => a.event === 'BOOKING_RESCHEDULED_VENDOR')).toBeUndefined();
+  });
 });

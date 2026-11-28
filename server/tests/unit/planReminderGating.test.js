@@ -2,9 +2,9 @@
  * planService — reminder/reschedule plan-gating helpers.
  *
  * Forces the FALLBACK_PLANS path (subscription_plans query returns empty) so the
- * assertions pin the intended tiering independent of live DB rows. Since v3.165:
- *   free 1 flow → 24h only (a first booking needs a reminder to survive),
- *   premium -1  → 24h + 1h + reschedule notifications.
+ * assertions pin the intended tiering independent of live DB rows. Pricing v2:
+ *   free 2 flows → 24h + 1h, but NO host reschedule alert (spec §4 item 8),
+ *   premium -1   → 24h + 1h + reschedule notifications.
  */
 
 jest.mock('../../config/supabase', () => ({
@@ -18,8 +18,8 @@ const planService = require('../../services/planService');
 beforeEach(() => planService.clearCache());
 
 describe('reminderWindowsForPlan', () => {
-  test('free → 24h only', async () => {
-    expect(await planService.reminderWindowsForPlan('free')).toEqual([24]);
+  test('free → 24h + 1h', async () => {
+    expect(await planService.reminderWindowsForPlan('free')).toEqual([24, 1]);
   });
   test('premium → 24h + 1h', async () => {
     expect(await planService.reminderWindowsForPlan('premium')).toEqual([24, 1]);
@@ -28,17 +28,18 @@ describe('reminderWindowsForPlan', () => {
     expect(await planService.reminderWindowsForPlan('creator')).toEqual([24, 1]);
     expect(await planService.reminderWindowsForPlan('professional')).toEqual([24, 1]);
   });
-  test('legacy free aliases resolve to the free row (24h only)', async () => {
-    expect(await planService.reminderWindowsForPlan('explorer')).toEqual([24]);
-    expect(await planService.reminderWindowsForPlan('starter')).toEqual([24]);
+  test('legacy free aliases resolve to the free row', async () => {
+    expect(await planService.reminderWindowsForPlan('explorer')).toEqual([24, 1]);
+    expect(await planService.reminderWindowsForPlan('starter')).toEqual([24, 1]);
   });
-  test('unknown slug falls back to free (24h only), never the paid set', async () => {
-    expect(await planService.reminderWindowsForPlan('nope')).toEqual([24]);
+  test('unknown slug falls back to free, never a paid tier', async () => {
+    expect(await planService.reminderWindowsForPlan('nope')).toEqual([24, 1]);
+    expect(await planService.rescheduleNotifyForPlan('nope')).toBe(false);
   });
 });
 
 describe('rescheduleNotifyForPlan', () => {
-  test('free does NOT get reschedule notifications', async () => {
+  test('free does NOT get reschedule notifications, despite having both windows', async () => {
     expect(await planService.rescheduleNotifyForPlan('free')).toBe(false);
     expect(await planService.rescheduleNotifyForPlan('explorer')).toBe(false);
   });

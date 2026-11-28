@@ -29,15 +29,25 @@ const {
   calculateVendorPayout,
   calculateCustomerTotal,
   computeBreakdown,
+  splitInclusiveFee,
   computeSubscriptionBreakdown,
 } = require('../../lib/pricingEngine');
 
 // ─── calculatePlatformFee ─────────────────────────────────────────────────────
 describe('calculatePlatformFee', () => {
-  test('flat ₹10 default for any paid service', () => {
-    expect(calculatePlatformFee(100)).toBe(10);
-    expect(calculatePlatformFee(1)).toBe(10);
+  test('flat ₹10 default for any paid service at or above the ₹300 floor', () => {
+    expect(calculatePlatformFee(300)).toBe(10);
     expect(calculatePlatformFee(5000)).toBe(10);
+  });
+  // Pricing v2 §4 item 3 / acceptance test 4: "nothing under ₹300".
+  test('no fee on a service priced under ₹300', () => {
+    expect(calculatePlatformFee(250)).toBe(0);
+    expect(calculatePlatformFee(299.99)).toBe(0);
+    expect(calculatePlatformFee(1)).toBe(0);
+  });
+  test('the floor is overridable, and fee-only mode bypasses it', () => {
+    expect(calculatePlatformFee(100, { feeFloorPrice: 0 })).toBe(10);
+    expect(calculatePlatformFee(100, { chargeFeeOnFree: true })).toBe(10);
   });
   test('₹0 for a free service', () => {
     expect(calculatePlatformFee(0)).toBe(0);
@@ -47,8 +57,8 @@ describe('calculatePlatformFee', () => {
     expect(calculatePlatformFee(0, { chargeFeeOnFree: true, platformFee: 12 })).toBe(12);
   });
   test('admin-configurable override is honoured', () => {
-    expect(calculatePlatformFee(100, { platformFee: 15 })).toBe(15);
-    expect(calculatePlatformFee(100, { platformFee: 0 })).toBe(0);
+    expect(calculatePlatformFee(500, { platformFee: 15 })).toBe(15);
+    expect(calculatePlatformFee(500, { platformFee: 0 })).toBe(0);
   });
   test('negative service price throws', () => {
     expect(() => calculatePlatformFee(-1)).toThrow('servicePrice cannot be negative');
@@ -166,16 +176,17 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
 
   test('Scenario B — free-plan host, 5% commission → payout ₹909.76', () => {
     const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 5, razorpayFee: PG });
-    expect(b.platformFee).toBe(10);
-    expect(b.gst).toBe(1.8);
+    expect(b.platformFee).toBe(8.47);           // ₹10 GST-inclusive fee, taxable part (pricing v2)
+    expect(b.gst).toBe(1.53);
+    expect(b.platformFeeGross).toBe(10);
     expect(b.commission).toBe(50);
     expect(b.commissionTaxable).toBe(42.37);
     expect(b.commissionGst).toBe(7.63);
     expect(b.tds).toBe(10);
     expect(b.tcs).toBe(10);
-    expect(b.customerTotal).toBe(1011.8);
-    expect(b.vendorPayout).toBe(909.76);       // 1000 − 50 − 20.24 − 10 − 10
-    expect(b.platformRevenue).toBe(52.37);      // fee 10 + commission ex-GST 42.37
+    expect(b.customerTotal).toBe(1010);
+    expect(b.vendorPayout).toBe(909.76);       // 1000 − 50 − 20.24 − 10 − 10 (fee never touches payout)
+    expect(b.platformRevenue).toBe(50.84);      // fee ex-GST 8.47 + commission ex-GST 42.37
   });
 
   test('Scenario A — Atish (paid plan), 0% commission → payout ₹959.76', () => {
@@ -184,9 +195,9 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
     expect(b.commissionGst).toBe(0);
     expect(b.tds).toBe(10);
     expect(b.tcs).toBe(10);
-    expect(b.customerTotal).toBe(1011.8);
+    expect(b.customerTotal).toBe(1010);
     expect(b.vendorPayout).toBe(959.76);        // 1000 − 0 − 20.24 − 10 − 10
-    expect(b.platformRevenue).toBe(10);         // platform fee only
+    expect(b.platformRevenue).toBe(8.47);       // platform fee only, ex-GST
   });
 
   test('no-PAN host (paid_booking_without_pan ON) → flat 1% TDS, payout ₹909.76', () => {
@@ -196,7 +207,7 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
     const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 5, razorpayFee: PG });
     expect(b.tds).toBe(10);                      // 1% of 1000 (flat, not §206AA 5%)
     expect(b.tcs).toBe(10);                      // 1% of 1000
-    expect(b.customerTotal).toBe(1011.8);        // guest total unchanged — TDS/TCS host-borne
+    expect(b.customerTotal).toBe(1010);          // guest total unchanged — TDS/TCS host-borne
     expect(b.vendorPayout).toBe(909.76);         // 1000 − 50 − 20.24 − 10 − 10
   });
 
@@ -218,27 +229,27 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
     expect(b.vendorPayout).toBe(0);
   });
 
-  test('interim fee-only: ₹0 service with chargeFeeOnFree charges only the fee + GST', () => {
+  test('interim fee-only: ₹0 service with chargeFeeOnFree charges only the (inclusive) fee', () => {
     const b = computeBreakdown({ servicePrice: 0, commissionPercentage: 5, chargeFeeOnFree: true });
-    expect(b.platformFee).toBe(10);
-    expect(b.gst).toBe(1.8);
+    expect(b.platformFee).toBe(8.47);
+    expect(b.gst).toBe(1.53);
     expect(b.commission).toBe(0);        // no host price → no commission
     expect(b.tds).toBe(0);               // no host sale → no TDS/TCS
     expect(b.tcs).toBe(0);
-    expect(b.customerTotal).toBe(11.8);  // 0 + 10 + 1.80
+    expect(b.customerTotal).toBe(10);    // 0 + ₹10 gross
     expect(b.vendorPayout).toBe(0);      // host gets nothing (no host money moves)
-    expect(b.platformRevenue).toBe(10);  // BAS keeps the fee
+    expect(b.platformRevenue).toBe(8.47); // BAS keeps the fee, ex-GST
   });
 
   test('custom platform fee + GST rate flow through', () => {
-    const b = computeBreakdown({ servicePrice: 200, commissionPercentage: 5, platformFee: 20, gstRate: 0.18, razorpayFee: 4.72 });
-    expect(b.platformFee).toBe(20);
-    expect(b.gst).toBe(3.6);
-    expect(b.commission).toBe(10);
-    expect(b.customerTotal).toBe(223.6);
-    expect(b.tds).toBe(2);                       // 1% of 200
-    expect(b.tcs).toBe(2);
-    expect(b.vendorPayout).toBe(181.28);         // 200 − 10 − 4.72 − 2 − 2
+    const b = computeBreakdown({ servicePrice: 400, commissionPercentage: 5, platformFee: 20, gstRate: 0.18, razorpayFee: 4.72 });
+    expect(b.platformFee).toBe(16.95);
+    expect(b.gst).toBe(3.05);
+    expect(b.commission).toBe(20);
+    expect(b.customerTotal).toBe(420);
+    expect(b.tds).toBe(4);                       // 1% of 400
+    expect(b.tcs).toBe(4);
+    expect(b.vendorPayout).toBe(367.28);         // 400 − 20 − 4.72 − 4 − 4
   });
 
   test('configurable TDS rate override flows through (engine capability; prod uses flat 1%)', () => {
@@ -311,5 +322,56 @@ describe('platformNetFromBooking', () => {
     expect(platformNetFromBooking(null)).toBe(0);
     expect(platformNetFromBooking({})).toBe(0);
     expect(platformNetFromBooking({ commission_applied: 10, commission_gst: 999 })).toBe(0);
+  });
+});
+
+// ─── Pricing v2: the platform fee is GST-INCLUSIVE (spec §2.1, tests 1–3) ────
+// Fee amounts below are the admin setting, not statutory rates.
+describe('splitInclusiveFee — GST is backed out, and is the remainder', () => {
+  test.each([
+    [10, 8.47, 1.53],
+    [20, 16.95, 3.05],
+    [1, 0.85, 0.15],
+    [0, 0, 0],
+  ])('₹%p → taxable ₹%p + GST ₹%p', (gross, taxable, gst) => {
+    expect(splitInclusiveFee(gross, { gstRate: 0.18 })).toEqual({ gross, taxable, gst });
+  });
+
+  test('taxable + gst === gross to the paisa for every fee 0.01–100', () => {
+    for (let paise = 1; paise <= 10000; paise++) {
+      const gross = paise / 100;
+      const { taxable, gst } = splitInclusiveFee(gross, { gstRate: 0.18 });
+      expect(Math.round(taxable * 100) + Math.round(gst * 100)).toBe(paise);
+    }
+  });
+});
+
+describe('computeBreakdown — inclusive fee acceptance (spec §7 tests 1–3)', () => {
+  test('free host, ₹500 at 9% → commission ₹45, guest pays exactly ₹510.00', () => {
+    const b = computeBreakdown({ servicePrice: 500, commissionPercentage: 9, platformFee: 10, gstRate: 0.18 });
+    expect(b.commission).toBe(45);
+    expect(b.customerTotal).toBe(510);
+    expect([b.platformFee, b.gst, b.platformFeeGross]).toEqual([8.47, 1.53, 10]);
+  });
+  test('Pro host, ₹500 at 0% → commission ₹0, guest pays ₹510.00', () => {
+    const b = computeBreakdown({ servicePrice: 500, commissionPercentage: 0, platformFee: 10, gstRate: 0.18 });
+    expect(b.commission).toBe(0);
+    expect(b.customerTotal).toBe(510);
+  });
+  test('fee set to ₹1 → guest pays exactly ₹1.00 on top (₹0.85 + ₹0.15)', () => {
+    const b = computeBreakdown({ servicePrice: 500, commissionPercentage: 9, platformFee: 1, gstRate: 0.18 });
+    expect(b.customerTotal).toBe(501);
+    expect([b.platformFee, b.gst]).toEqual([0.85, 0.15]);
+  });
+  test('fee set to ₹0 → no fee components at all', () => {
+    const b = computeBreakdown({ servicePrice: 500, commissionPercentage: 9, platformFee: 0, gstRate: 0.18 });
+    expect([b.platformFee, b.gst, b.platformFeeGross, b.customerTotal]).toEqual([0, 0, 0, 500]);
+  });
+});
+
+describe('computeBreakdown — fee floor (spec §7 test 4)', () => {
+  test('free host, ₹250 appointment → no platform fee, guest pays ₹250', () => {
+    const b = computeBreakdown({ servicePrice: 250, commissionPercentage: 9, platformFee: 10, gstRate: 0.18 });
+    expect([b.platformFee, b.gst, b.platformFeeGross, b.customerTotal]).toEqual([0, 0, 0, 250]);
   });
 });

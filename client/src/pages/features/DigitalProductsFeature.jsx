@@ -20,9 +20,10 @@
 //   buyer flow ................. client/src/pages/ProductPurchase.jsx (name/email/WhatsApp, 6-digit WhatsApp code, no account)
 //   delivery ................... productController + paymentController.materializeProductPurchase (24h token, 3 downloads,
 //                                60s signed file URL, emailed via sendProductDownloadEmail, OTP-gated resend-link)
-//   fee + GST invoice .......... createProductOrder (price + ₹10 fee + GST on fee; invoice for the fee); free = no fee
-//   no commission .............. journalTemplates.productPaymentEntry ("Products carry NO commission"), vendor_amount = price − gateway
-//   plan cap ................... subscription_plans.limits.digital_products: free 3 / premium -1 (v3.165), counts ACTIVE products
+//   no booking fee ............. createProductOrder (pricing v2: buyer pays exactly the price)
+//   commission ................. subscription_plans.commission_rates.products: Starter 12% / Pro 4% (v3.230),
+//                                fixed at checkout, snapshotted on product_purchases (v3.231)
+//   no product cap ............. limits.digital_products -1 on both plans (v3.230)
 //   refunds .................... Refund.jsx §5: not refundable once a download link has been issued
 //   live flags ................. feature_flags digital_products + product_purchase enabled on prod
 // No usage stats, no ratings. Testimonials are the real, consented quotes from data/testimonials.js.
@@ -57,16 +58,16 @@ const HEAD_ACCENT = '#E9578A';   // Tukku pink — heading accents on the light 
 const MIST = '#F6E3C6';          // cream body text on dark
 const LILAC = '#F6E3C6';         // cream light section background
 
-// Mirrors subscription_plans.limits.digital_products for the free plan (v3.165)
-// and FREE_PLAN.features "3 digital products". Change both if the DB changes.
-export const FREE_PRODUCT_LIMIT = 3;
+// Mirrors subscription_plans.commission_rates.products (pricing v2, v3.230).
+// Change these if the DB changes.
+const STARTER_PRODUCT_PCT = 12;
+const PRO_PRODUCT_PCT = 4;
+const SAMPLE_PRODUCT_PRICE = 499;
 
-// Buyer-side money, same basis as bookings: price + flat ₹10 fee + 18% GST on
-// the fee. A ₹0 product carries no fee (pricingEngine.calculatePlatformFee).
-const FEE = 10;
-const FEE_GST = 1.8;
+// Buyer-side money (pricing v2): products carry no booking fee — the buyer pays
+// exactly the price.
 const round2 = (n) => Math.round(n * 100) / 100;
-export const buyerTotal = (price) => (price > 0 ? round2(price + FEE + FEE_GST) : 0);
+export const buyerTotal = (price) => (price > 0 ? round2(price) : 0);
 const inr = (n) => `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
@@ -78,7 +79,7 @@ const CHIPS = [
   { icon: Mail, label: 'Download link on screen and by email' },
   { icon: IndianRupee, label: 'UPI, card and wallet checkout' },
   { icon: Gift, label: 'Free products allowed' },
-  { icon: InfinityIcon, label: `Unlimited on ${PREMIUM_PLAN.name}` },
+  { icon: InfinityIcon, label: 'Unlimited on every plan' },
 ];
 
 const STEPS = [
@@ -106,9 +107,9 @@ const FAQ = [
   { q: 'How big can a file be?', a: 'Up to 2 MB per uploaded file. For anything bigger, compress it into a ZIP or link to where it is hosted.' },
   { q: 'How does the buyer get the file?', a: 'Right after payment, a download link appears on screen and a copy is emailed to them. The link works for 24 hours and up to 3 downloads. If it lapses, the buyer verifies their email with a code and gets a new one.' },
   { q: 'Do buyers need an account?', a: 'No. They enter their name, email and WhatsApp number, confirm a 6-digit code sent on WhatsApp, and pay. No password and no app.' },
-  { q: 'What does the buyer pay?', a: 'Your price, plus a ₹10 booking fee and GST on that fee, ₹11.80 in total. A free product has no fee at all.' },
-  { q: 'Do you take a commission on product sales?', a: `No, on either plan. The actual payment gateway charge is deducted from the sale. The 5% commission on ${FREE_PLAN.name} applies to bookings, not products.` },
-  { q: 'How many products can I sell?', a: `Up to ${FREE_PRODUCT_LIMIT} live products on ${FREE_PLAN.name} and unlimited on ${PREMIUM_PLAN.name}. The cap counts active products, so you can deactivate one to put another live.` },
+  { q: 'What does the buyer pay?', a: 'Exactly your price. Digital products carry no booking fee, on either plan.' },
+  { q: 'Do you take a commission on product sales?', a: `Yes: 12% on ${FREE_PLAN.name} and 4% on ${PREMIUM_PLAN.name}, GST included. The actual payment gateway charge is also deducted from the sale.` },
+  { q: 'How many products can I sell?', a: `As many as you like, on ${FREE_PLAN.name} and ${PREMIUM_PLAN.name}. There is no product cap on either plan.` },
   { q: 'Is there a GST invoice?', a: 'Yes. Every paid purchase generates a GST invoice for the booking fee, issued to the buyer.' },
   { q: 'Can a buyer get a refund?', a: 'Digital products are not refundable once a download link has been issued, as set out in our refund policy.' },
 ];
@@ -203,7 +204,6 @@ function ShelfDemo() {
                 <div className="text-xs text-[#F6E3C6]/50">{p.meta}</div>
                 <dl className="mt-4 space-y-2 text-sm text-[#F6E3C6]/70">
                   <div className="flex justify-between"><dt>Price</dt><dd className="tabular-nums">{free ? 'Free' : inr(p.price)}</dd></div>
-                  {!free && <div className="flex justify-between"><dt>Booking fee + GST</dt><dd className="tabular-nums">{inr(FEE + FEE_GST)}</dd></div>}
                   <div className="flex justify-between border-t border-white/10 pt-2 font-heading font-bold text-[#F6E3C6]"><dt>Total</dt><dd className="tabular-nums">{inr(buyerTotal(p.price))}</dd></div>
                 </dl>
                 <div className="mt-3 flex items-center gap-1.5 text-[11px] text-[#F6E3C6]/55">
@@ -241,74 +241,50 @@ function ShelfDemo() {
   );
 }
 
-/* The difference — how many products can be live on each plan. */
-function PlanCounter() {
-  const [n, setN] = useState(5);
-  const live = Math.min(n, FREE_PRODUCT_LIMIT);
-  const waiting = n - live;
-  const Slots = ({ count, filled }) => (
-    <div className="mt-5 grid grid-cols-6 gap-2">
-      {Array.from({ length: count }, (_, i) => (
-        <span
-          key={i}
-          className={`flex aspect-square items-center justify-center rounded-[5px] ${i < filled ? 'text-white' : 'border border-dashed border-black/20 text-neutral-400'}`}
-          style={i < filled ? { background: VIOLET} : undefined}
-        >
-          {i < filled ? <Check size={14} aria-hidden /> : <Lock size={12} aria-hidden />}
-        </span>
-      ))}
+/* The difference — what each plan keeps from a month of product sales
+   (pricing v2: products are unlimited on both plans; commission is the gap). */
+export const keepOnPlan = (sales, commissionPct) => round2(sales * (1 - commissionPct / 100));
+
+function PlanKeep() {
+  const [n, setN] = useState(10);
+  const sales = n * SAMPLE_PRODUCT_PRICE;
+  const Card = ({ name, note, pct, dark }) => (
+    <div
+      className={`rounded-[24px] p-6 sm:p-7 ${dark ? 'text-[#F6E3C6] shadow-[0_24px_60px_-28px_rgba(13,35,70,0.7)]' : 'border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]'}`}
+      style={dark ? { background: DEEP } : undefined}
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 className={`font-heading text-lg font-bold ${dark ? 'text-[#F6E3C6]' : 'text-ink'}`}>{name}</h3>
+        <span className={`text-xs ${dark ? 'text-[#F6E3C6]/60' : 'text-neutral-500'}`}>{note}</span>
+      </div>
+      <p className={`mt-5 font-heading text-3xl font-extrabold tabular-nums ${dark ? 'text-[#F6E3C6]' : 'text-ink'}`}>{inr(keepOnPlan(sales, pct))}</p>
+      <p className={`mt-2 text-sm leading-relaxed ${dark ? 'text-[#F6E3C6]/75' : 'text-neutral-600'}`}>
+        You keep {100 - pct}% of {inr(sales)} in sales — {pct}% commission, GST included.
+      </p>
     </div>
   );
 
   return (
     <div className="mt-12">
       <div className="mx-auto flex max-w-md items-center justify-between gap-4 rounded-[16px] border border-black/5 bg-white px-5 py-4 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-        <span className="text-sm text-neutral-600" id="dp-count-label">Products you want live</span>
+        <span className="text-sm text-neutral-600" id="dp-count-label">Products sold this month at ₹{SAMPLE_PRODUCT_PRICE}</span>
         <div className="flex items-center gap-3" role="group" aria-labelledby="dp-count-label">
-          <button type="button" aria-label="Fewer products" onClick={() => setN((v) => Math.max(1, v - 1))} className="flex h-9 w-9 items-center justify-center rounded-[16px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n <= 1}>
+          <button type="button" aria-label="Fewer sales" onClick={() => setN((v) => Math.max(1, v - 1))} className="flex h-9 w-9 items-center justify-center rounded-[16px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n <= 1}>
             <Minus size={15} aria-hidden />
           </button>
           <output aria-live="polite" className="w-8 text-center font-heading text-3xl font-extrabold tabular-nums" style={{ color: VIOLET_INK }}>{n}</output>
-          <button type="button" aria-label="More products" onClick={() => setN((v) => Math.min(12, v + 1))} className="flex h-9 w-9 items-center justify-center rounded-[16px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n >= 12}>
+          <button type="button" aria-label="More sales" onClick={() => setN((v) => Math.min(100, v + 1))} className="flex h-9 w-9 items-center justify-center rounded-[16px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n >= 100}>
             <Plus size={15} aria-hidden />
           </button>
         </div>
       </div>
 
       <div className="mt-8 grid gap-5 sm:gap-6 md:grid-cols-2">
-        <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="font-heading text-lg font-bold text-ink">{FREE_PLAN.name}</h3>
-            <span className="text-xs text-neutral-500">₹0 / month</span>
-          </div>
-          <Slots count={n} filled={live} />
-          <p className="mt-5 text-sm leading-relaxed text-neutral-600">
-            {waiting > 0
-              ? `${live} live, ${waiting} waiting. Deactivate one to swap it in, or upgrade.`
-              : n === FREE_PRODUCT_LIMIT
-                ? `All ${n} live. That fills the free plan.`
-                : `All ${n} live. Room for ${FREE_PRODUCT_LIMIT - n} more.`}
-          </p>
-        </div>
-        <div className="rounded-[24px] p-6 text-[#F6E3C6] shadow-[0_24px_60px_-28px_rgba(13,35,70,0.7)] sm:p-7" style={{ background: DEEP}}>
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="font-heading text-lg font-bold text-[#F6E3C6]">{PREMIUM_PLAN.name}</h3>
-            <span className="text-xs text-[#F6E3C6]/60">₹{PREMIUM_PLAN.monthly} / month or ₹{PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year</span>
-          </div>
-          <div className="mt-5 grid grid-cols-6 gap-2">
-            {Array.from({ length: n }, (_, i) => (
-              <span key={i} className="flex aspect-square items-center justify-center rounded-[16px] text-white" style={{ background: VIOLET}}>
-                <Check size={14} aria-hidden />
-              </span>
-            ))}
-          </div>
-          <p className="mt-5 flex items-center gap-2 text-sm leading-relaxed text-[#F6E3C6]/75">
-            <InfinityIcon size={16} style={{ color: VIOLET_SOFT }} aria-hidden /> All {n} live. No product cap.
-          </p>
-        </div>
+        <Card name={FREE_PLAN.name} note="₹0 / month" pct={STARTER_PRODUCT_PCT} />
+        <Card name={PREMIUM_PLAN.name} note={`₹${PREMIUM_PLAN.monthly} / month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year`} pct={PRO_PRODUCT_PCT} dark />
       </div>
       <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-neutral-600">
-        On both plans, product sales carry no commission and buyers pay the same. {PREMIUM_PLAN.name} also drops the 5% on your bookings.
+        Buyers pay exactly your price on both plans, and both plans sell unlimited products. The payment gateway&rsquo;s charge comes off either way.
         {' '}<Link to="/pricing" className="font-semibold underline underline-offset-4" style={{ color: VIOLET_INK }}>Compare plans</Link>
       </p>
     </div>
@@ -376,7 +352,7 @@ export default function DigitalProductsFeature() {
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
               <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F6E3C6] hover:no-underline hover:opacity-80">
-                See product limits by plan <ArrowRight size={15} />
+                See what each plan keeps <ArrowRight size={15} />
               </a>
             </Reveal>
           </div>
@@ -519,18 +495,18 @@ export default function DigitalProductsFeature() {
         </div>
       </section>
 
-      {/* ═══════════════ 6 · THE DIFFERENCE (plan slot counter) ═══════════════ */}
+      {/* ═══════════════ 6 · THE DIFFERENCE (what each plan keeps) ═══════════════ */}
       <section id="plans" className="scroll-mt-20 px-5 py-20 text-ink sm:px-8 lg:py-28" style={{ background: LILAC }}>
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
             <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-              Start with {FREE_PRODUCT_LIMIT}. <span style={{ color: HEAD_ACCENT }}>Grow to unlimited.</span>
+              Unlimited on both. <span style={{ color: HEAD_ACCENT }}>Keep more on {PREMIUM_PLAN.name}.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
-              Choose how many products you want on sale and see what each plan keeps live.
+              Pick how many products you sell in a month and see what each plan keeps.
             </Reveal>
           </div>
-          <PlanCounter />
+          <PlanKeep />
         </div>
       </section>
 

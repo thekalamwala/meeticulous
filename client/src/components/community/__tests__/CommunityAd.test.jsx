@@ -70,3 +70,12 @@ test('the ad is permanent — no dismiss/hide control', () => {
   expect(screen.queryByRole('button', { name: 'Hide this' })).toBeNull();
   expect(container.firstChild).not.toBeNull();
 });
+
+// Pricing v2 bug list / acceptance test 16: founding and partner Pro hosts are paid —
+// they must never be shown an "upgrade to Pro" ad.
+test.each(['premium_founding', 'creator'])('a %s host gets the advertise deck, not an upgrade ad', (plan) => {
+  user = { id: 'h3', is_host: true, plan, name: 'Asha' };
+  render_();
+  expect(track).toHaveBeenCalledWith('community_ad_impression', expect.objectContaining({ audience: 'advertise' }));
+  expect(track).not.toHaveBeenCalledWith('community_ad_impression', expect.objectContaining({ audience: 'upgrade' }));
+});

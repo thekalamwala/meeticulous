@@ -23,4 +23,4 @@ test('generateRecoveryCodes returns N distinct codes; hash + match roundtrip', a
   expect(hashes.length).toBe(8);
   expect(await svc.matchRecoveryCode(codes[2], hashes)).toBe(2);
   expect(await svc.matchRecoveryCode('not-a-code', hashes)).toBe(-1);
-}, 20000); // 8 bcrypt hashes + up to 16 compares (cost 10) can exceed the 5s default under parallel load
+}, 60000); // 8 bcrypt hashes + up to 16 compares (cost 10, pure-JS bcryptjs) took >20s under full-suite parallel load (pre-push, 2026-11-27); ~1s alone

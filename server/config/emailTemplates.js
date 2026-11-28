@@ -453,9 +453,9 @@ const TEMPLATES = [
     email_reason: 'You are receiving this email because your Meeticulous subscription is due to renew soon.',
     html_content:
       C.heroImage('premium-expiring', 'Your plan renews soon') +
-      C.heroBand(t, { kick: 'Renews in {{days_left}} days', h2: 'Keep your 0%.', sub: "Don't slip back to 5% commission, {{first_name}}." }) +
+      C.heroBand(t, { kick: 'Renews in {{days_left}} days', h2: 'Keep your 0%.', sub: "Don't slip back to 9% commission, {{first_name}}." }) +
       lead('Your <strong>{{plan_name}}</strong> plan renews on <strong>{{expiry_date}}</strong>. Stay on it and every booking stays commission-free.') +
-      lead('If it lapses, you drop to Starter — 5% per booking comes back.'),
+      lead('If it lapses, you drop to Starter — 9% per booking comes back.'),
     cta_label: 'Renew {{plan_name}}', cta_url: '{{renew_url}}',
   }; })(),
 
@@ -815,7 +815,7 @@ const TEMPLATES = [
     ['PRO_TASTE_ENDING', 'Pro Taste — Ending Soon', 'Upgrade', '{{days_left}} days left of WhatsApp reminders',
       'They switch to email on {{taste_ends_on}}.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
       '{{days_left}} days left of WhatsApp reminders',
-      'Since your first booking, Meeticulous has sent WhatsApp reminders for <strong>{{reminded_count}}</strong> of your bookings. On {{taste_ends_on}} they switch to email. Keep them on with Pro — founding price ₹1,179/yr incl. GST, locked for life. {{spots_line}}',
+      'Since your first booking, Meeticulous has sent WhatsApp reminders for <strong>{{reminded_count}}</strong> of your bookings. On {{taste_ends_on}} they switch to email. Keep them on with Pro — founding price ₹899/yr incl. GST, locked for life. {{spots_line}}',
       'Keep WhatsApp reminders'],
     ['PRO_TASTE_ENDED', 'Pro Taste — Ended', 'Upgrade', 'WhatsApp reminders are now off',
       'Your guests now get email reminders only.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
@@ -848,12 +848,12 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Upgrade'); return {
     event_key: 'FOUNDING_SPOTS_LOW', audience: 'vendor', category: 'Marketing', sender_key: 'news',
     name: 'Upgrade — Founding Spots Low', subject: '{{spots_left}} founding Pro spots left',
-    preview_text: 'Founding price ₹1,179/yr incl. GST, locked for life — then Pro is ₹1,769.',
+    preview_text: 'Founding price ₹899/yr incl. GST, locked for life — then Pro is ₹1,199.',
     email_category: 'Upgrade',
     email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
     html_content:
       C.heroBand(t, { kick: 'Founding spots left', big: '{{spots_left}}', sub: 'of 100, {{first_name}}.' }) +
-      lead('The founding Pro price — <strong>₹1,179/yr incl. GST, locked for life</strong> — closes after the first 100 hosts. After that, Pro is ₹1,769/yr.') +
+      lead('The founding Pro price — <strong>₹899/yr incl. GST, locked for life</strong> — closes after the first 100 hosts. After that, Pro is ₹1,199/yr.') +
       lead("You've paid <strong>{{commission_total}}</strong> in commission so far. Pro takes 0%, keeps WhatsApp reminders on for every guest, and rebooks your regulars automatically."),
     cta_label: 'Claim a founding spot', cta_url: '{{upgrade_url}}',
   }; })(),

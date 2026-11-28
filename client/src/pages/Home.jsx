@@ -439,7 +439,7 @@ const PROBLEMS = [
   },
   {
     title: "Fees that eat into every booking",
-    fixes: ["Starter is free: we take 5% only when you get paid.", "Pro has 0% commission, so you keep every rupee."],
+    fixes: ["Starter is free: we take 9% only when you get paid.", "Pro has 0% commission on appointments, so you keep every rupee."],
     icon: IndianRupee,
     tile: "bg-cyan-100 text-cyan-500",
     band: "bg-cyan-900",
@@ -455,8 +455,8 @@ const PROBLEMS = [
 const FAQS = [
   { q: "What is appointment booking software?", a: "It's a tool that lets clients book time with you on their own — they see your open slots, pick one and confirm, without messaging back and forth. Meeticulous adds the parts around the booking too: upfront payment, reminders, invoices and a client list." },
   { q: "Who is Meeticulous for?", a: "Anyone who sells their time or skills: creators like photographers, artists and influencers; pros like consultants, coaches, freelancers and designers; and independents like fitness trainers, gaming coaches and mentors. If you get paid per session, it fits." },
-  { q: "Is Meeticulous really free?", a: "Yes. Starter costs nothing and has no time limit — unlimited services and bookings. We take 5% only when you actually get paid. Pro removes that commission for ₹1,179 a year (under ₹4 a day), which pays for itself once you're earning about ₹4,700 a month." },
-  { q: "Do you charge commission?", a: "On Pro, no — you keep 100% of every booking. Starter (the free plan) charges 5% per transaction, and nothing when you have no bookings." },
+  { q: "Is Meeticulous really free?", a: "Yes. Starter costs nothing and has no time limit — unlimited services and bookings. We take 9% on appointments (12% on products, courses and memberships) only when you actually get paid. Pro takes 0% on appointments for ₹1,199 a year (about ₹3 a day), which pays for itself once you're taking about ₹1,110 a month in bookings." },
+  { q: "Do you charge commission?", a: "On Pro, 0% on appointments up to ₹25,000 a month (3% above that) and 4% on products, courses and memberships. Starter (the free plan) charges 9% on appointments and 12% on products, courses and memberships — and nothing when you have no bookings." },
   { q: "Can clients pay while booking?", a: "Yes — that's the whole point. Clients pay via UPI, card or netbanking at checkout. You get paid before the session starts." },
   { q: "Do clients need an account?", a: "No. Clients book and pay without creating an account." },
   { q: "Can I connect Google Calendar?", a: "Yes. Two-way sync — your availability updates automatically and bookings appear in your calendar in real time." },
@@ -1200,7 +1200,7 @@ const Home = () => {
             Simple pricing. <span className="text-rose">No surprises.</span>
           </Reveal>
           <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-[750px] text-center text-muted">
-            Start free — we take 5% only when you get paid. Go Pro for 0% commission and keep every rupee.
+            Start free — we take 9% only when you get paid. Go Pro for 0% appointment commission and keep every rupee.
           </Reveal>
 
           <Reveal delay={0.12} className="mt-8">
