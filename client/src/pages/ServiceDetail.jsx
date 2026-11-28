@@ -574,7 +574,7 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
               </div>
               {platformFee > 0 && (
                 <p className="relative mt-1.5 flex items-center gap-1 text-xs text-gray-500">
-                  <span>+ ₹{platformFee} platform fee</span>
+                  <span>+ ₹{bookingFee} booking fee (incl. GST)</span>
                   <button type="button" onClick={() => setFeeTipOpen(o => !o)} aria-label="View fee breakdown"
                     className="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
@@ -1097,8 +1097,8 @@ export default function ServiceDetail() {
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xl font-black text-gray-900 leading-none">₹{service.price}</span>
               </div>
-              {(bookingFeeBreakdown?.platformFee || 0) > 0 && (
-                <p className="text-[11px] text-gray-500 mt-0.5">+ ₹{bookingFeeBreakdown.platformFee} platform fee</p>
+              {bookingFee > 0 && (
+                <p className="text-[11px] text-gray-500 mt-0.5">+ ₹{bookingFee} booking fee (incl. GST)</p>
               )}
             </>
           )}

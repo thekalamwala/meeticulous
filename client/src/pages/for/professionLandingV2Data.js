@@ -1613,7 +1613,7 @@ export const V2_LANDING = {
       { q: 'Can I collect an advance payment when a client books?', a: 'Yes. Your fee is shown on the booking page and collected at checkout through Razorpay (UPI, cards, netbanking) before the call. You can take an advance or the full amount upfront.' },
       { q: 'Does it handle clients in other time zones?', a: 'Yes. Your availability is shown in each client’s own time zone, and Google Calendar busy-time blocking keeps your real free slots accurate — so overseas clients book without any back-and-forth.' },
       { q: 'How does it reduce no-shows on discovery calls?', a: 'Automatic email and WhatsApp reminders go out before every call, and making the slot paid or deposit-based means only serious prospects book your time.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 9% commission per paid appointment. Pro begins at roughly ₹3 a day (billed yearly) and takes appointment commission to 0%, so you keep 100% of every fee.' },
       { q: 'Is it suitable for designers, developers, writers and consultants?', a: 'Yes. Any freelancer who sells booked time — designers, developers, writers, marketers, video editors and consultants — can use Meeticulous to run bookings and payments from one professional link.' },
     ],
 

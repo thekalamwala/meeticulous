@@ -31,7 +31,7 @@ const hostChain = (data) => ({ select: () => ({ eq: () => ({ single: () => Promi
 const productMaybe = (data) => ({ select: () => ({ eq: () => ({ eq: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data }) }) }) }) }) });
 
 describe('getProductPublic — slug then id', () => {
-  test('resolves by slug and attaches platform_fee', async () => {
+  test('resolves by slug; no platform fee on products (pricing v2)', async () => {
     supabaseAdmin.from.mockImplementation((t) => {
       if (t === 'profiles') return hostChain({ id: 'h1' });
       if (t === 'products') return productMaybe(PRODUCT);
@@ -39,7 +39,7 @@ describe('getProductPublic — slug then id', () => {
     });
     const r = res();
     await getProductPublic({ params: { username: 'john', key: 'guide' } }, r);
-    expect(r.json).toHaveBeenCalledWith(expect.objectContaining({ id: 'prod_1', platform_fee: 10 }));
+    expect(r.json).toHaveBeenCalledWith(expect.objectContaining({ id: 'prod_1', platform_fee: 0, platform_fee_gst: 0, total: 199 }));
   });
 
   test('falls back to id lookup when the key is a UUID and no slug matches', async () => {

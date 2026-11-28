@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
-  ALL_PLANS, FREE_PLAN, PREMIUM_PLAN, PAID_PLANS,
-  PLAN_COLUMNS, PLAN_MATRIX,
+  ALL_PLANS, FREE_PLAN, PREMIUM_PLAN, PAID_PLANS, FOUNDING,
+  PLAN_COLUMNS, PLAN_MATRIX, PREMIUM_PLAN_USD, PREMIUM_YEARLY_PER_MONTH,
   PREMIUM_ANNUAL_SAVING, PREMIUM_ANNUAL_SAVE_PCT, PREMIUM_PER_DAY,
 } from "../plans";
 
@@ -25,15 +25,19 @@ describe("plan data", () => {
 
 // Prices shown to a customer are GST-INCLUSIVE — what Razorpay actually charges.
 describe("pricing is coherent", () => {
-  it("matches the DB ex-GST values grossed up by 18%", () => {
-    expect(Math.round(199 * 1.18)).toBe(PREMIUM_PLAN.monthly); // 234.82 → ₹235
-    expect(Math.round(999 * 1.18)).toBe(PREMIUM_PLAN.yearly);  // 1178.82 → ₹1,179
+  // v3.230 stores back-solved ex-GST bases; the engine adds GST (round2) on top.
+  const charged = (base) => base + Math.round(base * 0.18 * 100) / 100;
+  it("matches the DB ex-GST values grossed up by 18%, to the paisa", () => {
+    expect(charged(168.64)).toBeCloseTo(PREMIUM_PLAN.monthly, 2); // ₹199.00
+    expect(charged(1016.10)).toBeCloseTo(PREMIUM_PLAN.yearly, 2); // ₹1,199.00
+    expect(charged(761.86)).toBeLessThanOrEqual(FOUNDING.yearly); // ₹898.99 — never above
   });
 
   it("a year genuinely costs less than twelve months", () => {
     expect(PREMIUM_PLAN.yearly).toBeLessThan(PREMIUM_PLAN.monthly * 12);
-    expect(PREMIUM_ANNUAL_SAVING).toBe(1641);
-    expect(PREMIUM_ANNUAL_SAVE_PCT).toBe(58);
+    expect(PREMIUM_ANNUAL_SAVING).toBe(1189);
+    expect(PREMIUM_ANNUAL_SAVE_PCT).toBe(50);
+    expect(PREMIUM_YEARLY_PER_MONTH).toBe(99); // ₹99.92 floored, never rounded up
   });
 
   it("the per-day headline is under ₹10 and matches the yearly price", () => {
@@ -93,8 +97,41 @@ describe("comparison table", () => {
 describe("no legacy tiers leak into display copy", () => {
   it("drops Host+ / Studio / Enterprise naming and old prices", () => {
     const blob = JSON.stringify({ ALL_PLANS, PLAN_MATRIX });
-    for (const dead of ["Host+", "Studio", "Enterprise", "229", "555", "1,499", "3,650"]) {
+    for (const dead of ["Host+", "Studio", "Enterprise", "229", "555", "1,499", "3,650", "235", "1,179", "1,769", "5%"]) {
       expect(blob).not.toContain(dead);
     }
+  });
+});
+
+// Pricing v2 (docs/pricing-v2-spec.md §1, §6).
+describe("pricing v2", () => {
+  const rows = PLAN_MATRIX.flatMap((s) => s.rows);
+  const row = (label) => rows.find((r) => r.label === label);
+
+  it("commission rows match the rate maps", () => {
+    expect(row("Commission on appointments")).toMatchObject({ free: "9%", premium: "0%, no monthly limit" });
+    expect(row("Commission on products, courses & memberships")).toMatchObject({ free: "12%", premium: "4%" });
+  });
+
+  it("the booking fee row says it is GST-inclusive, floored at ₹300, appointments only", () => {
+    const fee = row("Booking fee your guest pays");
+    expect(fee.free).toBe(fee.premium);
+    expect(fee.free).toMatch(/GST included/);
+    expect(fee.free).toMatch(/none under ₹300/);
+    expect(fee.free).not.toMatch(/\+ GST/);
+  });
+
+  it("founding is a cheaper yearly, then the standard price", () => {
+    expect(FOUNDING).toMatchObject({ yearly: 899, nextYearly: PREMIUM_PLAN.yearly });
+  });
+
+  it("USD display price is $19 / $99", () => {
+    expect(PREMIUM_PLAN_USD).toEqual({ monthly: 19, yearly: 99 });
+  });
+
+  it("lists no row the spec bans (calendar integrations, Explore priority until built)", () => {
+    const labels = rows.map((r) => r.label.toLowerCase());
+    expect(labels.some((l) => l.includes("calendar"))).toBe(false);
+    expect(labels.some((l) => l.includes("explore"))).toBe(false);
   });
 });

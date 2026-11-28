@@ -25,7 +25,7 @@ jest.mock('../../../services/community/store', () => ({
   insertComment: jest.fn(),
 }));
 jest.mock('../../../services/botService', () => ({ askBot: jest.fn() }));
-jest.mock('../../../services/community/replyGate', () => ({ decide: jest.fn(), appendCta: jest.fn((a) => a) }));
+jest.mock('../../../services/community/replyGate', () => ({ decide: jest.fn(), classify: jest.fn(), appendCta: jest.fn((a) => a) }));
 jest.mock('../../../services/bot/escalationService', () => ({ recordAndNotify: jest.fn() }));
 jest.mock('../../../services/community/notify', () => ({ onMentions: jest.fn() }));
 
@@ -393,6 +393,75 @@ describe('replyToComment (Phase 2 — questions in thread comments)', () => {
     expect(row.body).toMatch(/pulling in the team/i);
     expect(row.body).toContain('@team');
     expect(escalationService.recordAndNotify).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('replyToMention (@tithi anywhere in a thread)', () => {
+  const POST = { id: 'post-1', slug: 'hello-abc123', author_id: 'member-1', title: '', body: 'Intro post', status: 'visible' };
+  // The live miss: a reply nested two deep (under a reply to Tithi's own comment).
+  const NESTED = { id: 'cm3', post_id: 'post-1', parent_id: 'cm2', author_id: 'member-2', body: '@tithi how do I add a service?', status: 'visible' };
+
+  beforeEach(() => {
+    store.countRepliesByAuthor.mockResolvedValue(0);
+    store.countCommentsByAuthorOnPost.mockResolvedValue(0);
+    store.getProfile.mockResolvedValue({ id: 'member-2', is_host: true, username: 'priya' });
+    store.insertComment.mockResolvedValue({ id: 'reply-9' });
+    replyGate.classify.mockResolvedValue({ answerable: true, route: 'support' });
+    replyGate.appendCta.mockImplementation((a) => a);
+    botService.askBot.mockResolvedValue({ answer: 'Go to Catalog and tap Add.', escalate: false });
+  });
+
+  test('answers a nested reply, under that reply, with no gate or human-answered check', async () => {
+    const res = await tithi.replyToMention({ item: POST, comment: NESTED });
+    expect(res).toEqual({ replied: true, commentId: 'reply-9', escalated: false, tagged: false });
+    expect(botService.askBot).toHaveBeenCalledWith({ question: 'how do I add a service?', audience: 'host', channel: 'community' });
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({
+      post_id: 'post-1', parent_id: 'cm3', author_id: 'tithi-uuid', body: 'Go to Catalog and tap Add.',
+    }));
+    expect(replyGate.decide).not.toHaveBeenCalled();
+    expect(store.countReplies).not.toHaveBeenCalled();
+  });
+
+  test('a mention in the post itself replies top-level', async () => {
+    await tithi.replyToMention({ item: { ...POST, body: '@tithi what does Pro include?' }, comment: null });
+    expect(store.countCommentsByAuthorOnPost).toHaveBeenCalledWith('post-1', 'tithi-uuid');
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({ post_id: 'post-1', parent_id: null }));
+  });
+
+  test("out of scope (book a hotel) → brief line, @team tagged, escalated, no Sonnet call", async () => {
+    replyGate.classify.mockResolvedValue({ answerable: false, route: 'out_of_scope' });
+    const res = await tithi.replyToMention({ item: POST, comment: { ...NESTED, body: '@tithi Can you book hotel for me?' } });
+    expect(res).toMatchObject({ replied: true, escalated: true, tagged: true });
+    expect(botService.askBot).not.toHaveBeenCalled();
+    const [row] = store.insertComment.mock.calls[0];
+    expect(row.parent_id).toBe('cm3');
+    expect(row.body).toMatch(/outside what I can do/i);
+    expect(row.body).toContain('@team');
+    expect(escalationService.recordAndNotify).toHaveBeenCalledWith(expect.objectContaining({
+      reason: 'out_of_scope', question: 'Can you book hotel for me?', pageUrl: '/community/p/hello-abc123',
+    }));
+    expect(notify.onMentions).toHaveBeenCalledWith(expect.objectContaining({ usernames: ['team'], actorId: 'tithi-uuid' }));
+  });
+
+  test("in scope but askBot can't ground it → handoff + @team", async () => {
+    botService.askBot.mockResolvedValue({ answer: '', escalate: true, escalateReason: 'no_match' });
+    const res = await tithi.replyToMention({ item: POST, comment: NESTED });
+    expect(res).toMatchObject({ replied: true, escalated: true, tagged: true });
+    expect(store.insertComment.mock.calls[0][0].body).toMatch(/pulling in the team[\s\S]*@team/i);
+  });
+
+  test('triage unavailable → askBot still answers', async () => {
+    replyGate.classify.mockResolvedValue(null);
+    expect(await tithi.replyToMention({ item: POST, comment: NESTED })).toMatchObject({ replied: true, escalated: false });
+  });
+
+  test('one reply per mention; never herself; flag off is silent', async () => {
+    store.countRepliesByAuthor.mockResolvedValue(1);
+    expect(await tithi.replyToMention({ item: POST, comment: NESTED })).toEqual({ skipped: 'already_replied' });
+    expect(await tithi.replyToMention({ item: POST, comment: { ...NESTED, author_id: 'tithi-uuid' } })).toEqual({ skipped: 'self' });
+    isFeatureEnabled.mockResolvedValue(false);
+    expect(await tithi.replyToMention({ item: POST, comment: NESTED })).toEqual({ skipped: 'flag_off' });
+    expect(store.insertComment).not.toHaveBeenCalled();
   });
 });
 

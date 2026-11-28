@@ -154,7 +154,7 @@ const FAQ = [
   { q: 'Can I share my booking link on Instagram?', a: 'Yes. Your link works anywhere — put it in your Instagram bio, on WhatsApp, on Google or on your reception desk. One link handles all your appointment requests.' },
   { q: 'Can I manage multiple therapists and rooms?', a: 'Yes. Create as many services as you need and manage every appointment from one calm calendar, so no two guests are booked into the same therapist or room.' },
   { q: 'Does every appointment get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid appointment, and payouts go to your bank once KYC is complete.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -589,7 +589,7 @@ export default function Spas() {
                 <div className="mt-6 flex items-end gap-1">
                   <span className="pb-1.5 text-2xl font-bold">₹</span>
                   <span className="font-heading text-5xl font-extrabold tracking-tight">0</span>
-                  <span className="pb-2 text-sm text-slate-500">/mo · 5% per booking</span>
+                  <span className="pb-2 text-sm text-slate-500">/mo · 9% per booking</span>
                 </div>
                 <ul className="mt-6 flex flex-col gap-3">
                   {FREE_PLAN.features.slice(0, 5).map((f) => (

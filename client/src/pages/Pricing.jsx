@@ -122,7 +122,7 @@ export default function Pricing() {
     <main className="bg-canvas">
       <Seo
         title={feeOnly ? "Pricing — Meeticulous | Pro for creators & professionals" : "Pricing — Meeticulous | Start free. Go Pro as you grow."}
-        description={feeOnly ? "Simple, honest pricing for your booking page — scheduling, reminders and automation. Pro is ₹1,179 a year, GST included." : "Two plans, that's it. Starter is free forever — put your business online and start taking bookings. Pro turns those bookings into a business system. All prices include GST."}
+        description={feeOnly ? "Simple, honest pricing for your booking page — scheduling, reminders and automation. Pro is ₹1,199 a year, GST included." : "Two plans, that's it. Starter is free forever — put your business online and start taking bookings. Pro turns those bookings into a business system. All prices include GST."}
         image={ogCard('pricing')}
         canonical={`${SITE_URL}/pricing`}
         jsonLd={JSON_LD}
@@ -256,8 +256,8 @@ function OperateGrowPills() {
 
 // The four growth stages as one horizontal, connected timeline — replaces the
 // old Operate-vs-Grow panels, the "Your business is growing" band and the stage
-// grid. No fake numbers: the only figure named (₹4,700/mo) is the real breakeven
-// (5% commission = the effective ₹235/mo Pro price — see plans.js + the calc).
+// grid. No fake numbers: the only figure named (₹1,110/mo) is the real breakeven
+// (9% commission = Pro yearly ₹1,199 ÷ 12 — see plans.js + the calc).
 const STAGES = [
   {
     tag: "Starting out",
@@ -286,7 +286,7 @@ const STAGES = [
   {
     tag: "Running the business",
     lead: "Bookings are your engine",
-    body: "Earning over ₹4,700 a month? At 0% commission, Pro already costs you less than the 5% — and you keep it all.",
+    body: "Taking over ₹1,110 a month in bookings? Pro already costs you less than Starter's 9% — and 0% on appointments, however much you earn.",
     accent: GROW,
     plan: "Pro",
     icon: Rocket,
@@ -407,24 +407,25 @@ function ProValueAndCalculator() {
 }
 
 // "Does Pro pay for itself?" — an honest calculator, not decoration. It uses
-// only real pricing logic: Starter's 5% commission vs Pro's flat effective
-// ₹300/mo (yearly billing) at 0% commission. Breakeven is ₹4,700/mo of paid
-// bookings (0.05 × 6,000 = 300), matching the plans.js persona blurb.
-const COMMISSION_PCT = 5; // FREE_PLAN commission — mirrors subscription_plans
+// only real pricing logic (pricing v2): Starter's 9% appointment commission vs
+// Pro's ₹99/mo effective price (yearly billing) at 0%, with no monthly limit.
+// Breakeven is ₹1,110/mo of paid bookings (0.09 × 1,110 ≈ 99.92), matching the
+// plans.js persona blurb.
+const COMMISSION_PCT = 9; // Starter appointments rate — mirrors subscription_plans.commission_rates
 const inr = (n) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 function PayForItself() {
   const [earn, setEarn] = useState(8000);
-  const commission = (earn * COMMISSION_PCT) / 100; // what Starter's 5% costs this month
-  const activeCost = PREMIUM_YEARLY_PER_MONTH; // flat ₹300/mo effective (yearly)
+  const commission = (earn * COMMISSION_PCT) / 100; // what Starter's 9% costs this month
+  const activeCost = PREMIUM_YEARLY_PER_MONTH; // Pro's month: the ₹99 effective price, 0% commission
   const activeWins = commission >= activeCost;
   const saved = Math.max(0, commission - activeCost);
 
   let verdict;
-  if (earn < 6000) {
-    verdict = "You're just starting out. Starter is free and the 5% only applies when you actually get paid — stay on Starter for now.";
+  if (earn < 1110) {
+    verdict = "You're just starting out. Starter is free and the 9% only applies when you actually get paid — stay on Starter for now.";
   } else if (earn < 15000) {
-    verdict = "You're getting busy. Pro's flat price already costs less than the 5% here — and you keep every rupee, plus automation and CRM.";
+    verdict = "You're getting busy. Pro's flat price already costs less than the 9% here — and you keep every rupee, plus automation and CRM.";
   } else {
     verdict = "You're running a real business. Pro pays for itself several times over, and the automation and CRM keep the volume manageable.";
   }
@@ -433,7 +434,7 @@ function PayForItself() {
     <div className="rounded-[24px] border-2 border-neutral-200 bg-white p-6 sm:p-8">
       <h3 className="font-heading text-2xl font-extrabold text-ink">Does <span className="text-primary-cta">Pro</span> pay for itself?</h3>
       <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-        Drag to your rough monthly bookings revenue — we'll compare Starter's 5% against Pro's flat price.
+        Drag to your rough monthly bookings revenue — we'll compare Starter's 9% against Pro's flat price.
       </p>
 
       <label htmlFor="earn" className="mt-7 flex items-baseline justify-between">

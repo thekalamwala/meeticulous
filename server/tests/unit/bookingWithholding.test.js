@@ -12,7 +12,7 @@ jest.mock('../../config/google', () => ({ createCalendarEvent: jest.fn().mockRes
 jest.mock('../../utils/cryptoTokens', () => ({ decrypt: (v) => v }));
 jest.mock('../../services/availabilityService', () => ({ validateSlot: jest.fn().mockResolvedValue({ ok: true }) }));
 jest.mock('../../middleware/planMiddleware', () => ({ checkBookingReceiveLimit: jest.fn().mockResolvedValue({ allowed: true }) }));
-jest.mock('../../services/planService', () => ({ resolveVendorPlan: () => 'pro', getPlan: jest.fn().mockResolvedValue({ commission_percentage: 0 }) }));
+jest.mock('../../services/planService', () => ({ resolveVendorPlan: () => 'pro', getPlan: jest.fn().mockResolvedValue({ commission_percentage: 0 }), getRate: jest.fn().mockResolvedValue(0) }));
 // Full tax config, as platformConfig would return it (flag-ON rates).
 jest.mock('../../services/platformConfig', () => ({
   getConfig: jest.fn().mockResolvedValue({

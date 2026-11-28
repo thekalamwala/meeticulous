@@ -148,7 +148,7 @@ const FAQ = [
   { q: 'Can I collect fees online?', a: 'Optionally. Collect a consultation fee upfront through Razorpay — UPI, cards or netbanking — or leave it off and collect at the clinic. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Can I manage multiple dentists or chairs?', a: 'Right now Meeticulous is best for a single appointment calendar per account — two dentists or chairs on one account share one diary and cannot be booked in parallel. Parallel multi-chair scheduling is on our roadmap; in the meantime a separate account per dentist is the workaround. We would rather tell you upfront than have it surprise you after setup.' },
   { q: 'Is patient information kept private?', a: 'Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023. Meeticulous stores appointment and contact details for booking — it is not a dental-records system, and you control what a patient provides when booking. We never display patient reviews or ratings publicly.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited appointment types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and more.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited appointment types and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and more.' },
 ];
 
 const FOOTER_COLS = [
@@ -677,7 +677,7 @@ export default function DentistPage() {
                   <div className="mt-5 flex items-end gap-1 pb-6">
                     <span className="pb-1 text-xl font-bold">₹</span>
                     <span className="font-heading text-4xl font-extrabold tracking-tight">0</span>
-                    <span className="pb-1.5 text-sm text-slate-500">/mo · 5% per booking</span>
+                    <span className="pb-1.5 text-sm text-slate-500">/mo · 9% per booking</span>
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col p-8">

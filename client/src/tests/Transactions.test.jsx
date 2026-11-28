@@ -88,8 +88,8 @@ test('clicking a row opens the premium detail modal with grouped sections', asyn
   expect(inModal.getByRole('heading', { name: 'Gateway reference' })).toBeInTheDocument();
   expect(inModal.getByText('order_ABC123')).toBeInTheDocument();
   expect(inModal.getByText('− Commission')).toBeInTheDocument();
-  expect(inModal.getByText('− TDS (194-O, 1%)')).toBeInTheDocument();
-  expect(inModal.getByText('− TCS (GST §52, 1%)')).toBeInTheDocument();
+  expect(inModal.getByText('− TDS (194-O)')).toBeInTheDocument();
+  expect(inModal.getByText('− TCS (GST §52)')).toBeInTheDocument();
   expect(inModal.getByText('Net payout')).toBeInTheDocument();
 });
 

@@ -35,7 +35,7 @@ const ASSET_BASE = "/images/abs";
 
 const STATS = [
   { slug: "commission", icon: Percent, value: "0%", label: "Commission on the paid plan" },
-  { slug: "per-day", icon: IndianRupee, value: "₹3.23", label: "A day for Pro" },
+  { slug: "per-day", icon: IndianRupee, value: "₹3.28", label: "A day for Pro" },
   { slug: "reminders", icon: Bell, value: "24×7", label: "Automatic WhatsApp & email reminders" },
   { slug: "setup", icon: Zap, value: "5 min", label: "To set up your booking page" },
 ];
@@ -69,7 +69,7 @@ const FAQ = [
   },
   {
     q: "Is there free appointment booking software?",
-    a: "Yes. Meeticulous's Starter plan is free forever with unlimited services and bookings — you only pay a 5% fee when you actually get paid, and nothing when you don't. It's genuinely free online appointment booking software, not a time-limited trial. Upgrade to Pro to drop the commission to 0%.",
+    a: "Yes. Meeticulous's Starter plan is free forever with unlimited services and bookings — you only pay a 9% commission when you actually get paid for an appointment, and nothing when you don't. It's genuinely free online appointment booking software, not a time-limited trial. Upgrade to Pro to take appointment commission to 0%.",
   },
   {
     q: "Which is the best appointment booking software for doctors and clinics?",
@@ -505,7 +505,7 @@ export default function AppointmentBookingSoftware() {
               Free online appointment booking software — <span className="text-primary-cta">not a trial.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mt-4 max-w-md text-neutral-500">
-              Start on the free Starter plan with unlimited services and bookings. You pay 5% only
+              Start on the free Starter plan with unlimited services and bookings. You pay 9% only
               when a client actually pays you, and nothing when they don't. Ready to keep every
               rupee? Pro removes the commission for about ₹3 a day.
             </Reveal>

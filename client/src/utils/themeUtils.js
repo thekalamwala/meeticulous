@@ -46,12 +46,15 @@ export const DEFAULT_COVER_IMAGE = '/brand/default-cover.webp';
 
 // ─── Plan-gated color palettes ───────────────────────────────────────────────
 
-// Starter (free) tier: the two brand colours — maroon + rose. Keeps free
-// profiles on-brand while giving a real choice. Keep in sync with the server's
-// FREE_PALETTE in hostController.js.
+// Starter (free) tier: 4 colours — the brand pair plus a deep maroon and slate.
+// Keeps free profiles on-brand while giving a real choice. Keep in sync with the
+// server's FREE_PALETTE in hostController.js. Every one of these is also in
+// STUDIO_COLORS, so upgrading never takes a host's colour away (pricing v2 §4 item 9).
 export const FREE_COLORS = [
   { name: 'Brand Maroon', hex: '#960D32' },
   { name: 'Brand Rose',   hex: '#E0506F' },
+  { name: 'Deep Maroon',  hex: '#7A0A28' },
+  { name: 'Slate',        hex: '#475569' },
 ];
 
 // Host+ (creator) tier: 8 curated colours.
@@ -66,13 +69,16 @@ export const CREATOR_COLORS = [
   { name: 'Forest Green',  hex: '#15803D' },
 ];
 
-// Pro (+ legacy Studio / Supreme) tier: 16 hue-ordered colours. Light shades
+// Pro (+ legacy Studio / Supreme) tier: 18 hue-ordered colours, a superset of
+// FREE_COLORS. Light shades
 // (yellow, lime, pale greys) were dropped — white button text reads poorly on
 // them — along with near-duplicates. No pure black/white. Keep in sync with
 // server/controllers/hostController.js PRO_PALETTE.
 export const STUDIO_COLORS = [
   // warm → green
   { name: 'Brand Maroon', hex: '#960D32' },
+  { name: 'Deep Maroon',  hex: '#7A0A28' },
+  { name: 'Brand Rose',   hex: '#E0506F' },
   { name: 'Red',          hex: '#DC2626' },
   { name: 'Rose',         hex: '#F43F5E' },
   { name: 'Pink',         hex: '#EC4899' },
@@ -95,14 +101,13 @@ export const DEFAULT_THEME_COLOR = '#960D32';
 
 /**
  * Returns the color swatches available for the given plan.
- *   Starter                 → brand maroon only (1)
- *   Pro (Partner) (creator) → CREATOR_COLORS (8)
- *   Pro / Studio / Supreme  → STUDIO_COLORS (16); Studio/Supreme also get custom hex
+ *   Starter                         → FREE_COLORS (4)
+ *   Pro / Partner / Studio / Supreme → STUDIO_COLORS (18); Studio/Supreme also get custom hex
  */
 export const getColorsForPlan = (plan) => {
   const canon = normalizePlan(plan);
-  if (canon === 'premium' || canon === 'professional' || canon === 'supreme') return STUDIO_COLORS;
-  if (canon === 'creator') return CREATOR_COLORS;
+  // premium_founding already canonicalises to premium (PLAN_ALIASES).
+  if (canon === 'premium' || canon === 'creator' || canon === 'professional' || canon === 'supreme') return STUDIO_COLORS;
   return FREE_COLORS;
 };
 

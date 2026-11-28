@@ -66,6 +66,7 @@ const makeBooking = ({ bookingId = 'booking-b', rescheduleCount = 1, vendorFee =
   services: { duration: 30, grace_period_minutes: 10 },
   'profiles!bookings_host_id_fkey': {
     id: 'host-1',
+    plan: 'premium', // guest self-reschedule is a Pro perk of the host (pricing v2 §4 item 7)
     reschedule_fee: vendorFee,
     google_calendar_connected: false,
     google_refresh_token: null,

@@ -1,31 +1,53 @@
-// Consent state for marketing/tracking tools (GA4, Meta Pixel, Clarity).
+// Cookie consent, per category (India DPDP / GDPR).
 //
-// India DPDP / GDPR: ad + session-replay tools must not load until the user opts
-// in. PostHog (first-party product analytics) is exempt and always-on. This module
-// just persists the decision and notifies subscribers; the bus (index.js) reacts
-// by lazy-loading the gated adapters.
+//   analytics — GA4 + Clarity: which pages get read, session replay.
+//   marketing — Meta Pixel + GTM: ad measurement and retargeting audiences.
 //
-// States: 'granted' | 'denied' | null (undecided → banner shows, nothing loads).
-const KEY = 'bas_marketing_consent';
+// Nothing in either category loads until the visitor allows it. PostHog and the
+// first-party counter (adapters with no `consent` category) are always on — the
+// banner says so under "Necessary". This module only persists the decision and
+// notifies subscribers; the bus (index.js) lazy-loads the adapters a category unlocks.
+//
+// Stored as JSON { analytics, marketing } under KEY. null = undecided → banner shows.
+const KEY = 'mt_cookie_consent';
+// The one-switch banner wrote 'granted' / 'denied' here. A visitor who already chose
+// keeps that choice for both categories and is not asked again.
+const LEGACY_KEY = 'bas_marketing_consent';
+
+export const CATEGORIES = ['analytics', 'marketing'];
 
 const listeners = new Set();
 
+const normalize = (o) => ({ analytics: !!o?.analytics, marketing: !!o?.marketing });
+
+/** Current choice { analytics, marketing }, or null when the visitor hasn't chosen. */
 export function getConsent() {
-  try { return localStorage.getItem(KEY); } catch (_) { return null; }
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return normalize(JSON.parse(raw));
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if (legacy === 'granted') return { analytics: true, marketing: true };
+    if (legacy === 'denied') return { analytics: false, marketing: false };
+  } catch (_) { /* storage blocked or bad JSON → undecided */ }
+  return null;
 }
 
+/** true / false = accept / reject everything; or { analytics, marketing } per category. */
 export function setConsent(value) {
-  // value: true → 'granted', false → 'denied'
-  const v = value ? 'granted' : 'denied';
-  try { localStorage.setItem(KEY, v); } catch (_) {}
-  listeners.forEach((fn) => { try { fn(v); } catch (_) {} });
-  return v;
+  const state = typeof value === 'object' && value !== null
+    ? normalize(value)
+    : { analytics: !!value, marketing: !!value };
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
+  listeners.forEach((fn) => { try { fn(state); } catch (_) {} });
+  return state;
 }
 
 export function hasDecided() { return getConsent() !== null; }
-export function isGranted() { return getConsent() === 'granted'; }
 
-// Subscribe to consent changes. Returns an unsubscribe fn.
+/** Is this category allowed? Undecided = no. */
+export function isGranted(category = 'analytics') { return !!getConsent()?.[category]; }
+
+// Subscribe to consent changes (receives the new { analytics, marketing }).
 export function onConsentChange(fn) {
   listeners.add(fn);
   return () => listeners.delete(fn);

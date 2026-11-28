@@ -11,7 +11,8 @@
  *            booking fee (chargeFeeOnFree), except price-on-request.
  *   product  paymentController.createProductOrder / productController public read
  *   course   courseController.createCourseOrder
- *            — price + platform fee + GST on the fee; a free item carries no fee.
+ *            — no platform fee at all since pricing v2 (the guest fee is a
+ *              BOOKING fee); the guest pays the listed price.
  *
  * A coupon is applied per booking, so it is never in this figure. Display only:
  * nothing here is stored or charged. Best-effort: if config can't be read, the
@@ -19,18 +20,17 @@
  */
 'use strict';
 
-const { calculatePlatformFee, calculateGst, calculateCustomerTotal, calculateCommission, round2 } = require('../lib/pricingEngine');
+const { calculatePlatformFee, splitInclusiveFee, calculateCommission, round2 } = require('../lib/pricingEngine');
 const { supabaseAdmin } = require('../config/supabase');
 const platformConfig = require('./platformConfig');
 const planService = require('./planService');
 const { feeOnlyForHost } = require('./paidMode');
 
-/** Pure. `price` + fee + GST on the fee, as checkout computes it. */
+/** Pure. `price` + the GST-inclusive booking fee, as checkout computes it. */
 function guestPrice(price, { platformFee, gstRate, chargeFeeOnFree = false } = {}) {
   const p = Math.max(0, Number(price) || 0);
-  const fee = calculatePlatformFee(p, { platformFee, chargeFeeOnFree });
-  const gst = calculateGst(fee, { gstRate });
-  return { guest_total: calculateCustomerTotal(p, fee, gst), booking_fee: round2(fee + gst) };
+  const { gross } = splitInclusiveFee(calculatePlatformFee(p, { platformFee, chargeFeeOnFree }), { gstRate });
+  return { guest_total: round2(p + gross), booking_fee: gross };
 }
 
 /** Pure. A service row → its guest price under the host's mode. */
@@ -56,13 +56,14 @@ function serviceHostEarnings(svc, commissionPct) {
 /**
  * The host's commission %, read exactly as bookingController.createBooking reads
  * it: the plan resolveVendorPlan picks (an expired paid plan falls back to free),
- * then that plan row's commission_percentage. Never hard-coded.
+ * then that plan's `appointments` rate (commission_rates, scalar fallback). Never
+ * hard-coded. Shows the base rate (a plan's monthly band, if one is ever set, is
+ * applied per booking at checkout and is not reflected in this display figure).
  */
 async function hostCommissionPct(hostId) {
   const { data: host } = await supabaseAdmin
     .from('profiles').select('plan, plan_expires_at').eq('id', hostId).maybeSingle();
-  const plan = await planService.getPlan(planService.resolveVendorPlan(host || {}));
-  return Number(plan?.commission_percentage) || 0;
+  return planService.getRate(planService.resolveVendorPlan(host || {}), 'appointments');
 }
 
 /**
@@ -82,7 +83,8 @@ async function withGuestPrices(rows, kind, hostId) {
       ...r,
       ...(kind === 'service'
         ? { ...serviceGuestPrice(r, cfg, feeOnly), ...(pct === null ? {} : serviceHostEarnings(r, pct)) }
-        : guestPrice(r.price, { platformFee: cfg.platformFee, gstRate: cfg.gstRate })),
+        // Products and courses carry no platform fee (pricing v2 §2.1 Change A).
+        : guestPrice(r.price, { platformFee: 0, gstRate: cfg.gstRate })),
     }));
   } catch (_) {
     return rows;

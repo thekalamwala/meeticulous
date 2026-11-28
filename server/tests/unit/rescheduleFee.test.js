@@ -24,7 +24,8 @@ const mk = (count, fee) => ({
   id: 'b1', host_id: 'h1', guest_id: 'g1', status: 'confirmed', reschedule_count: count,
   scheduled_at: '2098-12-01T05:00:00.000Z', services: { duration: 30, grace_period_minutes: 10 },
   google_event_id: null,
-  'profiles!bookings_host_id_fkey': { id: 'h1', reschedule_fee: fee },
+  // plan: premium — guest self-reschedule is a Pro perk of the host (pricing v2 §4 item 7).
+  'profiles!bookings_host_id_fkey': { id: 'h1', reschedule_fee: fee, plan: 'premium' },
 });
 const wire = (b) => mockFrom.mockImplementation((table) => {
   const c = {};

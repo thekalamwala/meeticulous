@@ -14,7 +14,7 @@ import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
 import { isNotFoundError } from "../utils/fetchError";
 import { resolveProfileSeo, profileTabSeo, profileGraphJsonLd, profileTabGraphJsonLd, membershipGraphJsonLd, productPath, SITE_URL } from "../utils/seo";
-import { CourseCard, ProfileMembership, ProfileTabHeading, ProfileTabAnswer, ProfileTabFaq, CatalogSections, UpdatedNote } from "../components/profile/ProfileTabs";
+import { CourseCard, ProfileMembership, ProfileTabHeading, ProfileTabFaq, CatalogSections, UpdatedNote } from "../components/profile/ProfileTabs";
 import { profileFaqs, catalogFaqs, catalogSections, updatedLabel, latestUpdate } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import ItemCard from "../components/community/ItemCard";
@@ -687,12 +687,10 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   // Headed, self-contained sections (real data only) + visible freshness.
   const sections = !host ? []
     : tab === 'services'
-      ? catalogSections({ kind: 'profile', host: { ...host, product_count: products.length, course_count: courses.length }, services, rating })
+      // No "About {name}" stats block on the main profile (founder 2026-11-28:
+      // not needed in print; services, rating and occupation are in the Person schema).
+      ? []
       : catalogSections({ kind: tab, host, items: tabItems });
-  // On a tab, the host's own About block (real stats) closes the page.
-  const hostAbout = host && tab !== 'services'
-    ? catalogSections({ kind: 'profile', host: { ...host, product_count: products.length, course_count: courses.length }, services, rating })
-    : [];
   const tabUpdatedTs = tab === 'membership' ? membership?.program?.updated_at : latestUpdate(tabItems);
   const tabUpdated = tab !== 'services' ? updatedLabel(tabUpdatedTs) : '';
   // A tab's own visible FAQ (and its FAQPage) only while the tab lists items.
@@ -1086,9 +1084,9 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             {/* Anchor for the profile nav's scroll-to (header/intro/featured removed) */}
             <div id="offerings" style={{ scrollMarginTop: 82 }} />
 
-            {/* Answer-first summary (AEO/GEO): the data-built description of this
-                profile or tab, visible, near the top. */}
-            <ProfileTabAnswer summary={seo?.summary} C={C} />
+            {/* No answer-first summary line above the content (profile or tab):
+                founder 2026-11-28 — it repeated the tab's own intro. It stays as the
+                meta description. */}
 
             {!onServices && !tabHasItems ? (
               tabFailed[tab] ? (
@@ -1125,7 +1123,6 @@ const HostProfile = ({ tab = 'services' } = {}) => {
               </>)
             ) : null}
 
-            {!onServices && tabHasItems && <CatalogSections sections={hostAbout} C={C} />}
             {!onServices && <ProfileTabFaq faqs={tabFaqs} C={C} />}
 
             {onServices && (filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
@@ -1237,9 +1234,6 @@ const HostProfile = ({ tab = 'services' } = {}) => {
                 </div>
               </div>
             )}
-
-            {/* About — real stats (sessions booked, reviews, catalog, member since). */}
-            <CatalogSections sections={sections} C={C} />
 
             {/* FAQ — templated from real profile data; powers the FAQPage schema. */}
             {faqs.length > 0 && (

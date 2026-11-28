@@ -14,14 +14,16 @@
 // timeline · bento with a dark cell · interactive "what you keep" calculator ·
 // featured pull-quote · sticky-heading FAQ.
 //
-// HONESTY: every number here is published on /host-fees or /pricing (₹10 + GST
-// booking fee, 5% / 0% commission, actual gateway charge ~2%, TDS 1% + TCS 1%,
+// HONESTY: every number here is published on /host-fees or /pricing (₹10
+// GST-inclusive booking fee, 9% / 0% commission, actual gateway charge ~2%,
+// TDS 0.1% + TCS 0.5% only if GST-registered,
 // payout held until ~24h after the session). No usage stats, no ratings.
 // Testimonials are the real, consented quotes from data/testimonials.js.
 //
 // IMAGES: /features/payment.png in the "Paid, held, then released" bento cell.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
+import { computeMorBreakdown } from '../../lib/morPricing';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
@@ -44,22 +46,18 @@ const GOLD_INK = '#CC6220';   // dark orange for text on light cream
 
 /* ─────────────────────────────  MONEY MATH  ────────────────────────────── */
 
-// Mirrors /host-fees §1–5. Booking fee + GST live in platform_settings; if they
-// change there, change them here and on HostFees.jsx.
-export const BOOKING_FEE = 10;
-export const BOOKING_FEE_GST = 1.8;
+// Mirrors /host-fees §1–5 via lib/morPricing (the one client copy of the payout
+// maths — pricing v2 fee, tds_tcs_v2 withholding). The booking fee lives in
+// platform_settings; if it changes there, change morPricing and HostFees.jsx.
+export const BOOKING_FEE = 10; // GST included
 export const GATEWAY_PCT = 2; // illustrative, the real charge is passed through at cost
-const round2 = (n) => Math.round(n * 100) / 100;
 
-/** What a host receives for one paid booking at `price`, on a plan charging `commissionPct`. */
+/** What a host receives for one paid booking at `price`, on a plan charging `commissionPct`
+ *  (a host with a PAN, not GST-registered — the common case; see /host-fees §3). */
 export function payoutBreakdown(price, commissionPct) {
-  const guestPays = round2(price + BOOKING_FEE + BOOKING_FEE_GST);
-  const commission = round2((price * commissionPct) / 100);
-  const gateway = round2((guestPays * GATEWAY_PCT) / 100);
-  const tds = round2(price * 0.01);
-  const tcs = round2(price * 0.01);
-  const keep = round2(price - commission - gateway - tds - tcs);
-  return { price, guestPays, commission, gateway, tds, tcs, keep };
+  const b = computeMorBreakdown({ targetEarning: price, commissionRate: commissionPct / 100, pgRate: GATEWAY_PCT / 100 });
+  return { price, guestPays: b.guestTotal, fee: b.bookingCharge, feeTaxable: b.taxableValue, feeGst: b.gstAmount,
+    commission: b.commission, gateway: b.pgCharge, tds: b.tds, tcs: b.tcs, keep: b.hostConsideration };
 }
 
 const inr = (n, dp = 2) => `₹${n.toLocaleString('en-IN', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
@@ -104,7 +102,7 @@ const QUOTES = PICKED.map((n) => ALL_TESTIMONIALS.find((t) => t.name === n)).fil
 const FAQ = [
   { q: 'Do I need my own Razorpay account?', a: 'No. Meeticulous runs the checkout. You complete KYC in your dashboard, which sets up a Razorpay Linked Account, and your payouts go to the bank account on it.' },
   { q: 'When do I get paid?', a: 'The transfer is created when your client pays and held until about 24 hours after the scheduled end of the session. It is then released to your bank, either when the booking is marked complete or automatically at the end of the hold.' },
-  { q: 'What does it cost?', a: `Your client pays your price plus a ₹10 booking fee and GST on that fee (₹11.80). You pay the actual payment-gateway charge (about 2%), TDS of 1% and TCS of 1%, which are credited to your PAN. On ${FREE_PLAN.name} there is a 5% commission; on ${PREMIUM_PLAN.name} it is 0%.` },
+  { q: 'What does it cost?', a: `Your client pays your price plus a ₹10 booking fee, GST included, on appointments of ₹300 or more. You pay the actual payment-gateway charge (about 2%) and TDS of 0.1% (plus 0.5% TCS if you are GST-registered), which is credited to your PAN. On ${FREE_PLAN.name} the commission is 9% of appointments; on ${PREMIUM_PLAN.name} it is 0%, however much you earn.` },
   { q: 'Which payment methods can my clients use?', a: 'UPI, credit and debit cards, netbanking and wallets, all through Razorpay.' },
   { q: 'Are GST invoices automatic?', a: 'Yes. Every paid booking generates a GST invoice for your client, with nothing for you to type.' },
   { q: 'What happens if a payment fails?', a: 'The booking is not confirmed and the slot stays open. Nobody can hold your time without paying.' },
@@ -160,7 +158,7 @@ function CheckoutDemo() {
             <div className={panel(0)} aria-hidden={step !== 0}>
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between"><dt className="text-neutral-500">Session</dt><dd className="tabular-nums">{inr(1500)}</dd></div>
-                  <div className="flex justify-between"><dt className="text-neutral-500">Booking fee + GST</dt><dd className="tabular-nums">{inr(BOOKING_FEE + BOOKING_FEE_GST)}</dd></div>
+                  <div className="flex justify-between"><dt className="text-neutral-500">Booking fee (GST included)</dt><dd className="tabular-nums">{inr(DEMO.fee)}</dd></div>
                   <div className="flex justify-between border-t border-black/10 pt-2.5 font-heading font-bold"><dt>Total</dt><dd className="tabular-nums">{inr(DEMO.guestPays)}</dd></div>
                 </dl>
                 <div className="mt-4 grid grid-cols-4 gap-1.5 text-center text-[11px] font-semibold">
@@ -183,8 +181,8 @@ function CheckoutDemo() {
                 <div className="mt-3 space-y-2 rounded-[16px] border border-dashed border-black/15 p-3.5 text-[13px]">
                   <div className="flex justify-between"><span className="text-neutral-500">Billed to</span><span>Priya Nair</span></div>
                   <div className="flex justify-between"><span className="text-neutral-500">Discovery call</span><span className="tabular-nums">{inr(1500)}</span></div>
-                  <div className="flex justify-between"><span className="text-neutral-500">Booking fee</span><span className="tabular-nums">{inr(BOOKING_FEE)}</span></div>
-                  <div className="flex justify-between"><span className="text-neutral-500">GST on fee (18%)</span><span className="tabular-nums">{inr(BOOKING_FEE_GST)}</span></div>
+                  <div className="flex justify-between"><span className="text-neutral-500">Booking fee</span><span className="tabular-nums">{inr(DEMO.feeTaxable)}</span></div>
+                  <div className="flex justify-between"><span className="text-neutral-500">GST on fee (18%)</span><span className="tabular-nums">{inr(DEMO.feeGst)}</span></div>
                   <div className="flex justify-between border-t border-black/10 pt-2 font-semibold"><span>Paid</span><span className="tabular-nums">{inr(DEMO.guestPays)}</span></div>
                 </div>
                 <div className="mt-3 text-center text-xs text-neutral-500">Confirmation sent on WhatsApp and email</div>
@@ -215,7 +213,7 @@ function CheckoutDemo() {
 function KeepCalculator() {
   const [price, setPrice] = useState(1000);
   const plans = [
-    { name: FREE_PLAN.name, note: '₹0 / month', b: payoutBreakdown(price, 5) },
+    { name: FREE_PLAN.name, note: '₹0 / month', b: payoutBreakdown(price, 9) },
     { name: PREMIUM_PLAN.name, note: `₹${PREMIUM_PLAN.monthly} / month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year`, b: payoutBreakdown(price, 0) },
   ];
   return (
@@ -248,9 +246,9 @@ function KeepCalculator() {
             </div>
             <dl className={`mt-5 space-y-2 text-sm ${i === 1 ? 'text-neutral-600' : 'text-[#FBF3E8]/65'}`}>
               <div className="flex justify-between"><dt>Your client pays</dt><dd className="tabular-nums">{inr(p.b.guestPays)}</dd></div>
-              <div className="flex justify-between"><dt>Commission ({i === 1 ? '0%' : '5%'})</dt><dd className="tabular-nums">− {inr(p.b.commission)}</dd></div>
+              <div className="flex justify-between"><dt>Commission ({i === 1 ? '0%' : '9%'})</dt><dd className="tabular-nums">− {inr(p.b.commission)}</dd></div>
               <div className="flex justify-between"><dt>Gateway (~{GATEWAY_PCT}%)</dt><dd className="tabular-nums">− {inr(p.b.gateway)}</dd></div>
-              <div className="flex justify-between"><dt>TDS 1% + TCS 1%, to your PAN</dt><dd className="tabular-nums">− {inr(p.b.tds + p.b.tcs)}</dd></div>
+              <div className="flex justify-between"><dt>TDS 0.1%, to your PAN (+0.5% TCS if GST-registered)</dt><dd className="tabular-nums">− {inr(p.b.tds + p.b.tcs)}</dd></div>
             </dl>
             <div className={`mt-5 flex items-baseline justify-between border-t pt-4 ${i === 1 ? 'border-black/10' : 'border-white/10'}`}>
               <span className="text-sm font-semibold">You keep</span>
@@ -261,7 +259,7 @@ function KeepCalculator() {
       </div>
 
       <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#FBF3E8]/70">
-        Your client pays the same on both plans. Earning more than about ₹4,700 a month? {PREMIUM_PLAN.name} yearly costs less than the 5% it saves you.
+        Your client pays the same on both plans. Taking more than about ₹1,110 a month in bookings? {PREMIUM_PLAN.name} yearly costs less than the 9% it saves you.
         {' '}<Link to="/host-fees" className="font-semibold underline decoration-white/30 underline-offset-4 hover:decoration-white" style={{ color: GOLD }}>Full fee breakdown</Link>
       </p>
     </div>

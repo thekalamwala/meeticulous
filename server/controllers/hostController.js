@@ -9,6 +9,7 @@ const { sanitizeLikeTerm } = require("../utils/searchSanitize");
 // Server-side read-through cache TTL for the assembled public host profile.
 const HOST_PROFILE_CACHE_MS = Number(process.env.HOST_PROFILE_CACHE_MS) || 120_000;
 const { getConfig: getPlatformConfig } = require("../services/platformConfig");
+const { splitInclusiveFee, calculatePlatformFee } = require("../lib/pricingEngine");
 const usernameService = require("../services/usernameService");
 const { bustSitemapCache } = require("../utils/sitemapCache");
 const planService = require('../services/planService');
@@ -452,42 +453,35 @@ const updateProfile = async (req, res) => {
     }
     // Validate and store theme color. Plan-gated server-side (mirror of
     // client/src/utils/themeUtils.js — keep both palettes in sync):
-    //   free/starter → 3 presets, creator → 16 presets, professional → any hex.
-    // Invalid input is now a 400, not a silent drop (was the root cause of
+    //   Starter → 4 colours, Pro (+ founding, legacy creator) → 18 colours,
+    //   Studio (professional / legacy `pro`) + Supreme → any hex.
+    // Every plan may also use the Starter colours, so a host who upgrades keeps
+    // the colour they already picked (pricing v2 §4 item 9: Pro ⊇ Starter).
+    // Invalid input is a 400, not a silent drop (was the root cause of
     // "saved but colour never changed" reports).
     if (theme_color !== undefined && theme_color !== null && theme_color !== "") {
       if (!/^#[0-9a-fA-F]{6}$/.test(theme_color)) {
         return res.status(400).json({ message: "Invalid theme colour — expected a hex value like #960D32." });
       }
-      // Keep in sync with client/src/utils/themeUtils.js FREE_COLORS (the two
-      // brand colours shown to free hosts). The off-white/grey are legacy-safe.
-      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#960D32", "#E0506F"];
-      // Host+ (creator) — 8 curated colours (keep in sync with
-      // client/src/utils/themeUtils.js CREATOR_COLORS).
-      const CREATOR_PALETTE = [
-        "#960D32", "#2563EB", "#4F46E5", "#7C3AED",
-        "#EC4899", "#DC2626", "#10B981", "#15803D",
-      ];
-      // Pro (premium / premium_founding) — 16 colours (keep in sync with
-      // client/src/utils/themeUtils.js STUDIO_COLORS).
+      // Starter — keep in sync with client FREE_COLORS. #F8F7F2 / #6B7280 are
+      // legacy-safe only (old free defaults, no longer offered) so a host still on
+      // one can re-save their profile without a 403.
+      const FREE_PALETTE = ["#960D32", "#E0506F", "#7A0A28", "#475569", "#F8F7F2", "#6B7280"];
+      // Pro — 18 colours, keep in sync with client STUDIO_COLORS. Contains every
+      // offered Starter colour, so the superset holds even without the rule below.
       const PRO_PALETTE = [
-        "#960D32", "#DC2626", "#F43F5E", "#EC4899", "#F97316", "#F59E0B", "#10B981", "#15803D",
-        "#14B8A6", "#0EA5E9", "#2563EB", "#4F46E5", "#7C3AED", "#C026D3", "#92400E", "#475569",
+        "#960D32", "#7A0A28", "#E0506F", "#DC2626", "#F43F5E", "#EC4899", "#F97316", "#F59E0B", "#10B981",
+        "#15803D", "#14B8A6", "#0EA5E9", "#2563EB", "#4F46E5", "#7C3AED", "#C026D3", "#92400E", "#475569",
       ];
+      // Resolve the EFFECTIVE plan: an expired Pro reads as Starter and loses the
+      // Pro palette (was: raw profiles.plan, so a lapsed Pro kept every colour).
       const { data: planRow } = await supabaseAdmin
-        .from("profiles").select("plan").eq("id", req.user.id).single();
-      const plan = planRow?.plan || "explorer";
+        .from("profiles").select("plan, plan_expires_at").eq("id", req.user.id).single();
+      const plan = planService.resolveVendorPlan(planRow || {});
       const hex = theme_color.toUpperCase();
-      // Studio (professional) and Supreme get any hex; Pro is gated to the
-      // 16-colour palette, creator to the 8-colour one; everyone else to the
-      // free palette.
       const unlimited = plan === "professional" || plan === "pro" || plan === "supreme";
-      const isPro = plan === "premium" || plan === "premium_founding";
-      const allowed =
-        unlimited ||
-        (isPro && PRO_PALETTE.includes(hex)) ||
-        (plan === "creator" && CREATOR_PALETTE.includes(hex)) ||
-        (!isPro && plan !== "creator" && FREE_PALETTE.includes(hex));
+      const isPro = plan === "premium" || plan === "premium_founding" || plan === "creator";
+      const allowed = unlimited || FREE_PALETTE.includes(hex) || (isPro && PRO_PALETTE.includes(hex));
       if (!allowed) {
         return res.status(403).json({ message: "This colour is not available on your plan. Upgrade to unlock more colours." });
       }
@@ -602,7 +596,12 @@ const updateCategories = async (req, res) => {
       activeSlugs,
       max,
     });
-    if (!result.ok) return res.status(result.status).json({ message: result.message });
+    if (!result.ok) {
+      // Over the plan's cap → an upgrade prompt (acceptance test 13); a 400 is bad input.
+      return res.status(result.status).json(result.status === 403
+        ? { message: result.message, upgrade_required: true, current_plan: plan }
+        : { message: result.message });
+    }
 
     // Prior profession — a change invalidates every categorised service (their
     // category slugs belong to the OLD profession's list).
@@ -926,13 +925,20 @@ const getServiceBySlug = async (req, res) => {
       .eq("host_id", host.id)
       .single();
 
-    // Customer-facing booking charge = flat platform fee + GST (admin-editable).
-    // Single source of truth so the booking summary matches what Razorpay charges.
+    // Customer-facing booking charge = the flat, GST-INCLUSIVE platform fee
+    // (pricing v2). bookingFee is the gross the guest pays; platformFee is its
+    // taxable value, so "Platform Fee (₹8.47 + GST) ₹10" reads true. Same split
+    // as computeBreakdown, so the summary matches what Razorpay charges.
     let bookingFee = 0, platformFee = 0, gstRate = 0;
     try {
-      ({ platformFee, gstRate } = await getPlatformConfig());
-      bookingFee = Math.round(platformFee * (1 + gstRate) * 100) / 100;
-    } catch (_) { bookingFee = 0; }
+      let feeSetting;
+      ({ platformFee: feeSetting, gstRate } = await getPlatformConfig());
+      // Same ₹300 floor as checkout. A ₹0 service keeps the fee figure here (the
+      // client shows it only under fee-only mode, which charges it).
+      const price = Number(service.price) || 0;
+      const gross = calculatePlatformFee(price, { platformFee: Number(feeSetting) || 0, chargeFeeOnFree: price === 0 });
+      ({ gross: bookingFee, taxable: platformFee } = splitInclusiveFee(gross, { gstRate }));
+    } catch (_) { bookingFee = 0; platformFee = 0; }
 
     // P3-7: return feeOnly so the booking page's step list matches reality (the
     // client otherwise defaults it true, showing a "Pay" step for a free booking).

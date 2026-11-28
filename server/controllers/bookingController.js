@@ -9,6 +9,7 @@ const { checkBookingReceiveLimit } = require("../middleware/planMiddleware");
 const { parseListRange } = require("../utils/pagination");
 const { runExclusive } = require("../utils/keyedMutex");
 const { checkBookingCaps } = require("../lib/bookingCaps");
+const { appointmentGmvMtd } = require("../lib/appointmentGmv");
 const crypto = require("crypto");
 const { computeBreakdown, resolveWithholding } = require("../lib/pricingEngine");
 const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
@@ -495,10 +496,14 @@ const createBooking = async (req, res) => {
     const pricedValue = Math.max(0, bookingValue - discountAmount);
 
     // Commission % is read from the vendor's subscription plan record (DB-driven,
-    // admin-editable). Expired paid plans fall back to the free tier.
+    // admin-editable). Expired paid plans fall back to the free tier. Pricing v2:
+    // the plan's `appointments` rate (commission_rates, scalar fallback). A plan
+    // with a monthly band (Pro) is re-rated inside the booking lock below, once
+    // month-to-date GMV can be read race-free; until then this is the base rate.
     const effectivePlanSlug = planService.resolveVendorPlan(host);
     const planRecord        = await planService.getPlan(effectivePlanSlug);
-    const commissionPct     = Number(planRecord.commission_percentage) || 0;
+    let commissionPct       = await planService.getRate(effectivePlanSlug, 'appointments');
+    const hasAppointmentBand = planRecord?.commission_rates?.appointment_band_inr != null;
 
     // v3.206: snapshot the cancellation policy agreed at booking time (default tiers
     // while `pro_cancellation_policy` is OFF). Refunds read this snapshot, never the
@@ -542,9 +547,8 @@ const createBooking = async (req, res) => {
 
     // Razorpay fee is vendor-borne and only known at capture → finalised in
     // paymentController.verifyPayment. Here razorpayFee = 0 (payout provisional).
-    const pricing = computeBreakdown({
+    const pricingArgs = {
       servicePrice:         pricedValue,
-      commissionPercentage: commissionPct,
       platformFee:          feeSetting,
       gstRate,
       razorpayFee:          0,
@@ -555,7 +559,8 @@ const createBooking = async (req, res) => {
       // flat 1% + 1% (unchanged behaviour); when ON they follow PAN / entity / ₹5L.
       tdsRate:              _tdsRate,
       tcsRate:              _tcsRate,
-    });
+    };
+    const pricing = computeBreakdown({ ...pricingArgs, commissionPercentage: commissionPct });
     const platformFee  = pricing.platformFee;
     const commission   = pricing.commission;
     const vendorPayout = pricing.vendorPayout;
@@ -634,9 +639,10 @@ const createBooking = async (req, res) => {
       meeting_link: meetingLink,
       google_event_id: googleEventId,
       vendor_amount:       vendorPayout,
-      platform_fee_amount: platformFee,
-      platform_fee_gst:    pricing.gst,           // GST on platform fee (v2.2)
-      customer_total:      pricing.customerTotal,  // service + fee + GST (v2.2)
+      platform_fee_amount: platformFee,           // fee TAXABLE value, ex-GST (v3.229: backed out of the gross)
+      platform_fee_gst:    pricing.gst,           // GST inside the fee = gross − taxable (v2.2; v3.229 inclusive)
+      platform_fee_gross:  pricing.platformFeeGross, // v3.229: what the guest paid for the fee (GST-inclusive)
+      customer_total:      pricing.customerTotal,  // service + fee gross (v2.2)
       gst_rate:            gstRate,                // snapshot of rate used (v2.2)
       razorpay_fee_actual: 0,                      // set at payment capture (v2.2)
       razorpay_tax_actual: 0,                      // set at payment capture (v2.8)
@@ -674,6 +680,30 @@ const createBooking = async (req, res) => {
         guestId: resolvedGuestId, guestEmail: guest_email, guestPhone: guest_phone,
       });
       if (!capRecheck.allowed) return { capped: capRecheck.message };
+      // Pricing v2 §2: Pro's monthly band. Read MTD-before INSIDE the lock so two
+      // concurrent bookings can't both see "below band", then re-rate the whole
+      // booking if it lands above it (never split across the band — see
+      // planService.appointmentRateFor). A failed read keeps the base rate: a
+      // host is never charged the higher rate on a figure we couldn't read.
+      if (hasAppointmentBand && pricedValue > 0) {
+        try {
+          const mtd = await appointmentGmvMtd({ supabaseAdmin, hostId: host_id });
+          const bandPct = await planService.appointmentRateFor(effectivePlanSlug, mtd);
+          if (bandPct !== commissionPct) {
+            const banded = computeBreakdown({ ...pricingArgs, commissionPercentage: bandPct });
+            commissionPct = bandPct;
+            Object.assign(bookingPayload, {
+              vendor_amount:         banded.vendorPayout,
+              commission_applied:    banded.commission,
+              commission_gst:        banded.commissionGst,
+              commission_taxable:    banded.commissionTaxable,
+              commission_percentage: bandPct,
+            });
+          }
+        } catch (bandErr) {
+          console.error("appointment band read failed — base rate kept:", bandErr.message);
+        }
+      }
       return {
         result: await supabaseAdmin
           .from("bookings")
@@ -708,6 +738,7 @@ const createBooking = async (req, res) => {
         google_event_id: _gei, billing_details: _bd, grace_minutes: _gm,
         coupon_id: _cid, discount_amount: _da,   // v3.204 — stripped if the migration hasn't run
         cancellation_policy: _canp,              // v3.206 — stripped if the migration hasn't run
+        platform_fee_gross: _pfg,                // v3.229 — stripped if the migration hasn't run
         ...payloadCore
       } = bookingPayload;
       bookingResult = await supabaseAdmin
@@ -1519,6 +1550,17 @@ const rescheduleBooking = async (req, res) => {
         .status(403)
         .json({ message: "Not authorized to reschedule this booking" });
 
+    // Pricing v2 §4 item 7: a guest moving their OWN booking is a Pro perk of the
+    // host's plan. The host can always move a booking from the dashboard, on any
+    // plan, and the guest is emailed the new time either way.
+    if (req.user?.id !== booking.host_id
+      && planService.isFreeSlug(planService.resolveVendorPlan(hostOf(booking)))) {
+      return res.status(403).json({
+        message: "This host doesn't offer self-serve rescheduling. Please contact them to move your booking.",
+        code: "GUEST_RESCHEDULE_PRO_ONLY",
+      });
+    }
+
     const { data: avail } = await supabaseAdmin
       .from("availability")
       .select("*")
@@ -1752,11 +1794,11 @@ const rescheduleBooking = async (req, res) => {
 
     const s = booking.services;
     const host = hostOf(booking);
-    // Pro perk: reschedule alerts (WhatsApp + the host's email) fire for plans
-    // entitled to the full reminder set, and for free hosts inside their 60-day
-    // Pro taste (services/proTaste.js). Outside it the GUEST still gets a plain
-    // email — their booking moved, they must hear about it — and both sides get
-    // the in-app notice below.
+    // Pro perk: reschedule alerts (WhatsApp + the host's email) fire only for
+    // plans with unlimited reminder flows — strictly paid since pricing v2 (§4
+    // item 8: the 60-day Pro taste covers WhatsApp REMINDERS only). The GUEST
+    // always gets a plain email — their booking moved, they must hear about it —
+    // and both sides get the in-app notice below.
     const rescheduleNotify = await rescheduleAlertsAllowed(host, booking.host_id);
     const oldWhen = new Date(booking.scheduled_at).toLocaleString("en-IN", {
       timeZone: hostTimezone,
@@ -1946,11 +1988,11 @@ const reminderFlagFor = (windowHours) =>
 // while the email send is untouched. Applies to both the guest and the host reminder.
 const whatsappRemindersAllowed = (host, hostId) => proTaste.tasteActive(host, hostId);
 
-// Reschedule alerts (WhatsApp + host email): plans entitled to every reminder
-// window, or a free host inside their 60-day Pro taste.
-const rescheduleAlertsAllowed = async (host, hostId) =>
-  (await planService.rescheduleNotifyForPlan(planService.resolveVendorPlan(host)))
-  || proTaste.tasteActive(host, hostId);
+// Reschedule alerts (WhatsApp + host email): strictly paid (pricing v2 §4 item 8).
+// The 60-day Pro taste no longer extends to them — it covers WhatsApp reminders only.
+// `_hostId` kept so every caller's signature is unchanged.
+const rescheduleAlertsAllowed = async (host, _hostId) =>
+  planService.rescheduleNotifyForPlan(planService.resolveVendorPlan(host));
 
 const sendBookingReminder = async (b, host, tz) => {
   const s = b.services;

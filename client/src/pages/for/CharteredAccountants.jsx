@@ -173,7 +173,7 @@ const FAQ = [
   { q: 'Can I use Meeticulous for virtual consultations?', a: 'Yes. Offer online consultations with automatic Google Meet links, or mark services as in-person at your office — or both. Clients pick the mode that suits them.' },
   { q: 'Do I need technical knowledge?', a: 'No. Setup takes minutes and requires no technical skills. You add your services and availability, and your booking page is ready to share — your clients need nothing more than the link.' },
   { q: 'Can I upgrade my plan later?', a: 'Yes. Start free on the Starter plan and upgrade to Pro whenever your practice needs 0% commission, WhatsApp automation, a full client CRM and advanced tools. You can change plans anytime.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -693,7 +693,7 @@ export default function CharteredAccountants() {
                   <span className="font-heading text-5xl font-extrabold tracking-tight">0</span>
                   <span className="pb-2 text-sm text-slate-500">/month</span>
                 </div>
-                <p className="mt-1.5 text-xs font-semibold text-slate-500">Free forever · 5% per booking</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-500">Free forever · 9% per booking</p>
                 <ul className="mt-6 flex flex-col gap-3">
                   {FREE_PLAN.features.slice(0, 5).map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">

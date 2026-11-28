@@ -7,13 +7,16 @@ import { SITE_URL } from "../utils/seo";
 import "./earningsCalculator.css";
 import {
   resultsFor, pickWinner, annualSaving, deltaVsFree, ANNUAL_FEE, platformFeesPerYear, TOPMATE_FEES,
+  otherPlatformAnnual, OTHER_PLATFORM,
 } from "../lib/earningsCalc";
+import { PREMIUM_YEARLY_PER_MONTH } from "../data/plans";
 
-// /earnings-calculator — public conversion tool. Host sets price + monthly volume;
-// sees annual take-home per plan as a bar chart (Starter 5% · Pro 0%),
-// the plan that keeps the most, and how much more than free. All numbers come from
-// lib/earningsCalc.js + lib/morPricing.js (server mirror) — display only, real
-// pricing computed server-side at booking. No invented tiers, no fake figures.
+// /earnings-calculator — public conversion tool. Host sets price, monthly volume and
+// monthly product/course/membership sales; sees annual take-home per plan as a bar
+// chart (Starter 9% / 12% · Pro 0% / 4%) next to a platform charging 10% +
+// transaction fee, the plan that keeps the most, and how much more than free. All
+// numbers come from lib/earningsCalc.js + lib/morPricing.js (server mirror) — display
+// only, real pricing computed server-side at booking. No invented tiers, no fake figures.
 
 const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
@@ -27,8 +30,8 @@ const POSITION = {
 
 // Concise, REAL feature highlights — mirrors data/plans.js. Keep in sync if plans change.
 const FEATURES = {
-  free: ["5% commission per booking", "Unlimited services & bookings", "Booking page + payments", "24-hour reminders", "Email support"],
-  premium: ["0% commission", "Client CRM + history", "Follow-up & rebook automation", "Unlimited digital products", "Priority WhatsApp support"],
+  free: ["9% per appointment, 12% on products, courses & memberships", "Unlimited services, bookings & products", "Booking page + payments", "24-hour and 1-hour reminders", "Email support"],
+  premium: ["0% commission on appointments, no limit", "4% on products, courses & memberships", "Client CRM + full history", "Day-21 rebook automation", "Priority support"],
 };
 
 const PLAN_MASCOTS = { free: ["green"], premium: ["orange", "purple"] };
@@ -66,7 +69,7 @@ function useCountUp(value, ms = 500) {
 }
 
 // Numbered input: value + −/+ steppers + a slider, with min/max rails.
-function StepperInput({ n, title, sublabel, value, min, max, step, prefix, presets, onChange }) {
+function StepperInput({ n, title, sublabel, value, min, max, step, prefix, onChange }) {
   const num = Number(value) || 0;
   const clamp = (v) => Math.min(max, Math.max(min, v));
   const sliderValue = min + Math.round((clamp(num) - min) / step) * step;
@@ -123,24 +126,22 @@ function StepperInput({ n, title, sublabel, value, min, max, step, prefix, prese
         <span className="text-center">{format(midpoint)}</span>
         <span className="text-right">{format(max)}</span>
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label={`${title} presets`}>
-        <span className="mr-1 text-[11px] text-neutral-500">Quick set</span>
-        {presets.map((preset) => (
-          <button key={preset} type="button" aria-pressed={num === preset} onClick={() => onChange(preset)}
-            className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-medium text-ink hover:border-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary aria-pressed:border-primary/30 aria-pressed:bg-primary/5 aria-pressed:text-primary">
-            {format(preset)}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
 
 // Honest bar chart — heights are true (0-based) net-annual take-home; the winner
 // is coloured + crowned, others muted. No truncated axis, no exaggeration.
-function EarningsBars({ results, winnerKey }) {
+// The third bar is a typical platform charging 10% + a transaction fee (12% in all)
+// on the same sales — muted, never crowned: it is the yardstick, not an option.
+const FEE_LABEL = { free: "9% · 12% on goods", premium: "0% · 4% on goods", other: "10% + transaction fee" };
+
+function EarningsBars({ results, winnerKey, otherNet }) {
   const order = ["free", "premium"];
-  const bars = order.map((k) => results.find((r) => r.plan.key === k)).filter(Boolean);
+  const bars = [
+    ...order.map((k) => results.find((r) => r.plan.key === k)).filter(Boolean),
+    { plan: { key: OTHER_PLATFORM.key, name: OTHER_PLATFORM.name }, netAnnual: otherNet, yardstick: true },
+  ];
   const maxNet = Math.max(...bars.map((b) => b.netAnnual), 1);
   const BAR_MAX = 132;
   return (
@@ -148,7 +149,7 @@ function EarningsBars({ results, winnerKey }) {
       <div className="earnings-bars__plot" style={{ height: BAR_MAX + 40 }}>
         {bars.map((b) => {
           const isWin = b.plan.key === winnerKey;
-          const muted = b.capped || b.outgrows;
+          const muted = b.yardstick;
           const h = Math.max(10, (Math.max(0, b.netAnnual) / maxNet) * BAR_MAX);
           return (
             <div key={b.plan.key} className="earnings-bars__col">
@@ -164,7 +165,7 @@ function EarningsBars({ results, winnerKey }) {
         {bars.map((b) => (
           <div key={b.plan.key}>
             <p className="earnings-bars__name">{b.plan.name}</p>
-            <p className="earnings-bars__fee">{b.plan.key === "free" ? "5% fee" : "0% fee"}</p>
+            <p className="earnings-bars__fee">{FEE_LABEL[b.plan.key]}</p>
           </div>
         ))}
       </div>
@@ -178,10 +179,11 @@ function PlanCard({ result, cycle, proAdvantage }) {
   const isRec = plan.key === "premium"; // Pro is the recommended plan
   const monthly = plan.monthly;
   const yearly = ANNUAL_FEE[plan.key];
+  // GST-inclusive prices only — never the ex-GST DB base (spec §4 item 11).
   const priceNote =
     monthly === 0
-      ? "Free to start · 5% per booking"
-      : `0% commission · ${cycle === "annual" ? `${inr0(yearly)}/yr` : `${inr0(monthly)}/mo`}`;
+      ? "Free to start · 9% per appointment"
+      : `0% on appointments · ${cycle === "annual" ? `${inr0(yearly)}/yr (₹${PREMIUM_YEARLY_PER_MONTH}/mo), GST included` : `${inr0(monthly)}/mo, GST included`}`;
   return (
     <article className={`earnings-plan ${isRec ? "earnings-plan--pro" : ""}`}>
       {isRec && <span className="mt-badge mt-badge--official earnings-plan__flag">Recommended</span>}
@@ -220,15 +222,6 @@ function PlanCard({ result, cycle, proAdvantage }) {
         ))}
       </ul>
 
-      {result.capped && (
-        <p className="earnings-plan__warn">This plan caps at {inr0(plan.maxServicePrice)} per session.</p>
-      )}
-      {result.outgrows && (
-        <p className="earnings-plan__warn">
-          Caps at {result.bookingCap.toLocaleString("en-IN")} bookings/year — {result.uncollectedBookings.toLocaleString("en-IN")} you couldn&rsquo;t take.
-        </p>
-      )}
-
       <Link to={ROUTE_START} className={`mt-btn mt-btn--block ${isRec ? "" : "mt-btn--secondary"}`}>
         {CTA_LABEL[plan.key]} <ArrowRight size={16} aria-hidden="true" />
       </Link>
@@ -256,9 +249,11 @@ function CycleToggle({ cycle, setCycle, onBrand }) {
 export default function EarningsCalculator() {
   const [earning, setEarning] = useState(5000);
   const [bookings, setBookings] = useState(12);
+  const [goods, setGoods] = useState(0); // product / course / membership sales a month
   const [cycle, setCycle] = useState("annual"); // annual | monthly
 
-  const results = useMemo(() => resultsFor(earning, bookings, cycle), [earning, bookings, cycle]);
+  const results = useMemo(() => resultsFor(earning, bookings, cycle, goods), [earning, bookings, cycle, goods]);
+  const otherNet = useMemo(() => otherPlatformAnnual(earning, bookings, goods), [earning, bookings, goods]);
   const winnerKey = useMemo(() => pickWinner(results), [results]);
   const winner = results.find((r) => r.plan.key === winnerKey);
 
@@ -296,12 +291,17 @@ export default function EarningsCalculator() {
             {/* Inputs */}
             <div className="rounded-2xl bg-white p-6 sm:p-8">
               <StepperInput n={1} title="Set your price per session" sublabel="How much do you charge for each session?"
-                prefix="₹" value={earning} min={500} max={50000} step={500} presets={[1500, 5000, 15000, 30000]}
+                prefix="₹" value={earning} min={500} max={50000} step={500}
                 onChange={(v) => setEarning(v)} />
               <div className="mt-7">
                 <StepperInput n={2} title="Set your sessions per month" sublabel="How many sessions do you conduct?"
-                  value={bookings} min={1} max={50} step={1} presets={[5, 12, 25, 40]}
+                  value={bookings} min={1} max={50} step={1}
                   onChange={(v) => setBookings(v)} />
+              </div>
+              <div className="mt-7">
+                <StepperInput n={3} title="Monthly product, course & membership sales" sublabel="Downloads, video courses and memberships you sell a month (₹)."
+                  prefix="₹" value={goods} min={0} max={200000} step={1000}
+                  onChange={(v) => setGoods(v)} />
               </div>
             </div>
 
@@ -325,7 +325,8 @@ export default function EarningsCalculator() {
                   Free plan keeps the most at your volume
                 </span>
               )}
-              <EarningsBars results={results} winnerKey={winnerKey} />
+              <EarningsBars results={results} winnerKey={winnerKey} otherNet={otherNet} />
+              <p className="earnings-bars__fee mt-2 text-center">Third bar: {OTHER_PLATFORM.label}, on the same sales.</p>
             </section>
           </div>
 
@@ -353,7 +354,7 @@ export default function EarningsCalculator() {
             </div>
 
             <p className="earnings-fineprint mt-5 text-center">
-              Your guest pays <strong>{inr2(winner.guestPays)}</strong> at a {inr0(earning)} price — your price plus a flat ₹10 booking fee. You never eat it; your take-home is your price minus taxes.
+              Your guest pays <strong>{inr2(winner.guestPays)}</strong> at a {inr0(earning)} price — your price plus a flat ₹10 booking fee, GST included. You never pay it; your take-home is your price minus commission, the gateway charge and TDS.
             </p>
           </div>
 
@@ -414,7 +415,7 @@ export default function EarningsCalculator() {
           <div className="earnings-fineprint mt-6 flex gap-2.5">
             <Info size={14} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
             <p>
-              An illustration, not a quote. Figures assume 18% GST (most categories; some differ) and your exact price is confirmed when you list a service. See the{" "}
+              An illustration, not a quote. Figures assume 18% GST, a ~2% gateway charge, a PAN on file and no GST registration (so 0.1% TDS and no TCS). Product, course and membership sales are shown after commission and the gateway charge. See the{" "}
               <Link to="/host-fees">Host Fee &amp; Payment Schedule</Link> for the full breakdown.
             </p>
           </div>

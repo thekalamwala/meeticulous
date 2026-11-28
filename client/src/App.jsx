@@ -53,9 +53,6 @@ const OpeningTakeover = lazy(() => import('./components/opening/OpeningTakeover'
 
 // Public pages
 const Home           = lazy(() => import('./pages/Home'));
-// Pre-compaction homepage snapshot — parked at /_attic (hidden, noindex) so the
-// sections cut from the live homepage stay reachable for future reuse.
-const HomeArchive    = lazy(() => import('./pages/HomeArchive'));
 const AgentTithi     = lazy(() => import('./pages/AgentTithi'));
 const UnifiedLogin   = lazy(() => import('./pages/UnifiedLogin'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
@@ -383,6 +380,7 @@ const AdminGstExports      = lazy(() => import('./pages/admin/AdminGstExports'))
 // Admin — SEO audit dashboard
 const AdminSeo = lazy(() => import('./pages/admin/AdminSeo'));
 const Presentation = lazy(() => import('./pages/presentation/Presentation'));
+const Agents = lazy(() => import('./pages/agents/Agents'));
 
 // ── Fallback shown while a route chunk downloads ──────────────────────────────
 const PageLoader = () => (
@@ -1063,6 +1061,7 @@ function App() {
           <Route path="/agent-tithi" element={<AgentTithi />} />
           {/* Full-screen shareable product pitch deck (pages/presentation/). */}
           <Route path="/presentation" element={<Presentation />} />
+          <Route path="/agents" element={<Agents />} />
 
           {/* Branded error pages — config-driven (see config/errorCatalog.js).
               One <ErrorPage> component renders all of them; adding a code = a
@@ -1090,11 +1089,6 @@ function App() {
           {/* /offline — reachable now; the Service Worker will serve it from
               cache in a follow-up branch. */}
           <Route path="/offline" element={<Offline />} />
-
-          {/* Hidden archive of the pre-compaction homepage (noindex, unlinked,
-              reserved). Holds the sections cut from the live homepage so they
-              can be harvested later. Must precede the /:profileSlug catch-all. */}
-          <Route path="/_attic" element={<HomeArchive />} />
 
           {/* Public host/service pages — specific before dynamic */}
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />

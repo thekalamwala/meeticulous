@@ -12,10 +12,10 @@ describe('PlanComparison', () => {
     expect(screen.getByText('Starter')).toBeInTheDocument();
     expect(screen.getByText('Pro')).toBeInTheDocument();
 
-    // The commission row is the whole pitch: 5% free vs 0% Pro.
-    const row = screen.getByText('Commission on your bookings').closest('tr');
-    expect(within(row).getByText('5%')).toBeInTheDocument();
-    expect(within(row).getByText('0%')).toBeInTheDocument();
+    // The commission row is the whole pitch: 9% free vs 0% Pro (pricing v2).
+    const row = screen.getByText('Commission on appointments').closest('tr');
+    expect(within(row).getByText('9%')).toBeInTheDocument();
+    expect(within(row).getByText('0%, no monthly limit')).toBeInTheDocument();
   });
 
   it('renders group headers from the matrix', () => {

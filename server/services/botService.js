@@ -303,11 +303,11 @@ const normalize = (s) => String(s || '').toLowerCase().replace(/[^\w\s]/g, ' ').
 // ── Pricing layer: deterministic, exact figures from the pricing page so Bolt never
 // guesses a price. Answers about the NAMED plan only (or a short overview when none is
 // named), always linking the on-site /pricing page to buy. Per-day = yearly ÷ 365; all
-// prices are GST-inclusive, matching client/src/data/plans.js (DB ₹199/₹999 + 18%).
+// prices are GST-inclusive, matching client/src/data/plans.js (pricing v2: ₹199/₹1,199).
 // Update here if the pricing page changes.
 const PRICING = {
-  free:    '**Starter — ₹0, free forever.** Unlimited services and bookings, your booking page, UPI payments and 24-hour reminders. We take 5% only when you actually get paid. [Start free](/pricing).',
-  premium: '**Pro — under ₹4 a day.** ₹1,179/year (save 58%), or ₹235/month. Commission drops to 0%, plus the Client CRM, follow-up automation and priority support. All prices include GST. [Go Premium](/pricing).',
+  free:    '**Starter — ₹0, free forever.** Unlimited services and bookings, your booking page, UPI payments and 24-hour + 1-hour reminders. We take 9% on appointments (12% on products, courses and memberships) only when you actually get paid. [Start free](/pricing).',
+  premium: '**Pro — about ₹3 a day.** ₹1,199/year (save 50%), or ₹199/month. 0% commission on appointments with no monthly limit, 4% on products, courses and memberships, plus the full Client CRM, rebook automation and priority support. All prices include GST. [Go Premium](/pricing).',
 };
 // Pricing intent — deliberately excludes bare "plan"/"plans" so it doesn't hijack
 // plan-management questions ("how do I change my plan"). Plan name alone isn't enough.
@@ -323,9 +323,9 @@ const pricingReply = (question) => {
       || /\bhost\b/.test(nq) || raw.includes('host+') || nq.includes('host plus')) return PRICING.premium;
   if (nq.includes('free') || nq.includes('starter')) return PRICING.free;
   return 'Two plans, that\'s it:\n\n' +
-    '- **Starter** — ₹0 forever. Unlimited services and bookings; we take 5% only when you get paid.\n' +
-    '- **Pro** — under ₹4/day. ₹1,179/yr (save 58%) or ₹235/mo, and commission drops to 0%.\n\n' +
-    'All prices include GST. Earning over ₹4,700 a month? Pro already costs you less than the 5%. [See both plans](/pricing).';
+    '- **Starter** — ₹0 forever. Unlimited services and bookings; we take 9% on appointments only when you get paid.\n' +
+    '- **Pro** — about ₹3/day. ₹1,199/yr (save 50%) or ₹199/mo, and appointment commission drops to 0%.\n\n' +
+    'All prices include GST. Taking over ₹1,110 a month in bookings? Pro already costs you less than the 9%. [See both plans](/pricing).';
 };
 
 // ── FAQ layer: deterministic canned answer, no LLM. Best-effort — a missing table

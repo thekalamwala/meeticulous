@@ -116,9 +116,9 @@ const STEPS = [
 const STICKERS = [
   { icon: Link2, title: 'A link that stays yours', body: 'Change your username up to twice a year, six months apart. Your old link redirects to the new one, and an old name is never handed to anyone else.', tilt: -1.6 },
   { icon: Layers, title: 'Every service gets its own page', body: 'Share one service directly at meeticulous.com/yourname/service-name, with its price, length, mode and description.', tilt: 1.2 },
-  { icon: AtSign, title: 'Bio and socials built in', body: 'Instagram, YouTube, LinkedIn, Facebook, X, WhatsApp, GitHub, email and your website, so the page works as your link-in-bio.', tilt: -0.8 },
+  { icon: AtSign, title: 'Bio and socials built in', body: `Instagram, Facebook, LinkedIn and email on every plan; YouTube, X, WhatsApp, your website and more on ${PREMIUM_PLAN.name}, so the page works as your link-in-bio.`, tilt: -0.8 },
   { icon: Star, title: 'Reviews you actually earned', body: 'Only a client with a completed booking can leave one. Your rating and review count show on the page once you have them.', tilt: 1.5 },
-  { icon: Package, title: 'Sell products on the same page', body: `Guides, templates or recordings next to your services. 3 digital products on ${FREE_PLAN.name}, unlimited on ${PREMIUM_PLAN.name}.`, tilt: -1.2 },
+  { icon: Package, title: 'Sell products on the same page', body: `Guides, templates or recordings next to your services. Unlimited on every plan, ${FREE_PLAN.name} included.`, tilt: -1.2 },
   { icon: Globe, title: 'Readable by search engines', body: 'Host pages are prerendered with structured data for your services, so search engines can read what you offer.', tilt: 0.9 },
 ];
 
@@ -126,7 +126,7 @@ const PICKED = ['Happy Singh', 'Ar. Pranav Kadoo', 'Vishal Chaware', 'Mukesh Tid
 const QUOTES = PICKED.map((n) => ALL_TESTIMONIALS.find((t) => t.name === n)).filter(Boolean);
 
 const FAQ = [
-  { q: 'Is the booking page really free?', a: `Yes. On ${FREE_PLAN.name} the page costs ₹0 a month and we take a 5% commission on paid bookings. On ${PREMIUM_PLAN.name} (₹${PREMIUM_PLAN.monthly} a month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year, GST included) the commission is 0%.` },
+  { q: 'Is the booking page really free?', a: `Yes. On ${FREE_PLAN.name} the page costs ₹0 a month and we take a 9% commission on paid appointments. On ${PREMIUM_PLAN.name} (₹${PREMIUM_PLAN.monthly} a month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year, GST included) appointment commission is 0%.` },
   { q: 'What will my link look like?', a: 'meeticulous.com/yourname. Usernames use lowercase letters, numbers and single hyphens, between 3 and 30 characters.' },
   { q: 'Can I change my username later?', a: 'Yes, up to two times in any 12 months, with at least six months between changes, once your WhatsApp number is verified. Your old link keeps working and redirects to the new one.' },
   { q: 'Can I use my own domain?', a: 'Not today. Your page lives at meeticulous.com/yourname. If you have a website, link a "Book a session" button to it.' },

@@ -3,7 +3,7 @@
 /**
  * upgradeNudge.js — email version of the commission → upgrade nudge (Sujata).
  *
- * The free plan takes 5% commission; Pro takes 0%. So the more a free host earns,
+ * The free plan takes 9% commission on appointments; Pro takes 0%. So the more a free host earns,
  * the more they pay — the upgrade sells itself once they've felt it. Dashboard
  * already shows an in-app card; this adds the email (higher reach) when a free
  * host's commission over the LAST 30 DAYS reaches Pro's monthly cost — the point
@@ -19,8 +19,8 @@ const { supabaseAdmin } = require('../config/supabase');
 const NotificationEngine = require('./notificationEngine');
 const { resolveVendorPlan, isFreeSlug } = require('./planService');
 
-// 30-day commission at which Pro pays for itself: Pro yearly ₹1,179 incl. GST / 12.
-const THRESHOLD_INR = Number(process.env.UPGRADE_NUDGE_THRESHOLD_INR) || 98;
+// 30-day commission at which Pro pays for itself: Pro yearly ₹1,199 incl. GST / 12 = ₹99.92.
+const THRESHOLD_INR = Number(process.env.UPGRADE_NUDGE_THRESHOLD_INR) || 100;
 const WINDOW_DAYS = 30;
 const REPEAT_DAYS = 60;
 const DAY_MS = 86400000;

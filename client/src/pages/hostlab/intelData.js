@@ -22,7 +22,7 @@ const PRODUCT_REVENUE = 34_291;
 const GROSS = SERVICE_REVENUE + PRODUCT_REVENUE;
 const PAID_BOOKINGS = 79;
 
-// A free host pays 5%; Pro pays 0% and ₹1,179/year. Both are real plan terms.
+// A free host pays 9%; Pro pays 0% and ₹1,199/year. Both are real plan terms.
 const COMMISSION_RATE = 0.05;
 const PRO_PRICE = 1_179;
 

@@ -129,9 +129,9 @@ export default function PricingCards({ freeAccent, startLabel = "Start free" } =
   const [intl] = useState(() => getPricingRegion() === "INTL");
   const savePct = intl ? PREMIUM_USD_ANNUAL_SAVE_PCT : PREMIUM_ANNUAL_SAVE_PCT;
 
-  // On the yearly tab we lead with the monthly-equivalent (₹1,179 / 12 = ₹300)
-  // so annual reads as the cheaper per-month price, with the real ₹1,179/year
-  // charge stated underneath. Monthly leads with ₹235. Both are GST-inclusive.
+  // On the yearly tab we lead with the monthly-equivalent (₹1,199 / 12 = ₹99)
+  // so annual reads as the cheaper per-month price, with the real ₹1,199/year
+  // charge stated underneath. Monthly leads with ₹199. Both are GST-inclusive.
   const displayPrice = intl
     ? `$${yearly ? PREMIUM_USD_YEARLY_PER_MONTH.toFixed(2) : PREMIUM_PLAN_USD.monthly}`
     : `₹${(yearly ? PREMIUM_YEARLY_PER_MONTH : PREMIUM_PLAN.monthly).toLocaleString("en-IN")}`;
@@ -140,7 +140,7 @@ export default function PricingCards({ freeAccent, startLabel = "Start free" } =
       ? `billed $${PREMIUM_PLAN_USD.yearly}/year · USD`
       : `or $${PREMIUM_PLAN_USD.yearly}/year · USD`
     : yearly
-      ? `billed ₹${PREMIUM_PLAN.yearly.toLocaleString("en-IN")}/year · under ${PREMIUM_PER_DAY} a day · incl. GST`
+      ? `billed ₹${PREMIUM_PLAN.yearly.toLocaleString("en-IN")}/year · ${PREMIUM_PER_DAY} a day · incl. GST`
       : `or ₹${PREMIUM_PLAN.yearly.toLocaleString("en-IN")}/year · incl. GST`;
 
   return (

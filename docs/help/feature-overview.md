@@ -20,7 +20,7 @@ A straight list of what's here today and what isn't yet — so you can decide if
 - **Digital products, not just appointments.** Sell downloadable products alongside your bookable services.
 - **Client CRM and follow-ups (Pro).** Your client list builds itself, with follow-up automation on the Pro plan.
 - **GST tax invoices.** Proper GST invoices (CGST/SGST or IGST) are issued for your subscription and bookings. See [GST invoices](/help/docs/gst-invoices).
-- **0% commission on Pro.** On Pro you keep the full price your client pays; on the free Starter plan we take 5%, and only when you actually get paid. See [Plans and upgrading](/help/docs/plans-and-upgrading).
+- **0% appointment commission on Pro.** On Pro you keep the full appointment price, however much you earn; on the free Starter plan we take 9% of appointments (12% of products, courses and memberships), and only when you actually get paid. See [Plans and upgrading](/help/docs/plans-and-upgrading).
 
 ## What it doesn't do yet
 

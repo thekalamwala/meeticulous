@@ -15,10 +15,18 @@ const mk = (mins, mode = 'online') => ({
 describe('redactBookingContact — guest phone → host', () => {
   const hostView = (plan) => ({ role: 'host', plan });
 
-  it('Starter host never sees guest phone', () => {
-    const b = redactBookingContact(mk(5), hostView('starter'), NOW);
+  // Pricing v2 §4 item 2: the in-window reveal is on EVERY plan. (The full number
+  // in the CRM list/export stays Pro-only — crmService, not this module.)
+  it('Starter host: hidden while the booking is far out', () => {
+    const b = redactBookingContact(mk(3 * 24 * 60), hostView('starter'), NOW);
     expect(b.guest_phone).toBeNull();
     expect(b.profiles.phone).toBeNull();
+  });
+
+  it('Starter host sees guest phone from 15 min before the session', () => {
+    const b = redactBookingContact(mk(5), hostView('starter'), NOW);
+    expect(b.guest_phone).toBe('+919000000001');
+    expect(b.profiles.phone).toBe('+919000000002');
   });
 
   // v3.165: the legacy paid rows carry Pro entitlements, so `creator`
@@ -31,12 +39,12 @@ describe('redactBookingContact — guest phone → host', () => {
     expect(redactBookingContact(mk(-100), hostView('creator'), NOW).guest_phone).not.toBeNull();
   });
 
-  it('free (Starter) host never sees guest phone, even inside the window', () => {
-    expect(redactBookingContact(mk(-100), hostView('free'), NOW).guest_phone).toBeNull();
+  it('free (Starter) host sees guest phone after the session too (permanent once open)', () => {
+    expect(redactBookingContact(mk(-100), hostView('free'), NOW).guest_phone).toBe('+919000000001');
   });
 
-  it('a viewer with no plan never sees guest phone', () => {
-    expect(redactBookingContact(mk(-100), hostView(undefined), NOW).guest_phone).toBeNull();
+  it('a host viewer with no plan: still hidden outside the window', () => {
+    expect(redactBookingContact(mk(3 * 24 * 60), hostView(undefined), NOW).guest_phone).toBeNull();
   });
 
   it('Studio host: hidden while booking is far out', () => {

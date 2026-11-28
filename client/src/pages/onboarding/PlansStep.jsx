@@ -265,7 +265,7 @@ const PlansStep = () => {
                     <div>
                       <h2 className="text-xl font-bold">{planLabel(freePlan.slug, freePlan.name)}</h2>
                       <p className="mt-1"><span className="text-2xl font-bold text-primary">₹0</span>
-                        <span className="text-sm font-normal text-gray-500"> · 5% only when you get paid</span></p>
+                        <span className="text-sm font-normal text-gray-500"> · 9% only when you get paid</span></p>
                     </div>
                     <button
                       type="button"

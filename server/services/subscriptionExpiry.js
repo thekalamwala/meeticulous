@@ -4,7 +4,7 @@
  * subscriptionExpiry.js — renewal nudge before a paid plan lapses (Sujata).
  *
  * No cron scanned expiry dates, so paid hosts could silently drop to Starter
- * (5% commission back) with no heads-up. This fires a renewal email at T-7 and
+ * (9% commission back) with no heads-up. This fires a renewal email at T-7 and
  * T-1 days before plan_expires_at / current_period_end.
  *
  * Fires on exact day-counts (7 or 1) and dedupes via email_logs (one send per

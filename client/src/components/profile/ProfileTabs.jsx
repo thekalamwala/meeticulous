@@ -28,12 +28,6 @@ export const ProfileTabHeading = ({ eyebrow, title, C }) => (
 
 const rupees = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 
-// Answer-first summary + visible FAQ for a profile tab (and its FAQPage schema —
-// HostProfile emits the FAQ only while this renders it). Copy comes from the
-// data-built templates in utils/seo.js + utils/profileFaqs.js.
-export const ProfileTabAnswer = ({ summary, C }) => (
-  summary ? <p className="mb-5 text-sm leading-relaxed" style={{ color: C.secondary }}>{summary}</p> : null
-);
 // Headed, self-contained sections from utils/profileFaqs catalogSections (real
 // data only; the bot shell renders the same blocks): h2 + text + list + steps.
 export const CatalogSections = ({ sections, C }) => (sections || []).map((s) => (
@@ -58,6 +52,8 @@ export const UpdatedNote = ({ ts, label, C }) => (
   label ? <p className="-mt-3 mb-5 text-xs" style={{ color: C.muted }}><time dateTime={ts}>{label}</time></p> : null
 );
 
+// Visible FAQ for a profile tab (and its FAQPage schema — HostProfile emits the
+// FAQ only while this renders it). Copy comes from utils/profileFaqs.js.
 export const ProfileTabFaq = ({ faqs, C }) => (
   faqs && faqs.length ? (
     <div className="mt-10">

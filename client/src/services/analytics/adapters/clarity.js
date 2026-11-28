@@ -9,7 +9,7 @@ const q = (...args) => { try { window.clarity?.(...args); } catch (_) {} };
 
 export default {
   name: 'clarity',
-  needsConsent: true,
+  consent: 'analytics',
   init() {
     if (loaded || !PROJECT_ID || typeof window === 'undefined') return;
     loaded = true;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getMyCourses, updateCourse, deleteCourse } from "../services/api";
 import BackButton from "../components/common/BackButton";
 import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
@@ -12,7 +12,7 @@ import {
 } from "./catalog/KeptKit";
 import toast from "react-hot-toast";
 import {
-  PageHeader, Card, Button, buttonClasses,
+  PageHeader, Card, Button,
   Badge, StatusBadge, EmptyState, ErrorState, ConfirmSheet, Fab,
 } from "../components/dashboard/ui";
 
@@ -20,14 +20,6 @@ import {
 //   /dashboard/course/add-new   /dashboard/course/edit/:id
 const ADD = "/dashboard/course/add-new";
 const editOf = (c) => `/dashboard/course/edit/${c.id}`;
-
-// Blurred teaser behind the upgrade overlay for free-plan hosts.
-const SAMPLE = [
-  { title: "Lightroom Masterclass", meta: "8 lessons", price: "₹1,499" },
-  { title: "Freelance Finance 101", meta: "5 lessons", price: "₹999" },
-  { title: "Reels That Convert", meta: "12 lessons", price: "₹2,499" },
-  { title: "Notion for Creators", meta: "6 lessons", price: "₹799" },
-];
 
 const Courses = () => {
   const navigate = useNavigate();
@@ -38,7 +30,7 @@ const Courses = () => {
   // Kept look (dashboard_v2). Same data and handlers; only the shell differs.
   const { flags } = useFeatureFlags();
   const kept = !!flags?.dashboard_v2;
-  const { coursesOn, canCreate } = useCourseGate();
+  const { canCreate } = useCourseGate();
 
   const fetchCourses = async () => {
     setLoadError(false);
@@ -77,45 +69,14 @@ const Courses = () => {
     } catch { toast.error("Failed to update"); }
   };
 
-  // Free plan / kill-switch off → upgrade teaser (mirrors Products.jsx).
-  // Plan-gated body, shared by both looks.
+  // Kill-switch off → coming-soon teaser. Courses are open on every plan
+  // (pricing v2 §4 item 1), so there is no plan lock here any more.
   const lockedBody = (
-      <>
-        {!coursesOn ? (
-          <ComingSoonTeaser
-            feature="courses"
-            title="Sell video courses"
-            blurb="Package your expertise into a structured video course and sell it from your profile — buy once, watch anytime. Coming to Pro."
-          />
-        ) : (
-          <div className="relative overflow-hidden rounded-2xl border border-black/5">
-            <ul aria-hidden className="pointer-events-none grid select-none gap-4 p-4 blur-[6px] sm:grid-cols-2">
-              {SAMPLE.map((s) => (
-                <li key={s.title} className="overflow-hidden rounded-xl border border-black/10 bg-white">
-                  <div className="aspect-[16/9] bg-blush" />
-                  <div className="p-4">
-                    <h3 className="font-semibold text-ink">{s.title}</h3>
-                    <p className="mt-1 text-sm text-muted">{s.meta}</p>
-                    <p className="mt-2 font-bold text-maroon">{s.price}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="absolute inset-0 grid place-items-center bg-white/50 p-4 backdrop-blur-[2px]">
-              <Card className="w-full max-w-sm text-center shadow-xl">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
-                  <Video className="h-6 w-6" strokeWidth={2} />
-                </div>
-                <h3 className="mb-1 font-display font-bold text-maroon">Video Courses are a Pro feature</h3>
-                <p className="mb-4 text-sm text-muted">
-                  Package your knowledge into a structured video course and sell it from your profile. Upgrade to Pro to create and sell courses.
-                </p>
-                <Link to="/dashboard/upgrade" className={buttonClasses({ variant: "primary" })}>Upgrade to Pro</Link>
-              </Card>
-            </div>
-          </div>
-        )}
-      </>
+    <ComingSoonTeaser
+      feature="courses"
+      title="Sell video courses"
+      blurb="Package your expertise into a structured video course and sell it from your profile — buy once, watch anytime."
+    />
   );
   if (!canCreate) {
     if (kept) {

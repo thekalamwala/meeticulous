@@ -9,7 +9,7 @@ describe('EarningsCalculator', () => {
   it('shows the estimated earnings for the winning plan on mount', () => {
     setup();
     expect(screen.getByText(/your estimated earnings/i)).toBeTruthy();
-    // default ₹5,000 × 12/mo → the 5% commission dwarfs the annual fee
+    // default ₹5,000 × 12/mo → the 9% commission dwarfs the annual fee
     expect(screen.getByText(/with pro, you keep/i)).toBeTruthy();
     expect(screen.getAllByText(/per year/i).length).toBeGreaterThan(0);
   });
@@ -33,22 +33,20 @@ describe('EarningsCalculator', () => {
     expect(monthly.getAttribute('aria-pressed')).toBe('true');
   });
 
-  it('keeps both sliders, quick-set buttons, and numeric inputs in sync', () => {
+  it('keeps the sliders and numeric inputs in sync, with no quick-set buttons', () => {
     setup();
     const price = screen.getByRole('slider', { name: 'Set your price per session slider' });
     const sessions = screen.getByRole('slider', { name: 'Set your sessions per month slider' });
-    const pricePreset = screen.getByRole('button', { name: '₹15,000' });
-    const sessionsPreset = screen.getByRole('button', { name: '25' });
 
-    fireEvent.click(pricePreset);
-    fireEvent.click(sessionsPreset);
+    fireEvent.change(price, { target: { value: '15000' } });
+    fireEvent.change(sessions, { target: { value: '25' } });
     expect(price).toHaveAttribute('aria-valuetext', '₹15,000');
     expect(sessions).toHaveAttribute('aria-valuetext', '25');
     expect(screen.getByRole('spinbutton', { name: 'Set your price per session' }).value).toBe('15000');
+    expect(screen.getByRole('spinbutton', { name: 'Set your sessions per month' }).value).toBe('25');
 
-    fireEvent.change(sessions, { target: { value: '26' } });
-    expect(screen.getByRole('spinbutton', { name: 'Set your sessions per month' }).value).toBe('26');
-    expect(sessionsPreset).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByText(/quick set/i)).toBeNull();
+    expect(screen.queryByRole('group', { name: /presets/i })).toBeNull();
   });
 
   // The honest answer at low volume is "stay free" — a calculator that always
@@ -61,5 +59,27 @@ describe('EarningsCalculator', () => {
     fireEvent.change(sessions, { target: { value: '1' } });
     expect(screen.getByText(/free plan keeps the most/i)).toBeTruthy();
     expect(screen.getByText(/with starter, you keep/i)).toBeTruthy();
+  });
+
+  // Pricing v2 (spec §4 item 11).
+  it('shows the comparison bar for a platform charging 10% + transaction fee', () => {
+    setup();
+    expect(screen.getByText('Typical platform')).toBeTruthy();
+    expect(screen.getByText(/third bar: a platform charging 10% \+ transaction fee/i)).toBeTruthy();
+  });
+
+  it('product, course & membership sales can tip the answer to Pro', () => {
+    setup();
+    fireEvent.change(screen.getByLabelText('Set your price per session'), { target: { value: '600' } });
+    fireEvent.change(screen.getByLabelText('Set your sessions per month'), { target: { value: '1' } });
+    expect(screen.getByText(/with starter, you keep/i)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Monthly product, course & membership sales'), { target: { value: '20000' } });
+    expect(screen.getByText(/with pro, you keep/i)).toBeTruthy();
+  });
+
+  it('shows Pro prices GST-inclusive, never the ex-GST base', () => {
+    setup();
+    expect(screen.getByText(/₹1,199\/yr \(₹99\/mo\), GST included/)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/1,016|168\.64/);
   });
 });

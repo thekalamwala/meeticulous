@@ -117,7 +117,7 @@ const PICKED = ['Mukesh Tidke', 'Ar. Pranav Kadoo', 'Vishal Chaware'];
 const QUOTES = PICKED.map((n) => ALL_TESTIMONIALS.find((t) => t.name === n)).filter(Boolean);
 
 const FAQ = [
-  { q: 'Is the scheduling software really free?', a: `Yes. ${FREE_PLAN.name} costs ₹0 a month with unlimited services and bookings. Paid bookings carry a 5% commission. ${PREMIUM_PLAN.name} is ₹${PREMIUM_PLAN.monthly} a month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year with 0% commission.` },
+  { q: 'Is the scheduling software really free?', a: `Yes. ${FREE_PLAN.name} costs ₹0 a month with unlimited services and bookings. Paid appointments carry a 9% commission. ${PREMIUM_PLAN.name} is ₹${PREMIUM_PLAN.monthly} a month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year with 0% commission on appointments.` },
   { q: 'Do my clients need an account or an app?', a: 'No. They enter their phone number and type the 6-digit code we send them on WhatsApp. No password and nothing to download.' },
   { q: 'Can two people book the same slot?', a: 'No. Booked times disappear from your page, and the database itself rejects any overlapping booking for you. A paid slot is only confirmed once its payment is verified.' },
   { q: 'Does it work with Google Calendar?', a: 'Yes. Busy time on your connected Google Calendar is removed from your booking page, and online bookings get a Google Meet link. If Google is ever unreachable, booking keeps working on your Meeticulous availability.' },

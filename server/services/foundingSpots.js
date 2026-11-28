@@ -3,10 +3,10 @@
 /**
  * foundingSpots.js — the "first 100 Pro hosts" founding offer.
  *
- * The first FOUNDING_LIMIT paying Pro hosts keep the founding price (₹999/yr
- * ex-GST) for life; after that Pro yearly rises to ₹1,499 (founder decision
- * 2026-11-03, docs/free-vs-pro-audit.md §0). This module only COUNTS — the price
- * itself lives in subscription_plans and changes by an admin edit at cutover.
+ * The first FOUNDING_LIMIT paying Pro hosts keep the founding price (₹899/yr
+ * incl. GST) for life; everyone else pays the standard ₹1,199/yr (pricing v2
+ * §5 — a standing campaign SKU, FOUNDING_LIMIT is its cap). This module only
+ * COUNTS — the prices live in subscription_plans (premium_founding / premium).
  *
  * "Paying" = an active Razorpay mandate on a Pro slug. Admin-assigned comps (no
  * razorpay_subscription_id), Supreme and the legacy partner tiers don't count.
@@ -18,8 +18,8 @@ const { supabaseAdmin } = require('../config/supabase');
 const planService = require('./planService');
 
 const FOUNDING_LIMIT = 100;
-const FOUNDING_PRICE_ANNUAL = 999;   // ex-GST, display only — the DB row is the authority
-const POST_FOUNDING_PRICE_ANNUAL = 1499;
+const FOUNDING_PRICE_ANNUAL = 899;   // incl. GST, display only — the premium_founding row is the authority
+const POST_FOUNDING_PRICE_ANNUAL = 1199; // incl. GST — the standard premium row
 // `premium_founding` is the archived row founding hosts move to at cutover (P1).
 const PRO_SLUGS = ['premium', 'premium_founding'];
 
@@ -95,7 +95,7 @@ async function checkFoundingMilestones() {
     lines: [
       `Paying Pro hosts: ${status.taken} of ${FOUNDING_LIMIT}.`,
       hit >= FOUNDING_LIMIT
-        ? 'New Pro checkouts now land on `premium`. Raise its yearly price to ₹1,499 — see docs/founding-cutover-runbook.md.'
+        ? 'New Pro checkouts now land on `premium` at the standard ₹1,199/yr — no price change needed (pricing v2). Founding hosts keep ₹899.'
         : 'Ten spots to go. Prepare the cutover — docs/founding-cutover-runbook.md.',
     ],
   });

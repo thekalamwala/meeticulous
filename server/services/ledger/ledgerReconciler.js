@@ -123,7 +123,9 @@ async function reconcile() {
   try {
     const { data: products, error: pErr } = await supabaseAdmin
       .from('product_purchases')
-      .select('id, host_id, created_at, amount_paid, platform_fee, customer_total, vendor_amount, razorpay_fee_actual, razorpay_tax_actual')
+      // select * (not a column list) so the v3.231 commission columns come along
+      // when present and the scan still works on a DB without them.
+      .select('*')
       .eq('payment_status', 'paid')
       .gt('amount_paid', 0)            // free products move no money → no entry
       .order('created_at', { ascending: false })
@@ -143,6 +145,8 @@ async function reconcile() {
             product_price: p.amount_paid, platform_fee: p.platform_fee,
             customer_total: p.customer_total, vendor_amount: p.vendor_amount,
             razorpay_fee_actual: p.razorpay_fee_actual, razorpay_tax_actual: p.razorpay_tax_actual,
+            commission_applied: p.commission_applied, commission_gst: p.commission_gst,
+            commission_taxable: p.commission_taxable,
           }),
         });
         if (id) reposted += 1;

@@ -90,24 +90,24 @@ describe('HostProfile — profile info', () => {
     await waitFor(() => expect(screen.getAllByText('Life Coach, Mumbai').length).toBeGreaterThan(0));
   });
 
-  test('About section lists real stats; the newest reviews show as quotes', async () => {
+  test('no About stats block or summary line on the profile; the newest reviews show as quotes', async () => {
     getHostReviews.mockResolvedValueOnce({ data: { count: 3, avg: 4.67, reviews: [
       { id: 'r1', rating: 5, comment: 'Practical, specific, zero fluff.', created_at: '2026-11-01', profiles: { name: 'A' } },
       { id: 'r2', rating: 5, comment: 'Showed up prepared.', created_at: '2026-11-02', profiles: { name: 'B' } },
       { id: 'r3', rating: 4, comment: 'Good session overall.', created_at: '2026-11-03', profiles: { name: 'C' } },
     ] } });
     renderProfile();
-    await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'About Jane Vendor' })).toBeTruthy());
-    expect(screen.getByText('2 bookable services')).toBeTruthy();
-    expect(screen.getByText('Rated 4.7 out of 5 from 3 reviews')).toBeTruthy();
-    expect(screen.getByText('“Practical, specific, zero fluff.”')).toBeTruthy();
+    await waitFor(() => expect(screen.getByText('“Practical, specific, zero fluff.”')).toBeTruthy());
+    // Founder 2026-11-28: the stats block and the summary line are not printed.
+    expect(screen.queryByRole('heading', { level: 2, name: 'About Jane Vendor' })).toBeNull();
+    expect(screen.queryByText('2 bookable services')).toBeNull();
+    expect(screen.queryByText(/Book online.$/)).toBeNull(); // the summary line's tail
     expect(screen.getByText('“Showed up prepared.”')).toBeTruthy();
     expect(screen.queryByText('“Good session overall.”')).toBeNull(); // behind the toggle
   });
 
   test('renders bio text', async () => {
     renderProfile();
-    // The bio shows in the card AND opens the answer-first summary.
     await waitFor(() => expect(screen.getAllByText(/I help people/i).length).toBeGreaterThan(0));
   });
 
@@ -334,7 +334,7 @@ describe('HostProfile — tabs', () => {
     expect(firstStat()).toEqual({ label: 'Members', n: '42' });
   });
 
-  test('products tab: own SEO, CollectionPage JSON-LD, answer-first summary, visible FAQ, slug links', async () => {
+  test('products tab: own SEO, CollectionPage JSON-LD, no summary line, visible FAQ, slug links', async () => {
     getHostProducts.mockResolvedValue({ data: [{ id: 'p1', slug: 'meal-plan', title: 'Meal plan PDF', price: 299, type: 'pdf' }] });
     renderTab('/jane-vendor/products');
     await waitFor(() => expect(document.title).toBe('Digital products by Jane Vendor (1)'));
@@ -344,17 +344,19 @@ describe('HostProfile — tabs', () => {
     expect(types).toContain('CollectionPage');
     expect(types).toContain('FAQPage');
     expect(types).not.toContain('ProfilePage');
-    expect(screen.getByText(/^1 digital product by Jane Vendor, from ₹299\./)).toBeTruthy();
+    // The summary is the meta description only — not printed above the tab.
+    expect(document.querySelector('meta[name="description"]').getAttribute('content')).toMatch(/^1 digital product by Jane Vendor, from ₹299\./);
+    expect(screen.queryByText(/^1 digital product by Jane Vendor, from ₹299\./)).toBeNull();
     expect(screen.getByText('How do I get my download after paying?')).toBeTruthy();
     expect(screen.getAllByRole('link', { name: 'Meal plan PDF' })[0].getAttribute('href')).toBe('/jane-vendor/products/meal-plan');
   });
 
-  test('products tab: intro, how-buying-works and About sections, h3 item titles, Updated date', async () => {
+  test('products tab: intro and how-buying-works sections (no host About block), h3 item titles, Updated date', async () => {
     getHostProducts.mockResolvedValue({ data: [{ id: 'p1', slug: 'meal-plan', title: 'Meal plan PDF', price: 299, type: 'pdf', updated_at: '2026-11-20T09:00:00Z' }] });
     renderTab('/jane-vendor/products');
     await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'How buying works' })).toBeTruthy());
     expect(screen.getByRole('heading', { level: 2, name: "About Jane Vendor's digital products" })).toBeTruthy();
-    expect(screen.getByRole('heading', { level: 2, name: 'About Jane Vendor' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { level: 2, name: 'About Jane Vendor' })).toBeNull();
     expect(screen.getByRole('heading', { level: 3, name: 'Meal plan PDF' })).toBeTruthy();
     expect(screen.getByText('Updated 20 Nov 2026')).toBeTruthy();
   });

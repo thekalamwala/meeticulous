@@ -16,7 +16,9 @@ const testimonial = (name) => TESTIMONIALS.find((t) => t.name === name) || TESTI
 // The card is a FIXED 320×440 box whatever the variant, so rotation never shifts the rail.
 // Every variant carries a unique `code` → tracked on impression + click.
 
-const PAID = new Set(['premium', 'professional', 'supreme']);
+// Every paid slug — premium_founding / creator were missing, so founding and
+// partner Pro hosts were shown "upgrade to Pro" ads (pricing v2 bug list).
+const PAID = new Set(['premium', 'premium_founding', 'creator', 'professional', 'supreme']);
 const isProPlan = (plan) => PAID.has(String(plan || '').toLowerCase());
 const firstName = (name) => String(name || '').trim().split(/\s+/)[0] || 'there';
 
