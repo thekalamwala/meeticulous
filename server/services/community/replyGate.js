@@ -32,7 +32,7 @@ const CLASSIFY_SYSTEM = [
   'You triage one community post for Meeticulous, a booking platform where creators ("hosts") sell services and guests book them.',
   'Decide if the post is a QUESTION or PROBLEM that the company (support or sales) should answer, and classify it.',
   'answerable = true ONLY for a genuine question or problem: how-to, troubleshooting, onboarding, pricing, whether a feature exists, or comparing Meeticulous to another tool.',
-  'route: "support" = how-to / troubleshooting / onboarding / pricing; "comparison" = evaluating Meeticulous vs another product, or "can you do X like <tool>"; "feature" = asking whether a capability exists; "not_for_us" = showing off work, opinions, chit-chat, member-to-member talk, off-topic, or anything that is not a question for the company.',
+  'route: "support" = how-to / troubleshooting / onboarding / pricing; "comparison" = evaluating Meeticulous vs another product, or "can you do X like <tool>"; "feature" = asking whether a capability exists; "out_of_scope" = asks the company to do something Meeticulous does not do (book a hotel or flight, unrelated errands or tasks); "not_for_us" = showing off work, opinions, chit-chat, member-to-member talk, off-topic, or anything that is not a question for the company.',
   'When in doubt, answerable = false and route = "not_for_us". Reply only by calling the tool.',
 ].join(' ');
 
@@ -43,13 +43,13 @@ const CLASSIFY_TOOL = {
     type: 'object',
     properties: {
       answerable: { type: 'boolean', description: 'true only for a genuine question/problem for the company to answer.' },
-      route: { type: 'string', enum: ['support', 'comparison', 'feature', 'not_for_us'] },
+      route: { type: 'string', enum: ['support', 'comparison', 'feature', 'out_of_scope', 'not_for_us'] },
     },
     required: ['answerable', 'route'],
   },
 };
 
-const ROUTES = ['support', 'comparison', 'feature', 'not_for_us'];
+const ROUTES = ['support', 'comparison', 'feature', 'out_of_scope', 'not_for_us'];
 
 async function classify(body) {
   if (!anthropicClient.isConfigured()) return null;
@@ -79,7 +79,9 @@ async function decide({ body } = {}) {
   if (!looksLikeQuestion(body)) return { act: false, route: 'not_for_us', reason: 'not_a_question' };
   const cls = await classify(body);
   if (!cls) return { act: false, route: 'not_for_us', reason: 'classify_unavailable' };
-  if (!cls.answerable || cls.route === 'not_for_us') return { act: false, route: 'not_for_us', reason: 'not_for_us' };
+  // out_of_scope is a mention-only route (tithi.replyToMention hands it to the team); the
+  // unprompted first-responder stays silent on it, exactly as it did on not_for_us.
+  if (!cls.answerable || cls.route === 'not_for_us' || cls.route === 'out_of_scope') return { act: false, route: 'not_for_us', reason: 'not_for_us' };
   return { act: true, route: cls.route, reason: cls.route };
 }
 

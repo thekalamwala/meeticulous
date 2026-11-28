@@ -9,6 +9,11 @@ jest.mock('../../../services/community/notify', () => ({
   onRemoved: jest.fn().mockResolvedValue(undefined),
   onAnswerAccepted: jest.fn().mockResolvedValue(undefined),
 }));
+let mockTithiId = null;
+jest.mock('../../../services/community/tithi', () => ({
+  replyToMention: jest.fn().mockResolvedValue({ skipped: 'test' }),
+  _tithiUserId: () => mockTithiId,
+}));
 jest.mock('../../../utils/sitemapCache', () => ({ bustSitemapCache: jest.fn() }));
 jest.mock('../../../utils/inAppNotify', () => ({ inAppNotify: jest.fn(), resolveInApp: jest.fn() }));
 jest.mock('../../../config/supabase', () => {
@@ -33,6 +38,7 @@ jest.mock('../../../config/supabase', () => {
 
 const { supabaseAdmin } = require('../../../config/supabase');
 const notify = require('../../../services/community/notify');
+const tithi = require('../../../services/community/tithi');
 const { bustSitemapCache } = require('../../../utils/sitemapCache');
 const ctrl = require('../../../controllers/communityController');
 const store = require('../../../services/community/store');
@@ -101,6 +107,7 @@ const bodyOf = (r) => r.json.mock.calls[0][0];
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockTithiId = null;
   db.calls.length = 0;
   db.handlers = {};
   setup();
@@ -437,6 +444,22 @@ describe('comments', () => {
     expect(payload).toMatchObject({ post_id: POST_ID, author_id: ME, body: 'Great point' });
     expect(bodyOf(r).comment.author.id).toBe(ME);
     expect(callsOn('community_posts', 'update').some((c) => 'is_indexable' in arg(c.ops, 'update'))).toBe(true);
+  });
+
+  test('@tithi in a nested reply -> replyToMention with that reply; other mentions do not', async () => {
+    const r = res();
+    await ctrl.createComment(req({ body: '@ravi can you book a hotel?', parent_id: COMMENT_ID }, { id: POST_ID }), r);
+    expect(statusOf(r)).toBe(201);
+    expect(tithi.replyToMention).not.toHaveBeenCalled(); // ravi is not Tithi
+
+    mockTithiId = 'user-9'; // the resolved @ravi is now Tithi's profile
+    await ctrl.createComment(req({ body: '@ravi can you book a hotel?', parent_id: COMMENT_ID }, { id: POST_ID }), res());
+    await new Promise((done) => setImmediate(done)); // bg() is fire-and-forget
+    expect(tithi.replyToMention).toHaveBeenCalledTimes(1);
+    expect(tithi.replyToMention).toHaveBeenCalledWith(expect.objectContaining({
+      item: expect.objectContaining({ id: POST_ID }),
+      comment: expect.objectContaining({ id: COMMENT_ID, parent_id: COMMENT_ID }),
+    }));
   });
 
   test('notify rejection does not fail the request', async () => {
