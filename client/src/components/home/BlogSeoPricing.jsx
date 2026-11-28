@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, animate, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import {
   FREE_PLAN,
@@ -10,14 +10,14 @@ import {
   PREMIUM_PLAN_USD,
   PREMIUM_USD_YEARLY_PER_MONTH,
 } from "../../data/plans";
-import useFeeOnly from "../../hooks/useFeeOnly";
 import { getPricingRegion } from "../../lib/pricingRegion";
 
 /* Homepage pricing — BlogSEO-style wide cards. Each plan is one card: a features
    page on the LEFT (plan name, blurb, two-column checklist) and a price panel on
    the RIGHT (per-card billing toggle, big price, CTA). Same data + rules as
    components/pricing/PricingCards and the old NotebookPricing it replaced:
-   - Starter hides in interim fee-only mode (useFeeOnly; free signup still works)
+   - Pro on top, Starter below it. Starter always shows (founder 2026-11-28,
+     overriding the interim fee-only hide); only Pro has a billing toggle
    - outside India → USD list price + "Get early access" (no USD checkout yet)
    - Pro shows the charge for the selected billing period */
 
@@ -52,10 +52,81 @@ function BillToggle({ yearly, onChange }) {
   );
 }
 
+/* Odometer price (founder 2026-11-28). On a change the number counts from the old
+   value to the new one in 400ms on an expo ease-out, and every digit is a 0–9
+   wheel positioned from that running value, carrying like a real odometer: the
+   units wheel turns fastest and the last two wheels visibly slow into place at
+   the end. Wheels that are leading zeros mid-roll (₹1,199 → ₹199) collapse.
+   Reduced motion: jumps straight to the value. */
+function OdometerPrice({ value, currency, locale }) {
+  const reduce = useReducedMotion();
+  const [v, setV] = useState(value);
+  const shown = useRef(value);
+  const [span, setSpan] = useState(String(value).length);
+
+  useEffect(() => {
+    if (reduce || shown.current === value) {
+      shown.current = value;
+      setV(value);
+      setSpan(String(value).length);
+      return undefined;
+    }
+    setSpan((n) => Math.max(n, String(value).length));
+    const ctrl = animate(shown.current, value, {
+      duration: 0.4,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (x) => { shown.current = x; setV(x); },
+      onComplete: () => { shown.current = value; setV(value); setSpan(String(value).length); },
+    });
+    return () => ctrl.stop();
+  }, [value, reduce]);
+
+  const wheels = [];
+  for (let k = span - 1; k >= 0; k -= 1) {
+    const unit = 10 ** k;
+    const base = Math.floor(v / unit) % 10;
+    // A wheel turns only while every wheel to its right is between 9 and 10.
+    const carry = k === 0 ? v % 1 : Math.max(0, (v % unit) - (unit - 1));
+    const hidden = k > 0 && v < unit - 1; // leading zero (shows once its carry starts)
+    // Grouping: en-IN 1,19,999 (comma after thousands, then every 2); en-US every 3.
+    const comma = locale === "en-IN" ? k >= 3 && (k - 3) % 2 === 0 : k >= 3 && k % 3 === 0;
+    wheels.push(
+      <span
+        key={k}
+        className="inline-flex overflow-hidden transition-[max-width,opacity] duration-150"
+        style={{ maxWidth: hidden ? 0 : "1.2em", opacity: hidden ? 0 : 1 }}
+      >
+        <span className="relative inline-block h-[1em] w-[0.62em] overflow-hidden">
+          <span
+            className="absolute inset-x-0 top-0 flex flex-col"
+            style={{ transform: `translateY(-${base + carry}em)` }}
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n, i) => (
+              <span key={i} className="flex h-[1em] items-center justify-center leading-none">{n}</span>
+            ))}
+          </span>
+        </span>
+        {comma && <span className="leading-none">,</span>}
+      </span>,
+    );
+  }
+
+  return (
+    <span role="img" aria-label={`${currency}${value.toLocaleString(locale)}`} className="inline-flex">
+      <span aria-hidden="true" className="inline-flex h-[1em] items-center leading-none tabular-nums">
+        <span>{currency}</span>
+        {wheels}
+      </span>
+    </span>
+  );
+}
+
 function PlanCard({
   plan,
   intro,
-  price,
+  amount,
+  currency,
+  locale,
   suffix,
   note,
   cta,
@@ -64,7 +135,6 @@ function PlanCard({
   onToggle,
   chip,
 }) {
-  const reduce = useReducedMotion();
   return (
     <div className="overflow-hidden rounded-3xl border border-black/5 bg-white shadow-[0_24px_60px_-34px_rgba(61,5,22,0.4)]">
       <div className="grid lg:grid-cols-[1.4fr_1fr]">
@@ -107,19 +177,8 @@ function PlanCard({
           </div>
 
           <p className="mt-6 flex items-baseline justify-center gap-1.5">
-            <span className="relative inline-flex overflow-hidden font-display text-5xl font-extrabold text-ink sm:text-6xl">
-              <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
-                  key={price}
-                  initial={reduce ? false : { y: "0.5em", opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={reduce ? { opacity: 0 } : { y: "-0.5em", opacity: 0 }}
-                  transition={reduce ? { duration: 0 } : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="inline-block"
-                >
-                  {price}
-                </motion.span>
-              </AnimatePresence>
+            <span className="font-display text-5xl font-extrabold text-ink sm:text-6xl">
+              <OdometerPrice value={amount} currency={currency} locale={locale} />
             </span>
             <span className="text-left text-sm font-semibold leading-tight text-neutral-400">{suffix}</span>
           </p>
@@ -140,14 +199,13 @@ function PlanCard({
 
 export default function BlogSeoPricing({ startLabel = "Get Started - Free" }) {
   const [yearly, setYearly] = useState(true);
-  const feeOnly = useFeeOnly();
   const [intl] = useState(() => getPricingRegion() === "INTL");
 
   const prices = intl ? PREMIUM_PLAN_USD : PREMIUM_PLAN;
   const currency = intl ? "$" : "₹";
   const period = yearly ? "year" : "month";
   const amount = yearly ? prices.yearly : prices.monthly;
-  const proPrice = `${currency}${amount.toLocaleString(intl ? "en-US" : "en-IN")}`;
+  const locale = intl ? "en-US" : "en-IN";
   const monthlyEquivalent = intl ? PREMIUM_USD_YEARLY_PER_MONTH.toFixed(2) : PREMIUM_YEARLY_PER_MONTH;
   const taxNote = intl ? "USD" : "incl. GST";
   const proNote = yearly
@@ -159,22 +217,12 @@ export default function BlogSeoPricing({ startLabel = "Get Started - Free" }) {
 
   return (
     <div className="space-y-6 lg:space-y-8">
-      {!feeOnly && (
-        <PlanCard
-          plan={FREE_PLAN}
-          intro={{ lead: "What you get", accent: "for free" }}
-          price={intl ? "$0" : "₹0"}
-          suffix="/ forever"
-          note="We take 9% only when you get paid. Nothing when you don't."
-          cta={startLabel}
-          ctaTo={ROUTE_START}
-          chip="Always free"
-        />
-      )}
       <PlanCard
         plan={PREMIUM_PLAN}
         intro={{ lead: "Everything in Starter,", accent: "plus" }}
-        price={proPrice}
+        amount={amount}
+        currency={currency}
+        locale={locale}
         suffix={`/ ${period}`}
         note={proNote}
         cta={intl ? "Get early access" : "Go Pro — keep every rupee"}
@@ -182,6 +230,18 @@ export default function BlogSeoPricing({ startLabel = "Get Started - Free" }) {
         yearly={yearly}
         onToggle={setYearly}
         chip={yearly ? `Save ${proSave}` : undefined}
+      />
+      <PlanCard
+        plan={FREE_PLAN}
+        intro={{ lead: "What you get", accent: "for free" }}
+        amount={0}
+        currency={currency}
+        locale={locale}
+        suffix="/ forever"
+        note="We take 9% only when you get paid. Nothing when you don't."
+        cta={startLabel}
+        ctaTo={ROUTE_START}
+        chip="Always free"
       />
     </div>
   );
