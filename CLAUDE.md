@@ -71,10 +71,13 @@ a second skill that covers the same ground just burns tokens. Not listed = don't
 
 **Costly — only when the user asks by name:** `code-review` max/ultra, Workflow, `deep-research`,
 `geo-audit`, `autoplan`, `plan-*-review`, `qa`, `benchmark-models`, `codex`.
-**Never here — they merge, bump versions or fight the stop-at-PR rule:** gstack `ship`,
-`land-and-deploy`, `setup-deploy`.
-**Not this stack (React web, no native app):** `ios-*`, `write-swift`, `apple-design`, `animate-expo`,
-`geo-prospect`, `geo-proposal`.
+**Agency-repo only, never here:** `geo-prospect`, `geo-proposal`, `geo-report-pdf`, `geo-compare`, `geo-update`.
+**Switched off on 2026-11-28** (moved to `~/.claude/skills-disabled/`; move a folder back to restore it):
+the iOS/Swift/Expo skills, gstack `ship`/`land-and-deploy`/`setup-deploy` (they merge, so they clash with the
+stop-at-PR rule), plus the skills that duplicate the map above (`investigate`, `review`, `autoplan`,
+`plan-ceo/devex/tune`, `office-hours`, `retro`, `design-consultation`, `design-shotgun`, `skillify`, `codex`,
+`benchmark-models`, gbrain). Plugins `ui-ux-pro-max`, `andrej-karpathy-skills` and `harness` are disabled in
+`~/.claude/settings.json`. Caveman comes from its plugin only; the repo copies were removed.
 
 ## Quick Start (every session)
 Read these 4 files before touching any code:
