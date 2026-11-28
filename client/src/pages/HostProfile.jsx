@@ -681,7 +681,7 @@ const HostProfile = ({ tab = 'services' } = {}) => {
   // Template FAQs are emitted as FAQPage ONLY when the host has host-specific facts
   // (services or a profession) — otherwise they're generic and thin (guide §5.3).
   // MIRROR this gate in server prerenderController resolveProfileMeta.
-  const faqs = host ? profileFaqs({ host, services }) : [];
+  const faqs = host ? profileFaqs({ host, services, summary: baseSeo?.summary }) : [];
   const faqsHostSpecific = host && (services.length > 0 || !!host.profession);
   // Headed, self-contained sections (real data only) + visible freshness.
   const sections = !host ? []
@@ -1085,9 +1085,10 @@ const HostProfile = ({ tab = 'services' } = {}) => {
             {/* Anchor for the profile nav's scroll-to (header/intro/featured removed) */}
             <div id="offerings" style={{ scrollMarginTop: 82 }} />
 
-            {/* Answer-first summary (AEO/GEO): the data-built description of this
-                profile or tab, visible, near the top. */}
-            <ProfileTabAnswer summary={seo?.summary} C={C} />
+            {/* Answer-first summary (AEO/GEO) for a products/courses/membership tab.
+                The main profile's summary lives in its FAQ ("What is {name} all
+                about?") instead — founder 2026-11-28. */}
+            {!onServices && <ProfileTabAnswer summary={seo?.summary} C={C} />}
 
             {!onServices && !tabHasItems ? (
               tabFailed[tab] ? (

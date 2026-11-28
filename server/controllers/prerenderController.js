@@ -149,8 +149,8 @@ function hostBody(payload, summary, counts = {}) {
   const site = trimSlash(SITE_URL);
   const name = host.name || 'Host';
   const out = [`<h1>${esc(name)}</h1>`];
-  // Answer-first summary (the data-built profile description), mirroring the SPA.
-  if (summary) out.push(`<p>${esc(summary)}</p>`);
+  // The data-built profile summary is the first FAQ answer ("What is {name} all
+  // about?"), mirroring the SPA — no longer a line under the h1 (2026-11-28).
   if (host.profession) out.push(`<p>${esc(host.profession)}${host.location ? ` · ${esc(host.location)}` : ''}</p>`);
   if (host.bio) out.push(`<p>${esc(host.bio)}</p>`);
   // About: real stats only (sessions booked, reviews, catalog, member since).
@@ -173,7 +173,7 @@ function hostBody(payload, summary, counts = {}) {
     out.push(`</ul></section>`);
   }
 
-  out.push(faqSection(profileFaqs(host, services)));
+  out.push(faqSection(profileFaqs(host, services, summary)));
   out.push(reviewSection(reviews, `What guests say about ${name}`));
   return out.filter(Boolean).join('\n');
 }
@@ -430,7 +430,7 @@ async function resolveProfileMeta(username) {
   const jsonLd = buildProfileGraph({
     host, services, site, name: title,
     rating: { avg: avgRating, count: reviewCount },
-    faqs: faqsHostSpecific ? profileFaqs(host, services) : [],
+    faqs: faqsHostSpecific ? profileFaqs(host, services, meta.description) : [],
   });
 
   const buildHtmlArgs = {
