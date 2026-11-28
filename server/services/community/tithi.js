@@ -537,11 +537,91 @@ async function replyToComment({ comment } = {}) {
   }
 }
 
+// Said when a mention asks for something Meeticulous doesn't do (book a hotel, run an errand).
+const OUT_OF_SCOPE_HANDOFF =
+  "That one's outside what I can do from here, so I'm pulling in the team.";
+// "@tithi can you…" -> "can you…": the handles are addressing, not the question.
+const stripHandles = (s) => String(s || '').replace(/(?<![\w.@-])@[a-z0-9][a-z0-9-]*/gi, '').replace(/\s+/g, ' ').trim();
+
+/**
+ * replyToMention({ item, comment }) — someone @mentioned Tithi, so she answers. Fired by
+ * communityController.recordMentions the moment the post/comment is saved, so it covers a
+ * post, a comment, or a reply at ANY depth (the first-responder sweep only sees posts and
+ * top-level comments, and only on its own schedule). She was addressed directly, so there is
+ * no relevance gate and no "a human already answered" check — only the one-reply dedup.
+ *   item: the community_posts row; comment: the comment row that mentioned her, or null for
+ *   a mention in the post itself.
+ * Can't answer (out of scope, or askBot can't ground it) -> a brief holding line that tags
+ * the team in-thread + the bot escalation email, same path as replyToPost.
+ * Returns { skipped: ... } | { replied: true, commentId, escalated, tagged }.
+ */
+async function replyToMention({ item, comment = null } = {}) {
+  const target = comment || item;
+  if (!item || !item.id || !target || !target.id) return { skipped: 'bad_target' };
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  const tithi = tithiUserId();
+  if (!tithi) return { skipped: 'no_identity' };
+  if ((item.status && item.status !== 'visible') || (target.status && target.status !== 'visible')) return { skipped: 'not_visible' };
+  if (target.author_id === tithi) return { skipped: 'self' };
+  const question = stripHandles(comment ? comment.body : `${item.title || ''}\n${item.body || ''}`);
+  if (!question) return { skipped: 'empty' };
+
+  try {
+    // One reply per mentioning post/comment (a re-fire, or the post sweep, can't double up).
+    const already = comment
+      ? await store.countRepliesByAuthor(comment.id, tithi)
+      : await store.countCommentsByAuthorOnPost(item.id, tithi);
+    if (already) return { skipped: 'already_replied' };
+
+    // Cheap Haiku triage first: an out-of-scope ask goes straight to the team, no Sonnet
+    // spend. Triage unavailable (no key / budget) -> null -> askBot decides on its own.
+    const cls = await replyGate.classify(question);
+    const outOfScope = !!cls && cls.route === 'out_of_scope';
+    const route = cls && ['comparison', 'feature'].includes(cls.route) ? cls.route : 'support';
+
+    const author = target.author_id ? await store.getProfile(target.author_id) : null;
+    const audience = author ? (author.is_host ? 'host' : 'guest') : null;
+    const res = outOfScope
+      ? { escalate: true, escalateReason: 'out_of_scope' }
+      : await botService.askBot({ question, audience, channel: 'community' });
+
+    let body;
+    if (res.escalate) body = outOfScope ? OUT_OF_SCOPE_HANDOFF : COMMUNITY_HANDOFF;
+    else {
+      body = String(res.answer || '').trim();
+      if (!body) return { skipped: 'empty' };
+      body = personalizeLinks(replyGate.appendCta(text.toPlainText(body), route), author);
+    }
+    const handle = res.escalate ? escalationHandle() : null;
+    if (handle) body = `${body}\n\n@${handle} — could you take this one?`;
+
+    // Nest under the mentioning comment (any depth), or top-level on a post mention.
+    const reply = await store.insertComment({
+      post_id: item.id, parent_id: comment ? comment.id : null, author_id: tithi, body, status: 'visible',
+    });
+
+    if (res.escalate) {
+      await escalateToTeam({
+        post: { author_id: target.author_id, slug: item.slug || null },
+        author, question, reason: res.escalateReason || 'community',
+      });
+      if (handle) {
+        try { await notify.onMentions({ item, comment: reply, usernames: [handle], actorId: tithi }); }
+        catch (_) { /* team email already went; the ping is best-effort */ }
+      }
+    }
+    return { replied: true, commentId: reply.id, escalated: !!res.escalate, tagged: !!handle };
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+}
+
 module.exports = {
   VOICE, RELEASE_NOTE_RULES, MODEL_SKIP,
   classifyPr, kindFromPrefix, writeReleaseNote, briefNote,
   parseCommunityBlock, announceDecision, truncateWords,
   releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
-  replyToPost, replyToComment, escalateToTeam, personalizeLinks,
+  replyToPost, replyToComment, replyToMention, escalateToTeam, personalizeLinks,
   _tithiUserId: tithiUserId,
 };

@@ -65,6 +65,10 @@ describe('decide (Tier 0 → Tier 1)', () => {
     mockTriage = { answerable: false, route: 'not_for_us' };
     expect(await gate.decide({ body: 'is anyone else loving the new colours?' })).toMatchObject({ act: false });
   });
+  test('out_of_scope stays silent for the unprompted first-responder (mentions handle it)', async () => {
+    mockTriage = { answerable: true, route: 'out_of_scope' };
+    expect(await gate.decide({ body: 'can you book a hotel for me?' })).toMatchObject({ act: false, route: 'not_for_us' });
+  });
   test('AI off → silent (fail-safe)', async () => {
     mockConfigured = false;
     expect(await gate.decide({ body: 'how do I add a service?' })).toMatchObject({ act: false, reason: 'classify_unavailable' });
