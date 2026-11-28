@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
-import { FileText, Download, Receipt } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Download, FileText } from "lucide-react";
 import { getMyInvoices, invoiceUrl } from "../services/api";
+import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
+import { PageHeading } from "../components/dashboard/ui/v2";
+import { KeptError, KeptSkeleton } from "./catalog/KeptKit";
+import { GuestEmpty, btnSoft } from "./guest/GuestKit";
 
 // /user/invoices — the guest's own GST tax invoices (bookings + subscriptions),
 // each downloadable as a PDF via the token-gated invoice view. Product-purchase
@@ -9,77 +13,50 @@ import { getMyInvoices, invoiceUrl } from "../services/api";
 
 const fmtDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
-
 const fmtMoney = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
-
-const TYPE_LABEL = { booking: "Booking", subscription: "Subscription" };
+const TYPE_LABEL = { booking: "Booking", subscription: "Membership" };
 
 const GuestInvoices = () => {
-  const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [invoices, setInvoices] = useState(null);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    getMyInvoices()
-      .then(({ data }) => setInvoices(Array.isArray(data) ? data : []))
-      .catch(() => setInvoices([]))
-      .finally(() => setLoading(false));
-  }, []);
+  const load = useCallback(() => getMyInvoices()
+    .then(({ data }) => { setInvoices(Array.isArray(data) ? data : []); setError(false); })
+    .catch(() => setError(true)), []);
+  useEffect(() => { load(); }, [load]);
+  useRegisterRefresh(load);
 
   // GST invoice opens in a new tab (print / save as PDF from there). The
   // access_token is the invoice's own owner-scoped token from /invoices/mine.
-  const download = (inv) => {
-    window.open(invoiceUrl(inv.id, inv.access_token), "_blank", "noopener,noreferrer");
-  };
+  const download = (inv) => window.open(invoiceUrl(inv.id, inv.access_token), "_blank", "noopener,noreferrer");
 
   return (
-    <div>
-      <h1 className="font-display text-[24px] font-extrabold leading-none tracking-[-0.04em] text-maroon">Invoices</h1>
-      <p className="mt-1.5 text-[13px] font-medium text-ink/55">Download GST tax invoices for your bookings and subscriptions.</p>
-
-      <div className="mt-5">
-        {loading ? (
-          <div className="flex flex-col gap-2.5">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-[66px] animate-pulse rounded-[8px] border-2 border-neutral-200 bg-white" />
-            ))}
-          </div>
-        ) : invoices.length === 0 ? (
-          <div className="grid place-items-center rounded-2xl border-2 border-dashed border-neutral-200 bg-white px-4 py-10 text-center">
-            <Receipt className="mb-2 h-7 w-7 text-ink/25" strokeWidth={1.8} />
-            <p className="font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">No invoices yet</p>
-            <p className="mt-1 text-[12px] font-medium text-ink/50">Invoices appear here once you have a paid booking.</p>
-          </div>
-        ) : (
-          <ul className="flex flex-col gap-2.5">
-            {invoices.map((inv) => (
-              <li
-                key={inv.id}
-                className="flex items-center gap-3 rounded-[8px] border-2 border-neutral-200 bg-white p-4"
-              >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-maroon">
-                  <FileText className="h-[18px] w-[18px]" strokeWidth={2} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-display text-[14px] font-extrabold tracking-[-0.02em] text-ink">
-                    {inv.invoice_number || "Invoice"}
-                  </p>
-                  <p className="mt-0.5 truncate text-[11.5px] font-medium text-ink/50">
-                    {TYPE_LABEL[inv.source_type] || "Invoice"} · {fmtDate(inv.issued_at)} · <span className="font-bold text-ink/70">{fmtMoney(inv.total)}</span>
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => download(inv)}
-                  className="flex shrink-0 items-center gap-1.5 rounded-full border-2 border-neutral-200 px-3 py-1.5 text-[11.5px] font-bold text-ink/65 transition hover:border-maroon/40 hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
-                >
-                  <Download className="h-3.5 w-3.5" strokeWidth={2.2} />
-                  <span className="hidden sm:inline">Download</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    <div className="flex flex-col gap-6">
+      <PageHeading title="Invoices" sub="GST tax invoices for your bookings and memberships." />
+      {error && !invoices ? <KeptError what="invoices" onRetry={load} />
+        : !invoices ? <KeptSkeleton rows={3} />
+          : invoices.length === 0 ? (
+            <GuestEmpty mascot="orange" title="No invoices yet" sub="Invoices appear here once you have a paid booking." />
+          ) : (
+            <ul className="divide-y divide-neutral-200 overflow-hidden rounded-[24px] bg-white">
+              {invoices.map((inv) => (
+                <li key={inv.id} className="flex items-center gap-3 px-5 py-3.5 sm:px-6">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-pink-50 text-maroon">
+                    <FileText className="h-5 w-5" strokeWidth={1.9} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="mb-0 truncate text-[15px] font-semibold text-ink">{TYPE_LABEL[inv.source_type] || "Invoice"} · {fmtDate(inv.issued_at)}</p>
+                    <p className="mb-0 mt-0.5 truncate text-[13px] tabular-nums text-muted">{inv.invoice_number || "Invoice"}</p>
+                  </div>
+                  <span className="shrink-0 text-[15px] font-semibold tabular-nums text-ink">{fmtMoney(inv.total)}</span>
+                  <button type="button" onClick={() => download(inv)} className={btnSoft} aria-label={`Download invoice ${inv.invoice_number || ""}`}>
+                    <Download className="h-4 w-4" strokeWidth={2.2} />
+                    <span className="hidden sm:inline">Download</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
     </div>
   );
 };

@@ -9,7 +9,7 @@
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 jest.mock('../../services/platformConfig', () => ({ getConfig: jest.fn() }));
 jest.mock('../../services/paidMode', () => ({ feeOnlyForHost: jest.fn() }));
-jest.mock('../../services/planService', () => ({ getPlan: jest.fn(), resolveVendorPlan: jest.fn((p) => p.plan || 'free') }));
+jest.mock('../../services/planService', () => ({ getRate: jest.fn(), resolveVendorPlan: jest.fn((p) => p.plan || 'free') }));
 
 const { supabaseAdmin } = require('../../config/supabase');
 const platformConfig = require('../../services/platformConfig');
@@ -135,23 +135,31 @@ describe('guest price (display only, same engine as checkout)', () => {
     expect(serviceGuestPrice({ price: 0 }, cfg, false)).toEqual({ guest_total: 0, booking_fee: 0 });
     const b = computeBreakdown({ servicePrice: 0, commissionPercentage: 0, platformFee: 40, gstRate: 0.25, chargeFeeOnFree: true });
     expect(serviceGuestPrice({ price: 0 }, cfg, true).guest_total).toBe(b.customerTotal);
-    expect(serviceGuestPrice({ price: 0 }, cfg, true).booking_fee).toBe(50);
+    expect(serviceGuestPrice({ price: 0 }, cfg, true).booking_fee).toBe(40); // the fee is GST-inclusive (pricing v2)
   });
 
   test('price on request is a ₹0 enquiry with no fee, even in fee-only mode', () => {
     expect(serviceGuestPrice({ price: 2000, price_on_request: true }, cfg, true)).toEqual({ guest_total: 0, booking_fee: 0 });
   });
 
-  test('products/courses: price + fee + GST on fee; free carries nothing', () => {
-    expect(guestPrice(300, cfg)).toEqual({ guest_total: 350, booking_fee: 50 });
+  test('guestPrice: price + the GST-inclusive fee; free carries nothing', () => {
+    expect(guestPrice(300, cfg)).toEqual({ guest_total: 340, booking_fee: 40 });
     expect(guestPrice(0, cfg)).toEqual({ guest_total: 0, booking_fee: 0 });
+  });
+
+  test('products/courses carry no platform fee — the guest pays the listed price (pricing v2)', async () => {
+    platformConfig.getConfig.mockResolvedValue(cfg);
+    for (const kind of ['product', 'course']) {
+      const [row] = await withGuestPrices([{ id: 'p', price: 300 }], kind, 'h');
+      expect(row).toMatchObject({ guest_total: 300, booking_fee: 0 });
+    }
   });
 
   test('withGuestPrices adds the fields, and leaves rows alone if config fails', async () => {
     platformConfig.getConfig.mockResolvedValue(cfg);
     feeOnlyForHost.mockResolvedValue(true);
     const out = await withGuestPrices([{ id: 's', price: 0 }], 'service', 'h');
-    expect(out[0]).toMatchObject({ id: 's', guest_total: 50, booking_fee: 50 });
+    expect(out[0]).toMatchObject({ id: 's', guest_total: 40, booking_fee: 40 });
 
     platformConfig.getConfig.mockRejectedValue(new Error('down'));
     const rows = [{ id: 'p', price: 10 }];
@@ -167,19 +175,19 @@ describe('guest price (display only, same engine as checkout)', () => {
     expect(serviceHostEarnings({ price: 999, price_on_request: true }, 7)).toEqual({ host_earnings: null });
   });
 
-  test('withGuestPrices reads the commission from the host plan row; a failed read drops only host_earnings', async () => {
+  test("withGuestPrices reads the host plan's appointments rate; a failed read drops only host_earnings", async () => {
     platformConfig.getConfig.mockResolvedValue(cfg);
     feeOnlyForHost.mockResolvedValue(false);
     const maybeSingle = jest.fn().mockResolvedValue({ data: { plan: 'pro_x', plan_expires_at: null } });
     supabaseAdmin.from.mockReturnValue({ select: () => ({ eq: () => ({ maybeSingle }) }) });
-    planService.getPlan.mockResolvedValue({ commission_percentage: 7 });
+    planService.getRate.mockResolvedValue(7);
     const [row] = await withGuestPrices([{ id: 's', price: 1000 }], 'service', 'h');
-    expect(planService.getPlan).toHaveBeenCalledWith('pro_x');
-    expect(row).toMatchObject({ host_earnings: 930, guest_total: 1050 });
+    expect(planService.getRate).toHaveBeenCalledWith('pro_x', 'appointments');
+    expect(row).toMatchObject({ host_earnings: 930, guest_total: 1040 });
 
-    planService.getPlan.mockRejectedValue(new Error('down'));
+    planService.getRate.mockRejectedValue(new Error('down'));
     const [row2] = await withGuestPrices([{ id: 's', price: 1000 }], 'service', 'h');
-    expect(row2.guest_total).toBe(1050);
+    expect(row2.guest_total).toBe(1040);
     expect(row2).not.toHaveProperty('host_earnings');
 
     const [prod] = await withGuestPrices([{ id: 'p', price: 300 }], 'product', 'h');

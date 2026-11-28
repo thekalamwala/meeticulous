@@ -153,7 +153,7 @@ const FAQ = [
   { q: 'Can I manage multiple stylists and services?', a: 'Yes. Create as many services as you need — hair, skin, nails, makeup, spa — each with its own duration, price and availability, and manage every appointment from one calendar.' },
   { q: 'Do I need any technical knowledge?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and slots, and your booking page is ready to share — your clients need nothing more than the link.' },
   { q: 'Does every appointment get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid appointment, and payouts go to your bank once KYC is complete.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -592,7 +592,7 @@ export default function SalonPage() {
                   <span className="font-heading text-5xl font-black tracking-tight">0</span>
                   <span className="pb-2 text-sm text-neutral-500">/month</span>
                 </div>
-                <p className="mt-1.5 text-xs font-semibold text-neutral-500">Free forever · 5% per booking</p>
+                <p className="mt-1.5 text-xs font-semibold text-neutral-500">Free forever · 9% per booking</p>
                 <ul className="mt-6 flex flex-col gap-3">
                   {FREE_PLAN.features.slice(0, 5).map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm text-neutral-600">

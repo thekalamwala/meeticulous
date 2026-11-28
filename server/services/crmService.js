@@ -77,12 +77,18 @@ const shape = (c, crmRow) => ({
   attributes: crmRow?.attributes || {},
 });
 
-// List a host's clients. Options: { q, page, pageSize, sort:'ltv'|'recent', filter:'lapsed', maxClients }
+// Free plans see a client's phone only as its last 4 digits in the CRM (pricing
+// v2 §4 item 2: the full number in the client list/export is Pro-only; the
+// booking itself still shows it from 15 min before the session, on any plan).
+const maskPhone = (p) => (p ? `•••••• ${String(p).replace(/\D/g, '').slice(-4)}` : p);
+const withMaskedPhone = (c) => ({ ...c, phone: maskPhone(c.phone) });
+
+// List a host's clients. Options: { q, page, pageSize, sort:'ltv'|'recent', filter:'lapsed', maxClients, maskPhones }
 // maxClients: -1 = unlimited (paid plans + admin callers). A positive N caps the
 // result to the N most-recent clients — the free Starter plan's "your 10 most recent
 // clients". This is a MONETIZATION gate on the host's OWN customers, not a privacy
 // boundary, so a soft view cap is correct.
-const listClients = async (hostId, { q = '', page = 1, pageSize = 50, sort = 'recent', filter = null, maxClients = -1 } = {}) => {
+const listClients = async (hostId, { q = '', page = 1, pageSize = 50, sort = 'recent', filter = null, maxClients = -1, maskPhones = false } = {}) => {
   const nowMs = Date.now();
   const { data: bookings, error } = await supabaseAdmin
     .from('bookings').select(BOOKING_COLS).eq('host_id', hostId);
@@ -132,7 +138,8 @@ const listClients = async (hostId, { q = '', page = 1, pageSize = 50, sort = 're
 
   const total = shaped.length;
   const start = (page - 1) * pageSize;
-  return { clients: shaped.slice(start, start + pageSize), total, page, pageSize, hidden_count: hiddenCount };
+  const pageRows = shaped.slice(start, start + pageSize);
+  return { clients: maskPhones ? pageRows.map(withMaskedPhone) : pageRows, total, page, pageSize, hidden_count: hiddenCount };
 };
 
 // Idempotent: resolve or create the crm_customers row for (host, key). Used before
@@ -167,7 +174,7 @@ const resolveClientHandle = async (hostId, id) => {
 
 // Full detail for one client (addressed by a crm_customers handle OR a guest
 // profile id). Returns null if the id isn't this host's. History/reviews read LIVE.
-const getClient = async (hostId, customerId) => {
+const getClient = async (hostId, customerId, { maskPhones = false } = {}) => {
   const crmRow = await resolveClientHandle(hostId, customerId);
   if (!crmRow) return null;
 
@@ -191,6 +198,9 @@ const getClient = async (hostId, customerId) => {
     const { data: rv } = await supabaseAdmin
       .from('reviews').select('*').in('booking_id', bookingIds);
     reviews = rv || [];
+  }
+  if (maskPhones) {
+    return { customer: withMaskedPhone(customer), history: history.map((b) => ({ ...b, guest_phone: maskPhone(b.guest_phone) })), reviews };
   }
   return { customer, history, reviews };
 };

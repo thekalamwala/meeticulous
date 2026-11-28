@@ -56,11 +56,12 @@ describe('createTestimonial', () => {
     expect(r.status).toHaveBeenCalledWith(201);
   });
 
-  it('409 when a free host is at the cap', async () => {
-    wire({ profilePlan: 'free', count: ctrl.FREE_CAP });
+  // Pricing v2 §4 item 6: testimonials are unlimited on every plan.
+  it('201 for a free host with many testimonials already (no cap)', async () => {
+    wire({ profilePlan: 'free', count: 50 });
     const r = res();
     await ctrl.createTestimonial(req({ quote: 'Great!', author_name: 'Priya' }), r);
-    expect(r.status).toHaveBeenCalledWith(409);
+    expect(r.status).toHaveBeenCalledWith(201);
   });
 });
 

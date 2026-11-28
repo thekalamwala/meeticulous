@@ -192,20 +192,29 @@ describe('updateProfile', () => {
     expect(capturedUpdates?.theme_color).toBe('#960D32');
   });
 
-  // Pro gets the 16-colour palette; anything outside it (or on Starter) is a 403.
+  // Pro gets the 18-colour palette, a superset of Starter's 4; anything outside
+  // it (or on Starter) is a 403. Pricing v2 §4 item 9 / acceptance tests 14, 17.
+  const PAST = '2020-01-01T00:00:00Z';
   test.each([
-    ['premium',          '#2563EB', true],
-    ['premium_founding', '#2563EB', true],
-    ['premium',          '#FACC15', false],
-    ['free',             '#2563EB', false],
-  ])('plan %s saving %s → allowed=%s', async (plan, hex, allowed) => {
+    ['premium',          null, '#2563EB', true],
+    ['premium_founding', null, '#2563EB', true],
+    ['premium',          null, '#FACC15', false],
+    ['free',             null, '#2563EB', false],
+    ['free',             null, '#E0506F', true],   // test 14: Starter colour
+    ['free',             null, '#7A0A28', true],
+    ['premium',          null, '#E0506F', true],   // test 14: still allowed after upgrading
+    ['premium',          null, '#7A0A28', true],
+    ['creator',          null, '#0EA5E9', true],   // legacy partner = Pro palette
+    ['premium',          PAST, '#2563EB', false],  // test 17: expired Pro loses the palette
+    ['premium',          PAST, '#960D32', true],   //          …but keeps Starter colours
+  ])('plan %s (expires %s) saving %s → allowed=%s', async (plan, expires, hex, allowed) => {
     let capturedUpdates;
     supabaseAdmin.from.mockReturnValue({
       select:  jest.fn().mockReturnThis(),
       update:  jest.fn().mockImplementation((u) => { capturedUpdates = u; return { eq: jest.fn().mockReturnThis(), select: jest.fn().mockReturnThis(), single: jest.fn().mockResolvedValue({ data: HOST, error: null }) }; }),
       eq:      jest.fn().mockReturnThis(),
       neq:     jest.fn().mockReturnThis(),
-      single:  jest.fn().mockResolvedValue({ data: { username: 'jane-v', plan }, error: null }),
+      single:  jest.fn().mockResolvedValue({ data: { username: 'jane-v', plan, plan_expires_at: expires }, error: null }),
       maybeSingle: jest.fn().mockResolvedValue({ data: null }),
     });
 

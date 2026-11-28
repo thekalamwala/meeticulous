@@ -13,7 +13,8 @@ const readDismissed = () => {
 /**
  * CommissionMeter — the sharpest free→Pro conversion nudge on the host dashboard.
  *
- * Free hosts pay 5% commission on every booking; Pro charges 0%. Showing the actual
+ * Free hosts pay 9% commission on appointments (12% on goods); Pro charges 0% on
+ * appointments up to ₹25,000 a month. Showing the actual
  * rupees already handed over turns the upgrade into a calculation, not a generic
  * pitch — the single highest-leverage lever (Pro GMV earns the platform ₹0, so the
  * business runs on free→Pro upgrades). Once a host has paid MORE than Pro's yearly

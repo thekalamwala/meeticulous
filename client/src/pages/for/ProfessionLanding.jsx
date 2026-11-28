@@ -259,7 +259,7 @@ function ProfessionLandingV1() {
 
   const { theme, seo, hero, socialProof, trust, stats, painPoints, features, headings, pricing, faq, finalCta, midCtas = {}, madeFor, label } = data;
   const canonical = `${SITE_URL}/for/${data.slug}`;
-  // Headline "₹X/day" sells the paid plan. ₹1,179/yr = ₹3.23/day; rounding UP to
+  // Headline "₹X/day" sells the paid plan. ₹1,199/yr = ₹3.28/day; rounding UP to
   // ₹10 is deliberate — advertise at or above what we actually charge, never below.
   const topPlan = PAID_PLANS[PAID_PLANS.length - 1];
   const perDay = Math.max(1, Math.round(topPlan.yearly / 365));

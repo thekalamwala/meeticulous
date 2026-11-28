@@ -17,7 +17,7 @@ let loaded = false;
 
 export default {
   name: 'gtm',
-  needsConsent: true,
+  consent: 'marketing',
   init() {
     if (loaded || !CONTAINER_ID || typeof document === 'undefined') return;
     loaded = true;

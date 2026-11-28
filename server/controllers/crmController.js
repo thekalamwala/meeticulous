@@ -4,6 +4,10 @@
 const { supabaseAdmin } = require('../config/supabase');
 const crmService = require('../services/crmService');
 const { customerKey } = require('../utils/customerKey');
+const planService = require('../services/planService');
+
+// Pricing v2 §4 item 2: the full phone number in the CRM is Pro-only.
+const masksPhones = (req) => planService.isFreeSlug(req.vendorPlan || planService.FREE_PLAN);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NOTE_MAX = 5000;
@@ -18,6 +22,7 @@ const listCustomers = async (req, res) => {
     const maxClients = req.vendorPlanData?.limits?.crm ?? -1;
     const out = await crmService.listClients(req.user.id, {
       q: String(q), page: Math.max(1, parseInt(page, 10) || 1), sort, filter, maxClients,
+      maskPhones: masksPhones(req),
     });
     return res.json(out);
   } catch (err) { return fail(res, err, 'Could not load clients.'); }
@@ -27,7 +32,7 @@ const listCustomers = async (req, res) => {
 const getCustomer = async (req, res) => {
   try {
     if (!UUID_RE.test(req.params.id)) return res.status(404).json({ message: 'Client not found.' });
-    const detail = await crmService.getClient(req.user.id, req.params.id);
+    const detail = await crmService.getClient(req.user.id, req.params.id, { maskPhones: masksPhones(req) });
     if (!detail) return res.status(404).json({ message: 'Client not found.' });
     return res.json(detail);
   } catch (err) { return fail(res, err, 'Could not load client.'); }
@@ -39,7 +44,7 @@ const exportCsv = async (req, res) => {
     // Export honours the same plan cap as the list — a free host exports only their
     // N most-recent clients, a paid host exports everything (maxClients -1).
     const maxClients = req.vendorPlanData?.limits?.crm ?? -1;
-    const { clients } = await crmService.listClients(req.user.id, { pageSize: 100000, sort: 'ltv', maxClients });
+    const { clients } = await crmService.listClients(req.user.id, { pageSize: 100000, sort: 'ltv', maxClients, maskPhones: masksPhones(req) });
     const esc = (v) => {
       const s = v == null ? '' : String(v);
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;

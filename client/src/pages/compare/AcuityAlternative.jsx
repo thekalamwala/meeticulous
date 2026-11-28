@@ -38,7 +38,7 @@ const START = '/become-a-host';
 const ACU = COMPETITORS.acuity;
 const FREE = FREE_PLAN.name;
 const PREM = PREMIUM_PLAN.name;
-const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on your bookings');
+const COMMISSION = PLAN_MATRIX.flatMap((g) => g.rows).find((r) => r.label === 'Commission on appointments');
 
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 const usd = (n) => `$${n.toLocaleString('en-US')}`;
@@ -136,7 +136,7 @@ export const FAQ = [
   { q: 'Does Acuity Scheduling support UPI?', a: `No. Acuity Scheduling takes payments through ${ACU_PAYMENTS}, and UPI isn't one of them. On Meeticulous, clients pay by UPI or card through Razorpay when they book, on both plans. Meeticulous collects the payment and settles it to your Indian bank account after a one-time KYC, so you don't need a payment gateway account of your own.` },
   { q: 'Does Acuity Scheduling send WhatsApp reminders?', a: `Acuity's pricing page doesn't list WhatsApp reminders. It lists SMS reminders on the ${ACU.sms}. Meeticulous sends WhatsApp reminders on ${PREM}. On the free ${FREE} plan you get them for your first 2 months, then reminders go by email.` },
   { q: 'Is there a free alternative to Acuity Scheduling?', a: `Yes. Meeticulous's ${FREE} plan costs ${inr(FREE_PLAN.monthly)} a month, with unlimited services and bookings, UPI and card payments, Google Calendar and Meet, and GST invoices. You pay a ${COMMISSION.free} commission only on paid bookings, plus the gateway charge (about 2%) at cost. When that commission adds up to more than ${inr(PREMIUM_YEARLY_PER_MONTH)} a month, ${PREM} at ${inr(PREMIUM_PLAN.yearly)} a year removes it.` },
-  { q: 'How much does Meeticulous cost?', a: `${FREE} is free, with a ${COMMISSION.free} commission on each paid booking. ${PREM} is ${inr(PREMIUM_PLAN.monthly)} a month or ${inr(PREMIUM_PLAN.yearly)} a year, GST included, with ${COMMISSION.premium} commission. On both plans your client pays a flat ₹10 + GST booking fee, the gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout. On ₹1,000 at ${COMMISSION.premium} commission you receive ₹959.76.` },
+  { q: 'How much does Meeticulous cost?', a: `${FREE} is free, with a ${COMMISSION.free} commission on each paid booking. ${PREM} is ${inr(PREMIUM_PLAN.monthly)} a month or ${inr(PREMIUM_PLAN.yearly)} a year, GST included, with ${COMMISSION.premium} commission. On both plans your client pays a flat ₹10 booking fee (GST included, appointments of ₹300+), the gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout. On ₹1,000 on ${PREMIUM_PLAN.name} you receive ₹978.80.` },
   { q: 'Can I move from Acuity Scheduling to Meeticulous?', a: 'Yes. Sign in with Google, add your services and weekly availability, and share your new booking link with clients wherever you used your Acuity link. Google Calendar and Meet work on both plans. To receive payouts, complete a one-time KYC so Meeticulous can settle payments to your Indian bank account. Keep Acuity until your existing appointments are done.' },
 ];
 
@@ -289,7 +289,7 @@ function FirstYearCost() {
       <p className="mt-8 text-sm leading-relaxed text-[var(--ct-soft)]">
         Paying yearly instead of monthly saves {usd((ACU_MO - ACU_YR) * 12)} on Acuity {ACU_PLAN} and {inr(PREMIUM_ANNUAL_SAVING)} on {PREM}.
         These are subscription prices only, as each product publishes them. We don&rsquo;t convert dollars to rupees, because exchange rates change.
-        On Meeticulous, your client also pays a flat ₹10 + GST booking fee on each paid booking, the gateway charge (about 2%) is passed through at cost, and TDS 1% + TCS 1% are deducted on payout.{' '}
+        On Meeticulous, your client also pays a flat ₹10 booking fee (GST included, appointments of ₹300+) on each paid booking, the gateway charge (about 2%) is passed through at cost, and TDS 0.1% (plus 0.5% TCS if GST-registered) is deducted on payout.{' '}
         <Link to="/host-fees" className="font-semibold text-[var(--ct-light)] underline decoration-white/40 underline-offset-4 hover:decoration-white">See every Meeticulous fee</Link>
       </p>
     </div>

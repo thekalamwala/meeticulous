@@ -19,7 +19,7 @@ const USE_ROWS = [
 const Privacy = () => (
   <LegalLayout
     title="Privacy Policy"
-    updated="2 November 2026"
+    updated="28 November 2026"
     current="/privacy"
     description="How Meeticulous collects, uses, and protects your data under India's DPDP Act 2023 and GDPR. Read our full privacy policy."
     intro={
@@ -164,9 +164,9 @@ const Privacy = () => (
       <ul className="list-disc pl-5 space-y-1.5">
         <li><strong>Keep you signed in</strong> — authentication tokens and session cookies are essential for the Platform to work.</li>
         <li><strong>Remember preferences</strong> — such as theme and settings.</li>
-        <li><strong>Understand usage</strong> — product analytics (PostHog) and, subject to your consent, Google Analytics 4 and Google Tag Manager.</li>
-        <li><strong>Improve usability</strong> — Microsoft Clarity, subject to your consent, records anonymised session activity (a &ldquo;session replay&rdquo; of clicks, scrolls, and page views) to help us find and fix problems.</li>
-        <li><strong>Measure advertising</strong> — subject to your consent, the Meta Pixel and Google Ads tags; and, on our servers, we may send hashed identifiers to Meta and Google to measure conversions.</li>
+        <li><strong>Understand usage</strong> — product analytics (PostHog) and, subject to your consent (Analytics), Google Analytics 4.</li>
+        <li><strong>Improve usability</strong> — Microsoft Clarity, subject to your consent (Analytics), records anonymised session activity (a &ldquo;session replay&rdquo; of clicks, scrolls, and page views) to help us find and fix problems.</li>
+        <li><strong>Measure advertising</strong> — subject to your consent (Marketing), the Meta Pixel, Google Tag Manager and Google Ads tags; and, on our servers, we may send hashed identifiers to Meta and Google to measure conversions.</li>
       </ul>
       <p>Essential cookies cannot be switched off. Non-essential analytics, session-replay, and advertising technologies load <strong>only after you accept them</strong> in our consent banner; you can change your choice at any time, and you can also control cookies through your browser. Blocking some cookies may affect how the Platform works.</p>
     </Section>

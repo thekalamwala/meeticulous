@@ -149,9 +149,11 @@ function subscriptionPaymentEntry(payment) {
 }
 
 /**
- * PRODUCT_PAYMENT — paid digital product. Customer pays price + platform_fee.
- * Products carry NO commission and the checkout charges NO GST, so those legs
- * are absent. Gateway fee is VENDOR-borne (mirrors orderPaymentEntry): the
+ * PRODUCT_PAYMENT — paid digital product. Customer pays price (+ platform_fee on
+ * pre-v2 rows). Pricing v2: products carry commission at the plan's `products`
+ * rate — GST-INCLUSIVE, so it books exactly as on orderPaymentEntry: revenue at
+ * the taxable value, its GST to GST payable, vendor_amount already net of it.
+ * Rows without commission (pre-v2) post exactly as before. Gateway fee is VENDOR-borne (mirrors orderPaymentEntry): the
  * expense nets to 0 and is already subtracted from vendor_amount.
  * customer_total / vendor_amount fall back to derivation from price + fee when
  * the snapshot omits them (pre-v3.37 rows healed by the reconciler).
@@ -162,7 +164,8 @@ function productPaymentEntry(snapshot) {
   const platformFee = round2(Number(snapshot.platform_fee || 0));
   const gatewayTotal = round2(Number(snapshot.razorpay_fee_actual || 0) + Number(snapshot.razorpay_tax_actual || 0));
   const customerTotal = round2(snapshot.customer_total != null ? snapshot.customer_total : price + platformFee);
-  const vendorAmount = round2(snapshot.vendor_amount != null ? snapshot.vendor_amount : price - gatewayTotal);
+  const vendorAmount = round2(snapshot.vendor_amount != null ? snapshot.vendor_amount
+    : price - Number(snapshot.commission_applied || 0) - gatewayTotal);
 
   const lines = [
     line(ACCOUNTS.RAZORPAY_RECEIVABLE, 'debit', customerTotal, tags),
@@ -170,6 +173,14 @@ function productPaymentEntry(snapshot) {
   ];
   if (platformFee > 0) {
     lines.push(line(ACCOUNTS.PLATFORM_FEE_REVENUE, 'credit', platformFee, tags));
+  }
+  const commission = round2(Number(snapshot.commission_applied || 0));
+  if (commission > 0) {
+    const commissionGst = round2(Number(snapshot.commission_gst || 0));
+    // BAS revenue — commission ex-GST; its GST is a government payable.
+    lines.push(line(ACCOUNTS.COMMISSION_REVENUE, 'credit',
+      snapshot.commission_taxable != null ? Number(snapshot.commission_taxable) : round2(commission - commissionGst), tags));
+    if (commissionGst > 0) lines.push(line(ACCOUNTS.GST_PAYABLE, 'credit', commissionGst, tags));
   }
   if (gatewayTotal > 0) {
     // Gateway deducts its fee from the remittance (relieve receivable)…

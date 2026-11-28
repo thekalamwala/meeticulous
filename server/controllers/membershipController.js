@@ -251,7 +251,7 @@ const getPublicSpace = async (req, res) => {
     res.json({
       host: { username: host.username, name: host.name, avatar_url: host.profile_image || null },
       member_count: memberCount || 0,
-      program: { name: program.name, blurb: program.blurb, cover_url: program.cover_url },
+      program: { name: program.name, blurb: program.blurb, cover_url: program.cover_url, created_at: program.created_at || null, updated_at: program.updated_at || null },
       tiers, posts, viewer_membership: viewerMembership,
     });
   } catch (error) { safeError(res, error); }

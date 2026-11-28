@@ -74,12 +74,17 @@ describe('whatsappRemindersAllowed (60-day Pro taste from first booking)', () =>
   });
 });
 
+// Pricing v2 §4 item 8: reschedule alerts are strictly paid — the 60-day taste
+// covers WhatsApp reminders only.
 describe('rescheduleAlertsAllowed', () => {
-  test('free host past taste → no alerts; inside taste → alerts', async () => {
+  test('free host → no alerts, inside or past the taste', async () => {
     mockBookings.rows = [{ created_at: '2026-11-01T00:00:00+05:30' }];
     expect(await rescheduleAlertsAllowed({ plan: 'free' }, 'h1')).toBe(false);
     proTaste.clearCache();
     mockBookings.rows = [{ created_at: '2027-02-20T00:00:00+05:30' }];
-    expect(await rescheduleAlertsAllowed({ plan: 'free' }, 'h1')).toBe(true);
+    expect(await rescheduleAlertsAllowed({ plan: 'free' }, 'h1')).toBe(false);
+  });
+  test('Pro host → alerts', async () => {
+    expect(await rescheduleAlertsAllowed({ plan: 'premium' }, 'h1')).toBe(true);
   });
 });

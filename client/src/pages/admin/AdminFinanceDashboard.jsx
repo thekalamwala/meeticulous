@@ -15,7 +15,7 @@ const CARDS = [
   { key: 'available_business_cash',        label: 'Available Business Cash',   hint: 'Bank − host payables − GST liability', accent: true },
   { key: 'outstanding_vendor_payables',    label: 'Host Payables',             hint: 'Owed to hosts, pending settlement' },
   { key: 'gst_liability',                  label: 'GST Liability',             hint: 'Collected for the government, not revenue' },
-  { key: 'platform_fee_revenue',           label: 'Platform Fee Revenue',      hint: '₹10 base fee per paid order' },
+  { key: 'platform_fee_revenue',           label: 'Platform Fee Revenue',      hint: 'Booking fee ex-GST (₹8.47 of each ₹10)' },
   { key: 'commission_revenue',             label: 'Commission Revenue',        hint: 'Free-plan commission' },
   { key: 'subscription_revenue',           label: 'Subscription Revenue',      hint: 'Host plan fees (excl. GST)' },
   { key: 'razorpay_charges_orders',        label: 'Razorpay Charges (Orders)', hint: 'Host-borne gateway fees' },

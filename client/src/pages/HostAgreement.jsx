@@ -15,7 +15,7 @@ const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary
 const HostAgreement = () => (
   <LegalLayout
     title="Host Services Agreement"
-    updated="2 November 2026"
+    updated="27 November 2026"
     effective="on your acceptance during host onboarding"
     current="/host-agreement"
     description="The agreement between Meeticulous and its Hosts — how you sell your services to Guests through the Platform, and how you are priced, invoiced, and paid. Read before you list a service."
@@ -293,8 +293,9 @@ const HostAgreement = () => (
     <Section title="8. Tax deducted at source">
       <p>
         <strong>8.1</strong> Meeticulous deducts income tax at source (TDS under section 194-O) and collects tax at
-        source (TCS under section 52 of the CGST Act) from amounts due to you where required, deposits them to the
-        government against your PAN, and files the prescribed returns. The credit is available to you &mdash; reflected
+        source (TCS under section 52 of the CGST Act, where you are GST-registered) from amounts due to you where
+        required, deposits them to the government against your PAN (TDS) or GSTIN (TCS), and files the prescribed
+        returns. The rates are set out in the Host Fee &amp; Payment Schedule. The credit is available to you &mdash; reflected
         in your Form 26AS and on the GST portal &mdash; to claim in your income-tax and GST returns.
       </p>
       <p>
@@ -302,9 +303,11 @@ const HostAgreement = () => (
         deposited to your credit against your PAN, and you may claim it in your income tax return.
       </p>
       <p>
-        <strong>8.3 PAN is mandatory.</strong> A valid PAN must be on file <strong>before you can accept a paid
-        Booking</strong> &mdash; the Platform will not let you take a paid Booking without one. You are responsible for
-        keeping it accurate, and Meeticulous has no liability for any consequence of an incorrect or missing PAN.
+        <strong>8.3 PAN.</strong> You should add a valid PAN <strong>before your first paid Booking</strong>. If no
+        valid PAN is on file when a paid Booking is made, TDS is deducted at the higher rate the law sets for a missing
+        PAN (section 206AA of the Income-tax Act) instead of the standard rate, and Your Payout is held until your KYC is
+        complete. You are responsible for keeping your PAN accurate, and Meeticulous has no liability for any
+        consequence of an incorrect or missing PAN, including tax deducted at the higher rate.
       </p>
       <p>
         <strong>8.4</strong> If any tax, interest, or penalty is later demanded from Meeticulous in respect of

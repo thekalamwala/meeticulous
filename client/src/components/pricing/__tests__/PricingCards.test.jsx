@@ -33,25 +33,25 @@ describe("PricingCards", () => {
   it("leads with the yearly price and the under-₹10-a-day line", () => {
     const { container } = setup();
     const text = container.textContent;
-    expect(text).toContain("₹1,179");
-    expect(text).toContain("₹3.23");
+    expect(text).toContain("₹1,199");
+    expect(text).toContain("₹3.28");
     expect(text).toContain("incl. GST");
-    expect(text).toContain("Save 58%");
+    expect(text).toContain("Save 50%");
   });
 
   it("shows the monthly price when the toggle is switched", () => {
     const { container, getByText } = setup();
     fireEvent.click(getByText("Monthly"));
-    expect(container.textContent).toContain("₹235");
+    expect(container.textContent).toContain("₹199");
   });
 
   it("shows USD and early access outside India", () => {
     mockRegion.mockReturnValueOnce("INTL");
     const { container } = setup();
     const text = container.textContent;
-    expect(text).toContain("$59/year");
+    expect(text).toContain("$99/year");
     expect(text).toContain("Get early access");
-    expect(text).not.toContain("₹1,179");
+    expect(text).not.toContain("₹1,199");
   });
 
   it("both CTAs point at the signup route", () => {
@@ -71,6 +71,6 @@ describe("PricingCards", () => {
 
   it("states the free plan's commission rather than hiding it", () => {
     const { container } = setup();
-    expect(container.textContent).toContain("5% per booking");
+    expect(container.textContent).toContain("9% per booking");
   });
 });

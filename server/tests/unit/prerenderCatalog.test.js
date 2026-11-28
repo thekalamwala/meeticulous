@@ -11,7 +11,7 @@ const { resolveCatalogMeta, renderCatalogMeta, renderLegacyCatalogRedirect } = r
 
 const UUID = '3f2b8c1e-9d4a-4e6b-8f1a-2c3d4e5f6a7b';
 const HOST = { payload: { host: { id: 'h1', username: 'jane', name: 'Jane Doe', profession: 'Designer', is_verified: true }, services: [{ title: 'Call', slug: 'call' }] } };
-const PRODUCT = { id: UUID, slug: 'brand-kit', title: 'Brand kit', type: 'template', price: 499, description: 'Fonts, colours and logo rules in one Figma file. Ready in a day.', thumbnail_url: 'https://img/kit.webp' };
+const PRODUCT = { id: UUID, slug: 'brand-kit', title: 'Brand kit', type: 'template', price: 499, description: 'Fonts, colours and logo rules in one Figma file. Ready in a day.', thumbnail_url: 'https://img/kit.webp', created_at: '2026-10-01T09:00:00Z', updated_at: '2026-11-20T09:00:00Z' };
 const COURSE = { id: 'c1', slug: 'ux-101', title: 'UX 101', price: 0, description: 'Learn UX basics.', course_lessons: [{ id: 'b', title: 'Two', sort_order: 2 }, { id: 'a', title: 'One', sort_order: 1 }] };
 const res = () => { const r = { set: jest.fn(), send: jest.fn(), status: jest.fn(() => r), redirect: jest.fn() }; return r; };
 const node = (ld, t) => ld['@graph'].find((n) => n['@type'] === t);
@@ -83,6 +83,13 @@ describe('handlers', () => {
     expect(html).toContain('"@type":"Product"');
     expect(html).toContain('Frequently asked questions');
     expect(html).toContain('<meta name="twitter:card" content="summary_large_image">');
+    // Headed sections (same blocks as the SPA) + visible and JSON-LD freshness.
+    expect(html).toContain("<h2>What's included</h2>");
+    expect(html).toContain('<h2>Who made it</h2>');
+    expect(html).toContain('<h2>How you get it</h2>');
+    expect(html).toContain('<p>Updated 20 Nov 2026</p>');
+    expect(html).toContain('"@type":"ItemPage"');
+    expect(html).toContain('"dateModified":"2026-11-20T09:00:00Z"');
   });
 
   test('renderCatalogMeta: non-canonical key answers 301', async () => {

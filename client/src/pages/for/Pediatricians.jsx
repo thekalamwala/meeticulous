@@ -122,7 +122,7 @@ const FAQ = [
   { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Is our clinic and family information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — parents need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour and 1-hour reminders and GST invoices — with a 9% commission per paid appointment. Pro takes appointment commission to 0% and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -539,7 +539,7 @@ export default function Pediatricians() {
                   <span className="font-heading text-5xl font-extrabold tracking-tight">0</span>
                   <span className="pb-2 text-sm text-slate-500">/month</span>
                 </div>
-                <p className="mt-1.5 text-xs font-semibold text-slate-500">Free forever · 5% per booking</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-500">Free forever · 9% per booking</p>
                 <ul className="mt-6 flex flex-col gap-3">
                   {FREE_PLAN.features.slice(0, 5).map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">

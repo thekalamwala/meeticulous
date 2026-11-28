@@ -11,7 +11,7 @@ const {
   buildProfileTabGraph, buildMembershipGraph,
 } = require('../../controllers/prerenderController');
 const catalogSeo = require('../../services/seo/catalogSeo');
-const { catalogFaqs } = require('../../services/seo/pageContentModel');
+const { catalogFaqs, catalogSections, updatedLabel } = require('../../services/seo/pageContentModel');
 
 describe('prerender host entity graph — identical to the client', () => {
   test('profile graph matches the client fixture', () => {
@@ -41,5 +41,11 @@ describe('meta templates + catalog FAQ — identical to the client', () => {
   });
   test.each(fx.faqCases.map((c, i) => [i, c]))('faq case %i', (_i, c) => {
     expect(catalogFaqs(c.input)).toEqual(c.expected);
+  });
+  test.each(fx.sectionCases.map((c, i) => [i, c]))('section case %i', (_i, c) => {
+    expect(catalogSections(c.input)).toEqual(c.expected);
+  });
+  test('updatedLabel cases', () => {
+    for (const c of fx.updatedCases) expect(updatedLabel(c.ts)).toBe(c.expected);
   });
 });

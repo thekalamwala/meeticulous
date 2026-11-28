@@ -25,30 +25,34 @@ const LEGACY_ALIASES = { explorer: 'free', starter: 'free' };
 const FREE_PLAN = 'free';
 
 // Fallback only used when subscription_plans table is missing. Kept in lockstep
-// with the live subscription_plans row (Pro repriced to ₹199/₹999, verified
-// 2026-11-01) so a missing table never advertises numbers the live DB wouldn't
-// enforce. Prices are EX-GST; the 18% is added by computeSubscriptionBreakdown
-// (₹199 → ₹234.82 charged, ₹999 → ₹1,178.82 charged). Mirrors client/src/data/plans.js.
+// with migration v3.230 (pricing v2) so a missing table never advertises numbers
+// the live DB wouldn't enforce. Prices are EX-GST, back-solved so the 18% that
+// computeSubscriptionBreakdown adds lands on the GST-inclusive price: 168.64 →
+// ₹199.00, 1016.10 → ₹1,199.00, 761.86 → ₹898.99 (never rounded up). Mirrors
+// client/src/data/plans.js.
 // `insights` gates Creator Intelligence (services/intel/gate.js): 0 or missing
-// locks the six gated blocks, -1 unlocks. It is here for the DB-unreachable
-// fallback path ONLY — live gating reads subscription_plans.limits, so Pro stays
-// locked until that row is updated. Deliberate: the gate opens when the founder
-// opens it, not quietly at merge.
+// locks the six gated blocks, -1 unlocks.
 const PREMIUM_LIMITS = { services: -1, free_services: -1, bookings_per_year: -1, digital_products: -1, calendar_integrations: 2, profile_theme_colors: -1, reminder_flows: -1, followup_flows: -1, categories: -1, crm: -1, ai_generations: -1, insights: -1 };
 
+// Per-surface commission % (v3.229 `commission_rates`). GST-INCLUSIVE, like the
+// scalar it replaces — pricingEngine backs the GST out. Only free + Pro rows carry
+// a map; every other row falls back to its commission_percentage scalar.
+const STARTER_RATES = { appointments: 9, products: 12, courses: 12, memberships: 12, appointment_band_inr: null, appointment_rate_above_band: null };
+const PRO_RATES = { appointments: 0, products: 4, courses: 4, memberships: 4, appointment_band_inr: 25000, appointment_rate_above_band: 3 };
+
 const FALLBACK_PLANS = {
-  free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, active: true,
+  free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, commission_rates: { ...STARTER_RATES }, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
-    limits: { services: -1, free_services: 2, bookings_per_year: -1, digital_products: 3, calendar_integrations: 1, profile_theme_colors: -1, reminder_flows: 1, followup_flows: 0, categories: -1, crm: 10, ai_generations: 10 },
+    limits: { services: -1, free_services: 2, bookings_per_year: -1, digital_products: -1, calendar_integrations: 1, profile_theme_colors: -1, reminder_flows: 2, followup_flows: 1, categories: 1, crm: 50, ai_generations: 10 },
     features: {}, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'standard', sort_order: 1 },
-  premium:      { name: 'Pro', slug: 'premium', annual_price: 999, monthly_price: 199, commission_percentage: 0, active: true,
+  premium:      { name: 'Pro', slug: 'premium', annual_price: 1016.10, monthly_price: 168.64, commission_percentage: 0, commission_rates: { ...PRO_RATES }, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { ...PREMIUM_LIMITS },
     features: {}, integrations: { calendar_apps: ['google_calendar', 'ical'] }, support_type: 'priority', sort_order: 2 },
-  // Founding-100 Pro (v3.184): archived copy of Pro at the founding price. Pro
+  // Founding Pro (v3.184): archived copy of Pro at the campaign price. Pro
   // checkouts land here while founding spots are open; it keeps renewing at that
   // price after `premium` is repriced. Never in the public catalogue.
-  premium_founding: { name: 'Pro (Founding)', slug: 'premium_founding', annual_price: 999, monthly_price: 199, commission_percentage: 0, active: false,
+  premium_founding: { name: 'Pro (Founding)', slug: 'premium_founding', annual_price: 761.86, monthly_price: 168.64, commission_percentage: 0, commission_rates: { ...PRO_RATES }, active: false,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { ...PREMIUM_LIMITS },
     features: {}, integrations: { calendar_apps: ['google_calendar', 'ical'] }, support_type: 'priority', sort_order: 2 },
@@ -129,11 +133,47 @@ const reminderWindowsForPlan = async (slug) => {
   return REMINDER_WINDOWS.slice(0, n);
 };
 
-/** Whether a plan receives BOOKING_RESCHEDULED notifications — a perk of the top
- *  reminder tier (a plan entitled to every reminder window). */
-const rescheduleNotifyForPlan = async (slug) => {
-  const n = await getLimit(slug, 'reminder_flows');
-  return n < 0 || n >= REMINDER_WINDOWS.length;
+/** Whether a plan receives BOOKING_RESCHEDULED notifications — a perk of the
+ *  UNLIMITED reminder tier (reminder_flows -1). Pricing v2 gives Starter both
+ *  reminder windows (reminder_flows 2), so "has every window" no longer means
+ *  paid; the host reschedule alert stays Pro-only (spec §4 item 8). */
+const rescheduleNotifyForPlan = async (slug) => (await getLimit(slug, 'reminder_flows')) < 0;
+
+/** Commission % (GST-inclusive) a plan pays on one surface: 'appointments' |
+ *  'products' | 'courses' | 'memberships'. Reads the v3.229 rate map and falls
+ *  back to the commission_percentage scalar, so a row without a map (an
+ *  unmigrated DB, or a legacy tier) still prices exactly as before. */
+const getRate = async (slug, surface) => {
+  const plan = await getPlan(slug);
+  const mapped = plan.commission_rates?.[surface];
+  if (mapped != null && Number.isFinite(Number(mapped))) return Number(mapped);
+  return Number(plan.commission_percentage) || 0;
+};
+
+/** A host's current rate on one surface: their profile's plan, resolved the way
+ *  every checkout resolves it (an expired paid plan falls back to free), then
+ *  getRate. Used where only the host id is in hand — product/course checkout,
+ *  the catalog "You'll get" figure. */
+const hostRate = async (hostId, surface) => {
+  const { data: host } = await supabaseAdmin
+    .from('profiles').select('plan, plan_expires_at').eq('id', hostId).maybeSingle();
+  return getRate(resolveVendorPlan(host || {}), surface);
+};
+
+/** Appointment commission % for the NEXT booking, given the host's month-to-date
+ *  appointment GMV BEFORE that booking (sum of service_price, non-cancelled,
+ *  since the 1st of the month IST — the caller reads it inside the booking-quota
+ *  lock so two concurrent bookings can't both see "below band").
+ *
+ *  ponytail: deliberately does NOT split one booking across the band. The whole
+ *  booking is charged at the rate MTD-before selects — ₹24,000 MTD + a ₹2,000
+ *  booking is all 0%, the next one is all 3%. The rupee difference is trivial and
+ *  a split adds a failure mode to every booking total (spec §2). */
+const appointmentRateFor = async (slug, mtdGmvBefore) => {
+  const base = await getRate(slug, 'appointments');
+  const { appointment_band_inr: band, appointment_rate_above_band: above } = (await getPlan(slug)).commission_rates || {};
+  if (band == null || above == null) return base;
+  return (Number(mtdGmvBefore) || 0) >= Number(band) ? Number(above) : base;
 };
 
 /** Resolve a vendor's effective plan slug — expired paid plan falls back to free tier.
@@ -174,4 +214,4 @@ const isCompedSlug = (slug) => COMPED_SLUGS.has(String(slug || '').toLowerCase()
  */
 const isSelfServable = (plan) => !!plan && plan.active !== false;
 
-module.exports = { loadPlans, getPlan, getLimit, reminderWindowsForPlan, rescheduleNotifyForPlan, resolveVendorPlan, normalizeSlug, isFreeSlug, isCompedSlug, isSelfServable, clearCache, FALLBACK_PLANS, REMINDER_WINDOWS, FREE_PLAN };
+module.exports = { loadPlans, getPlan, getLimit, getRate, hostRate, appointmentRateFor, reminderWindowsForPlan, rescheduleNotifyForPlan, resolveVendorPlan, normalizeSlug, isFreeSlug, isCompedSlug, isSelfServable, clearCache, FALLBACK_PLANS, REMINDER_WINDOWS, FREE_PLAN };

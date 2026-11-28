@@ -3,8 +3,9 @@
 /**
  * proTaste.js — the 60-day "Pro taste" for free (Starter) hosts.
  *
- * A free host gets two Pro perks — WhatsApp booking reminders and reschedule
- * alerts — for TASTE_DAYS counted from their FIRST CONFIRMED BOOKING (not signup:
+ * A free host gets one Pro perk — WhatsApp booking reminders (pricing v2 §4 item
+ * 8: reschedule alerts are strictly paid now) — for TASTE_DAYS counted from their
+ * FIRST CONFIRMED BOOKING (not signup:
  * most hosts take weeks to land a booking, and a taste spent with no guests is a
  * taste never felt). After that those perks are Pro-only; paid/comped plans always
  * have them. A host with no booking yet hasn't started their taste, so it reads as
@@ -56,7 +57,7 @@ function tasteActiveSync(host, firstAt, now = Date.now()) {
   return !ends || now < ends.getTime();
 }
 
-/** Async: WhatsApp reminders + reschedule alerts allowed for this host? */
+/** Async: WhatsApp reminders allowed for this host? */
 async function tasteActive(host, hostId = host?.id) {
   // Some booking joins select only contact columns. Without `plan` a Pro host
   // would read as free, so load it rather than guess. Error → keep perks (fail-open).

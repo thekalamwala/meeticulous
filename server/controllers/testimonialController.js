@@ -8,16 +8,13 @@
  * aggregateRating (see reviewController.getHostReviews).
  *
  * Host CRUD is scoped by req.user.id. The public read is by username.
- * FREE hosts are capped at FREE_CAP testimonials; Pro is unlimited.
+ * Unlimited on every plan (pricing v2 §4 item 6 — the free cap is gone).
  *
  * Schema-fallback safe: until migration v3.212 is applied, reads return an
  * empty list and writes 503 gracefully, so the feature is dormant/harmless.
  */
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
-const planService = require('../services/planService');
-
-const FREE_CAP = 3;
 const MAX_QUOTE = 2000;
 const MAX_NAME = 120;
 const MAX_ROLE = 160;
@@ -57,26 +54,12 @@ const listMyTestimonials = async (req, res) => {
   } catch (e) { return safeError(res, e); }
 };
 
-// POST /api/host/testimonials — create one (free hosts capped at FREE_CAP)
+// POST /api/host/testimonials — create one (unlimited on every plan)
 const createTestimonial = async (req, res) => {
   try {
     const row = toRow(req.body || {});
     if (!row.quote) return res.status(400).json({ message: 'A quote is required.' });
     if (!row.author_name) return res.status(400).json({ message: 'An author name is required.' });
-
-    // Free-tier cap. Pro (any non-free slug) is unlimited.
-    const { data: profile } = await supabaseAdmin
-      .from('profiles').select('plan, plan_expires_at').eq('id', req.user.id).single();
-    if (planService.isFreeSlug(planService.resolveVendorPlan(profile || {}))) {
-      const { count, error: cErr } = await supabaseAdmin
-        .from('host_testimonials')
-        .select('id', { count: 'exact', head: true })
-        .eq('host_id', req.user.id);
-      if (cErr && isMissingSchema(cErr)) return res.status(503).json({ message: 'Testimonials are not available yet.' });
-      if (!cErr && (count || 0) >= FREE_CAP) {
-        return res.status(409).json({ message: `Free plan is limited to ${FREE_CAP} testimonials. Upgrade to Pro for unlimited.`, code: 'FREE_LIMIT' });
-      }
-    }
 
     const { data, error } = await supabaseAdmin
       .from('host_testimonials')
@@ -147,5 +130,5 @@ const getPublicTestimonials = async (req, res) => {
 
 module.exports = {
   listMyTestimonials, createTestimonial, updateTestimonial, deleteTestimonial,
-  getPublicTestimonials, FREE_CAP,
+  getPublicTestimonials,
 };

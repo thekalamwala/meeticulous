@@ -4,7 +4,7 @@ const { safeError } = require('../utils/httpError');
 const otpStore = require('../utils/otpStore');
 const { identifierOf } = require('../utils/bookingGrant');
 const crypto = require('crypto');
-const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEngine');
+const { round2 } = require('../lib/pricingEngine');
 const { sortHostOrder, applyHostOrder } = require('../services/catalogOrder');
 const { withGuestPrices } = require('../services/guestPrice');
 const platformConfig = require('../services/platformConfig');
@@ -165,7 +165,7 @@ const getHostProducts = async (req, res) => {
     if (!host) return res.status(404).json({ message: 'Host not found' });
 
     const { data, error } = await supabaseAdmin.from('products')
-      .select('id, title, description, type, price, thumbnail_url, slug, purchase_count')
+      .select('id, title, description, type, price, thumbnail_url, slug, purchase_count, created_at, updated_at')
       .eq('host_id', host.id).eq('is_active', true)
       .order('created_at', { ascending: false });
     if (error) return safeError(res, error);
@@ -294,7 +294,7 @@ const freeDownload = async (req, res) => {
 // Public detail columns + the host's theme_color (purchase page accent) and a
 // server-computed platform_fee so the client never hardcodes the fee.
 const PUBLIC_PRODUCT_COLS =
-  'id, title, description, type, price, thumbnail_url, slug, purchase_count, ' +
+  'id, title, description, type, price, thumbnail_url, slug, purchase_count, created_at, updated_at, ' +
   'profiles!products_host_id_fkey(name, username, profile_image, tagline, theme_color, is_verified, profession, social_links)';
 
 // ── GET /api/products/p/:username/:key ───────────────────────
@@ -312,18 +312,14 @@ const getProductPublic = async (req, res) => {
     const { data } = await resolveCatalogItem('products', host.id, key, PUBLIC_PRODUCT_COLS);
     if (!data) return res.status(404).json({ message: 'Product not found' });
 
-    // Config-driven fee + GST so the client never hardcodes money math (mirrors
-    // services). A free product (price 0) → fee 0, gst 0 via calculatePlatformFee.
+    // No platform fee on digital goods (pricing v2 §2.1 Change A): the guest fee is a BOOKING fee, appointments only. The guest pays the listed price; fields stay in the payload at 0 so older clients render unchanged.
     const cfg = await platformConfig.getConfig();
-    const price = Number(data.price) || 0;
-    const fee = calculatePlatformFee(price, { platformFee: cfg.platformFee });
-    const gst = calculateGst(fee, { gstRate: cfg.gstRate });
     res.json({
       ...data,
-      platform_fee: fee,
-      platform_fee_gst: gst,
+      platform_fee: 0,
+      platform_fee_gst: 0,
       gst_rate: cfg.gstRate,
-      total: round2(price + fee + gst),
+      total: round2(Number(data.price) || 0),
     });
   } catch (error) { safeError(res, error); }
 };

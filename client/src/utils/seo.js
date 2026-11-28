@@ -616,6 +616,12 @@ export const serviceGraphJsonLd = ({ service = {}, vendor = {}, siteUrl = SITE_U
  */
 const TAB_CRUMB = { products: 'Products', courses: 'Courses', membership: 'Membership' };
 const IN_STOCK = 'https://schema.org/InStock';
+// datePublished / dateModified from a row's created_at / updated_at (freshness).
+const rowDates = (row = {}) => ({
+  ...(row.created_at ? { datePublished: row.created_at } : {}),
+  ...(row.updated_at ? { dateModified: row.updated_at } : {}),
+});
+const newest = (rows = []) => (rows || []).map((r) => r && r.updated_at).filter(Boolean).sort().pop();
 
 const catalogCrumbs = (host, tab, item) => [
   { name: 'Home', path: '/' },
@@ -653,8 +659,13 @@ export const productGraphJsonLd = ({ product = {}, username, siteUrl = SITE_URL,
       seller: { '@id': `${hostUrl}#person` },
     },
   };
+  const pageNode = {
+    '@type': 'ItemPage', '@id': `${url}#webpage`, url, name: productNode.name, inLanguage: 'en-IN',
+    isPartOf: { '@id': `${site}/#website` }, breadcrumb: { '@id': `${url}#breadcrumb` },
+    mainEntity: { '@id': productNode['@id'] }, ...rowDates(product),
+  };
   return withFaq([
-    websiteNode(site), orgNode(site), productNode, personStubNode({ host, site }),
+    websiteNode(site), orgNode(site), pageNode, productNode, personStubNode({ host, site }),
     breadcrumbNode(catalogCrumbs(host, 'products', product.slug && { name: productNode.name, path: productPath(host.username, product.slug) }), site, `${url}#breadcrumb`),
   ], faqs, url);
 };
@@ -679,6 +690,7 @@ export const courseGraphJsonLd = ({ course = {}, username, siteUrl = SITE_URL, f
     inLanguage: 'en',
     // Lessons carry no duration, so no courseWorkload is claimed.
     hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online' },
+    ...rowDates(course),
     offers: {
       '@type': 'Offer',
       category: price > 0 ? 'Paid' : 'Free',
@@ -708,6 +720,7 @@ export const profileTabGraphJsonLd = ({ tab, host = {}, items = [], siteUrl = SI
       ...(name ? { name } : {}),
       ...(description ? { description } : {}),
       inLanguage: 'en-IN',
+      ...(newest(listed) ? { dateModified: newest(listed) } : {}),
       isPartOf: { '@id': `${site}/#website` },
       about: { '@id': `${hostUrl}#person` },
       mainEntity: { '@id': `${url}#list` },
@@ -739,6 +752,7 @@ export const membershipGraphJsonLd = ({ host = {}, program = {}, tiers = [], sit
       ...(name ? { name } : {}),
       ...(description ? { description } : {}),
       inLanguage: 'en-IN',
+      ...rowDates(program || {}),
       isPartOf: { '@id': `${site}/#website` },
       about: { '@id': `${hostUrl}#person` },
       mainEntity: { '@id': `${url}#list` },

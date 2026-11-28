@@ -8,6 +8,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
 const { setPublicCache } = require('../utils/httpCache');
 const { getConfig: getPlatformConfig } = require('../services/platformConfig');
+const { splitInclusiveFee, calculatePlatformFee } = require('../lib/pricingEngine');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 const { bustPublicReadCaches } = require('../services/publicCacheBust');
 const { sortHostOrder, makeReorderHandler } = require('../services/catalogOrder');
@@ -641,8 +642,9 @@ const buildPublicServiceByProfileAndSlug = async (profileSlug, serviceSlug) => {
     service.category_label = cat?.name || null;
   }
 
-  // Customer-facing booking charge = flat platform fee + GST (admin-editable).
-  // Mirrors the breakdown shown on the booking/payment screen so the price the
+  // Customer-facing booking charge = the flat, GST-INCLUSIVE platform fee
+  // (pricing v2): bookingFee is the gross, the breakdown is its taxable value +
+  // the GST backed out of it. Same split as computeBreakdown, so the price the
   // guest sees here matches what they pay. Falls back to 0 on error.
   let bookingFee = 0;
   let bookingFeeBreakdown = { platformFee: 0, tax: 0 };
@@ -652,9 +654,12 @@ const buildPublicServiceByProfileAndSlug = async (profileSlug, serviceSlug) => {
   try {
     const { platformFee, gstRate, feeOnlyMode } = await getPlatformConfig();
     feeOnly = feeOnlyMode;
-    const tax = Math.round(platformFee * gstRate * 100) / 100;
-    bookingFee = Math.round((platformFee + tax) * 100) / 100;
-    bookingFeeBreakdown = { platformFee: Math.round(platformFee * 100) / 100, tax };
+    // Same ₹300 floor as checkout; a ₹0 service keeps the figure for fee-only mode.
+    const price = Number(service.price) || 0;
+    const split = splitInclusiveFee(
+      calculatePlatformFee(price, { platformFee: Number(platformFee) || 0, chargeFeeOnFree: price === 0 }), { gstRate });
+    bookingFee = split.gross;
+    bookingFeeBreakdown = { platformFee: split.taxable, tax: split.gst };
   } catch (_) { bookingFee = 0; bookingFeeBreakdown = { platformFee: 0, tax: 0 }; }
 
   // Embed the host's appearance (enabled backgrounds + default) so the service

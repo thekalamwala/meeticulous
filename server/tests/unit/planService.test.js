@@ -1,8 +1,8 @@
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn(() => ({ select: () => ({ order: () => Promise.resolve({ data: null, error: { message: 'relation "subscription_plans" does not exist' } }) }) })) } }));
 const planService = require('../../services/planService');
 
-test('followup_flows fallback: free 0, premium/creator/professional unlimited', async () => {
-  expect(await planService.getLimit('free', 'followup_flows')).toBe(0);
+test('followup_flows fallback: free 1 (day-3 rebook), premium/creator/professional unlimited', async () => {
+  expect(await planService.getLimit('free', 'followup_flows')).toBe(1);
   expect(await planService.getLimit('premium', 'followup_flows')).toBe(-1);
   // Legacy paid rows were lifted to Pro entitlements in v3.165.
   expect(await planService.getLimit('creator', 'followup_flows')).toBe(-1);
@@ -49,10 +49,56 @@ test('free plan caps free (₹0) services; premium does not', async () => {
   expect(await planService.getLimit('premium', 'free_services')).toBe(-1);
 });
 
-// Free gets a CAPPED CRM view (10 most recent) — not a hard block (crm:0) and not
-// unlimited. requireCrm now lets any positive limit through; crmService.listClients
-// enforces the "10 most recent" cap. Premium is unlimited.
-test('free plan gets a capped CRM (10); premium is unlimited', async () => {
-  expect(await planService.getLimit('free', 'crm')).toBe(10);
+// Free gets a CAPPED CRM view (50 most recent, pricing v2) — not a hard block
+// (crm:0) and not unlimited. requireCrm lets any positive limit through;
+// crmService.listClients enforces the cap. Premium is unlimited.
+test('free plan gets a capped CRM (50); premium is unlimited', async () => {
+  expect(await planService.getLimit('free', 'crm')).toBe(50);
   expect(await planService.getLimit('premium', 'crm')).toBe(-1);
+});
+
+// ── Pricing v2: per-surface commission (spec §2) ───────────────────────────
+describe('getRate', () => {
+  test('Starter and Pro read the rate map per surface', async () => {
+    expect(await planService.getRate('free', 'appointments')).toBe(9);
+    expect(await planService.getRate('free', 'products')).toBe(12);
+    expect(await planService.getRate('free', 'memberships')).toBe(12);
+    expect(await planService.getRate('premium', 'appointments')).toBe(0);
+    expect(await planService.getRate('premium', 'courses')).toBe(4);
+    expect(await planService.getRate('premium_founding', 'products')).toBe(4);
+  });
+  test('legacy free aliases read the free map', async () => {
+    expect(await planService.getRate('explorer', 'appointments')).toBe(9);
+  });
+  test('a row with no map falls back to the commission_percentage scalar', async () => {
+    // creator carries no commission_rates in the fallback (nor in v3.230).
+    expect(await planService.getRate('creator', 'products')).toBe(0);
+  });
+});
+
+describe('getRate on a partially-migrated DB (row has no commission_rates)', () => {
+  const { supabaseAdmin } = require('../../config/supabase');
+  afterEach(() => planService.clearCache());
+  test('every surface prices at the scalar, exactly as before v3.229', async () => {
+    supabaseAdmin.from.mockImplementationOnce(() => ({ select: () => ({ order: () => Promise.resolve({
+      data: [{ slug: 'free', commission_percentage: '5.00', limits: {} }], error: null }) }) }));
+    planService.clearCache();
+    expect(await planService.getRate('free', 'appointments')).toBe(5);
+    expect(await planService.getRate('free', 'courses')).toBe(5);
+    expect(await planService.appointmentRateFor('free', 999999)).toBe(5);
+  });
+});
+
+describe('appointmentRateFor — the Pro 25,000/month band (acceptance test 9)', () => {
+  test('MTD-before below the band → 0%, even when this booking crosses it', async () => {
+    expect(await planService.appointmentRateFor('premium', 24000)).toBe(0);
+  });
+  test('MTD-before at or above the band → 3% on the whole booking', async () => {
+    expect(await planService.appointmentRateFor('premium', 25000)).toBe(3);
+    expect(await planService.appointmentRateFor('premium', 26000)).toBe(3);
+  });
+  test('Starter has no band — 9% at any volume', async () => {
+    expect(await planService.appointmentRateFor('free', 0)).toBe(9);
+    expect(await planService.appointmentRateFor('free', 1e7)).toBe(9);
+  });
 });

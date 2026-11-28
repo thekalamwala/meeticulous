@@ -19,7 +19,8 @@ import { useMinimalFooter } from "../context/ChromeContext";
 import loadRazorpay from "../utils/loadRazorpay";
 import Seo from "../components/common/Seo";
 import { SITE_URL, productGraphJsonLd, productMeta, productPath, catalogRobots } from "../utils/seo";
-import { catalogFaqs } from "../utils/profileFaqs";
+import { catalogFaqs, catalogSections, updatedLabel } from "../utils/profileFaqs";
+import { CatalogSections } from "../components/profile/ProfileTabs";
 import FaqAccordion from "../components/FaqAccordion";
 import toast from "react-hot-toast";
 
@@ -41,7 +42,7 @@ const TYPE_LABELS = {
 };
 
 // FaqAccordion chrome in brand tokens (ink text, cream card, line border).
-const FAQ_COLORS = { text: "var(--fg-1)", secondary: "var(--fg-2)", card: "var(--bg-page)", border: "var(--border-1)" };
+const FAQ_COLORS = { text: "var(--fg-1)", secondary: "var(--fg-2)", card: "var(--bg-page)", border: "var(--border-1)", muted: "var(--fg-3)" };
 
 // Only treat http(s) URLs as navigable. Anything else (javascript:, data:, …)
 // is rejected so a malicious stored URL can't be opened as a link.
@@ -324,6 +325,8 @@ const ProductPurchase = () => {
   const host = product.profiles;
   const meta = productMeta({ product, host: host || {} });
   const faqs = catalogFaqs({ kind: "product", host: host || {}, item: product });
+  const sections = catalogSections({ kind: "product", host: host || {}, item: product });
+  const updated = updatedLabel(product.updated_at);
   const canonical = `${SITE_URL}${productPath(username, product.slug || productKey)}`;
   const isPreview = searchParams.get("preview") === "1";
 
@@ -379,7 +382,8 @@ const ProductPurchase = () => {
         </Link>
 
         {/* Answer-first summary (AEO/GEO) — the data-built meta description. */}
-        <p className="text-sm leading-relaxed text-ink/70 mb-4">{meta.description}</p>
+        <p className="text-sm leading-relaxed text-ink/70 mb-1">{meta.description}</p>
+        {updated && <p className="text-xs text-ink/50 mb-4"><time dateTime={product.updated_at}>{updated}</time></p>}
 
         {/* Product card */}
         <div className="fb-card overflow-hidden mb-6">
@@ -806,6 +810,11 @@ const ProductPurchase = () => {
               </Link>
             </div>
           )}
+        </div>
+
+        {/* What's included · Who made it · How you get it (real data, same as the bot shell). */}
+        <div className="fb-card p-5 sm:p-6 mt-6 [&>section:first-child]:mt-0">
+          <CatalogSections sections={sections} C={FAQ_COLORS} />
         </div>
 
         {/* Visible FAQ — the same Q&A the FAQPage JSON-LD carries. */}

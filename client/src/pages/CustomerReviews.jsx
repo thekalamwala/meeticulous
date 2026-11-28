@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, Sparkles } from "lucide-react";
+import { Star } from "lucide-react";
 import { getReceivedReviews } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { isHost } from "../utils/roleRoutes";
-import PetalSpinner from "../components/common/PetalSpinner";
+import { PageHeading, cn } from "../components/dashboard/ui/v2";
+import { KeptSkeleton } from "./catalog/KeptKit";
+import { GuestEmpty, btnPrimary, ring } from "./guest/GuestKit";
 
-// /reviews — reviews the current user has RECEIVED.
-// Guests see only host→guest reviews (as traveler).
-// Hosts get a tab bar: "As Traveler" (host_to_guest) | "As Host" (guest_to_host).
+// /user/reviews — reviews the current user has RECEIVED (Kept).
+// Guests see only host→guest reviews (as a guest).
+// Hosts get tabs: "As Guest" (host_to_guest) | "As Host" (guest_to_host).
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
 const Stars = ({ n }) => (
-  <span className="mt-0.5 inline-flex" aria-label={`${n} out of 5`}>
+  <span className="inline-flex" aria-label={`${n} out of 5`}>
     {[1, 2, 3, 4, 5].map((i) => (
-      <Star key={i} className={`h-3.5 w-3.5 ${i <= n ? "fill-marigold text-marigold" : "text-neutral-200"}`} strokeWidth={1.5} />
+      <Star key={i} className={cn("h-4 w-4", i <= n ? "fill-marigold text-marigold" : "text-neutral-200")} strokeWidth={1.5} />
     ))}
   </span>
 );
@@ -41,93 +43,68 @@ const CustomerReviews = () => {
 
   const { reviews, count, avg } = data;
 
-  const subcopy = tab === "hosting"
-    ? "What guests say about you as a host."
-    : "What hosts say about you after a session.";
-
   return (
-    <>
-      <div className="mb-5 flex items-end justify-between gap-3">
-          <div>
-            <h1 className="font-display text-[24px] font-extrabold leading-none tracking-[-0.04em] text-maroon">Reviews</h1>
-            <p className="mt-1.5 text-[13px] font-medium text-ink/55">{subcopy}</p>
+    <div className="flex flex-col gap-6">
+      <PageHeading title="Reviews"
+        sub={tab === "hosting" ? "What guests say about you as a host." : "What hosts say about you after a session."}
+        action={count > 0 && (
+          <div className="text-right">
+            <p className="mb-0 font-display text-[28px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink">{avg}</p>
+            <p className="mb-0 mt-1 text-[13px] text-muted">{count} review{count === 1 ? "" : "s"}</p>
           </div>
-          {count > 0 && (
-            <div className="text-right">
-              <p className="font-display text-[22px] font-extrabold leading-none tracking-[-0.03em] text-ink">{avg}</p>
-              <p className="mt-1 text-[11px] font-semibold text-ink/50">{count} review{count === 1 ? "" : "s"}</p>
-            </div>
-          )}
+        )} />
+
+      {canHost && (
+        <div role="tablist" aria-label="Reviews" className="flex w-fit gap-1 rounded-[14px] bg-white p-1">
+          {[["traveling", "As Guest"], ["hosting", "As Host"]].map(([k, label]) => (
+            <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+              className={cn("h-9 rounded-[10px] px-3.5 text-[13.5px] font-semibold transition", ring,
+                tab === k ? "bg-maroon text-white" : "text-muted hover:bg-blush hover:text-maroon")}>
+              {label}
+            </button>
+          ))}
         </div>
+      )}
 
-        {/* Tab bar — only visible for hosts */}
-        {canHost && (
-          <div className="mb-5 inline-flex gap-1 rounded-full border-2 border-neutral-200 bg-white p-0.5">
-            {[["traveling", "As Guest"], ["hosting", "As Host"]].map(([k, label]) => (
-              <button key={k} onClick={() => setTab(k)}
-                className={`rounded-full px-4 py-1.5 text-[11.5px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose ${tab === k ? "bg-maroon text-white" : "text-ink/55 hover:text-ink"}`}>
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {loading ? (
-          <div className="py-16 text-center"><PetalSpinner size={40} /></div>
-        ) : count === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-10 text-center">
-            <span className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-full bg-blush">
-              <Star className="text-maroon" size={26} strokeWidth={1.8} />
-            </span>
-            <p className="font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">No reviews yet</p>
-            <p className="mx-auto mt-1 max-w-sm text-[12px] font-medium leading-snug text-ink/50">
-              {tab === "hosting"
-                ? "Guests can leave a review after a completed session with you. They'll show up here."
-                : "After your sessions, hosts can leave a rating and a note about you. They'll show up here."}
-            </p>
-            <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-cream px-3 py-1.5 text-[11px] font-semibold text-ink/50">
-              <Sparkles size={12} strokeWidth={2.2} /> Reviews open up as you complete bookings
-            </div>
-            {tab === "traveling" && (
-              <div className="mt-5">
-                <Link to="/" className="text-[12.5px] font-bold text-maroon hover:underline">Book a session →</Link>
-              </div>
-            )}
-          </div>
+      {loading ? <KeptSkeleton rows={3} />
+        : count === 0 ? (
+          <GuestEmpty mascot="blue" title="No reviews yet"
+            sub={tab === "hosting"
+              ? "Guests can leave a review after a completed session with you. They'll show up here."
+              : "After your sessions, hosts can leave a rating and a note about you. They'll show up here."}
+            action={tab === "traveling" && <Link to="/explore" className={btnPrimary}>Book a session</Link>} />
         ) : (
-          <div className="flex flex-col gap-2.5">
+          <ul className="divide-y divide-neutral-200 overflow-hidden rounded-[24px] bg-white">
             {reviews.map((r) => {
               const author = r.profiles || {};
               return (
-                <div key={r.id} className="rounded-[8px] border-2 border-neutral-200 bg-white p-4">
-                  <div className="flex items-center gap-2.5">
+                <li key={r.id} className="px-5 py-4 sm:px-6">
+                  <div className="flex items-center gap-3">
                     {author.profile_image ? (
-                      <img src={author.profile_image} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
+                      <img src={author.profile_image} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
                     ) : (
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-blush font-display text-[12px] font-extrabold text-maroon">
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pink-50 font-display text-[14px] font-extrabold text-maroon">
                         {author.name ? author.name[0].toUpperCase() : "U"}
                       </span>
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-[13px] font-bold text-ink">{author.name || "Someone"}</p>
-                        <span className="whitespace-nowrap text-[11px] font-medium text-ink/45">{fmtDate(r.created_at)}</span>
+                        <p className="mb-0 truncate text-[15px] font-semibold text-ink">{author.name || "Someone"}</p>
+                        <span className="whitespace-nowrap text-[13px] text-faint">{fmtDate(r.created_at)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Stars n={r.rating} />
-                        {r.bookings?.services?.title && (
-                          <p className="truncate text-[11px] font-medium text-ink/45">{r.bookings.services.title}</p>
-                        )}
+                        {r.bookings?.services?.title && <p className="mb-0 truncate text-[13px] text-muted">{r.bookings.services.title}</p>}
                       </div>
                     </div>
                   </div>
-                  {r.comment && <p className="mt-2 text-[12.5px] font-medium leading-snug text-ink/70">{r.comment}</p>}
-                </div>
+                  {r.comment && <p className="mb-0 mt-2.5 text-[14px] leading-relaxed text-ink">{r.comment}</p>}
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
-    </>
+    </div>
   );
 };
 

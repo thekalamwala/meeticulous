@@ -31,9 +31,10 @@ export const RESERVED_FIRST_SEGMENTS = [
   'search', 'wall-of-love', 'submit-review', 'moments', 'opening', 'inaugurators',
   'community', // /community feed, spaces, threads/posts (pages/community/*); bots get server HTML via middleware.js
   'agent-tithi', // Tithi's public profile (pages/AgentTithi.jsx) — linked from her community author chip
+  'agents', // full-screen agents territory page (pages/agents/) — Pal, Rupi, Ankur, Tara
   'presentation', // full-screen product pitch deck (pages/presentation/)
   'pitch-deck', // retired investor deck — kept reserved so old shared links can't be claimed as a host URL
-  '_attic', // hidden pre-compaction homepage snapshot (pages/HomeArchive.jsx) — noindex, unlinked, not in sitemap/prerender
+  '_attic', // retired hidden homepage snapshot (page deleted 2026-11-27) — kept reserved so the old URL can't be claimed as a host URL
   // Branded error pages (config/errorCatalog.js) + offline/maintenance. Each has
   // its own /<code> route, so the first segment must be reserved here too.
   '400', '401', '403', '404', '405', '408', '409', '410', '413', '415', '422', '429',
