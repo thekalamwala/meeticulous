@@ -307,7 +307,7 @@ const normalize = (s) => String(s || '').toLowerCase().replace(/[^\w\s]/g, ' ').
 // Update here if the pricing page changes.
 const PRICING = {
   free:    '**Starter — ₹0, free forever.** Unlimited services and bookings, your booking page, UPI payments and 24-hour + 1-hour reminders. We take 9% on appointments (12% on products, courses and memberships) only when you actually get paid. [Start free](/pricing).',
-  premium: '**Pro — about ₹3 a day.** ₹1,199/year (save 50%), or ₹199/month. 0% commission on appointments up to ₹25,000 a month (3% above), 4% on products, courses and memberships, plus the full Client CRM, rebook automation and priority support. All prices include GST. [Go Premium](/pricing).',
+  premium: '**Pro — about ₹3 a day.** ₹1,199/year (save 50%), or ₹199/month. 0% commission on appointments with no monthly limit, 4% on products, courses and memberships, plus the full Client CRM, rebook automation and priority support. All prices include GST. [Go Premium](/pricing).',
 };
 // Pricing intent — deliberately excludes bare "plan"/"plans" so it doesn't hijack
 // plan-management questions ("how do I change my plan"). Plan name alone isn't enough.

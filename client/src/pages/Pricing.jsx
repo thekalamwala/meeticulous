@@ -286,7 +286,7 @@ const STAGES = [
   {
     tag: "Running the business",
     lead: "Bookings are your engine",
-    body: "Taking over ₹1,110 a month in bookings? Pro already costs you less than Starter's 9% — and 0% on appointments up to ₹25,000 a month.",
+    body: "Taking over ₹1,110 a month in bookings? Pro already costs you less than Starter's 9% — and 0% on appointments, however much you earn.",
     accent: GROW,
     plan: "Pro",
     icon: Rocket,
@@ -408,19 +408,16 @@ function ProValueAndCalculator() {
 
 // "Does Pro pay for itself?" — an honest calculator, not decoration. It uses
 // only real pricing logic (pricing v2): Starter's 9% appointment commission vs
-// Pro's ₹99/mo effective price (yearly billing) at 0%, plus Pro's 3% on monthly
-// bookings above ₹25,000. Breakeven is ₹1,110/mo of paid bookings (0.09 × 1,110
-// ≈ 99.92), matching the plans.js persona blurb.
+// Pro's ₹99/mo effective price (yearly billing) at 0%, with no monthly limit.
+// Breakeven is ₹1,110/mo of paid bookings (0.09 × 1,110 ≈ 99.92), matching the
+// plans.js persona blurb.
 const COMMISSION_PCT = 9; // Starter appointments rate — mirrors subscription_plans.commission_rates
-const PRO_BAND_INR = 25000; // Pro: 0% up to this much a month…
-const PRO_ABOVE_BAND_PCT = 3; // …then 3% (whole bookings, spec §2 — approximated per rupee here)
 const inr = (n) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 function PayForItself() {
   const [earn, setEarn] = useState(8000);
   const commission = (earn * COMMISSION_PCT) / 100; // what Starter's 9% costs this month
-  // Pro's month: the ₹99 effective price plus 3% on whatever is above the band.
-  const activeCost = PREMIUM_YEARLY_PER_MONTH + (Math.max(0, earn - PRO_BAND_INR) * PRO_ABOVE_BAND_PCT) / 100;
+  const activeCost = PREMIUM_YEARLY_PER_MONTH; // Pro's month: the ₹99 effective price, 0% commission
   const activeWins = commission >= activeCost;
   const saved = Math.max(0, commission - activeCost);
 

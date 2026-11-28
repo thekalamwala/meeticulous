@@ -13,7 +13,7 @@ import { PREMIUM_YEARLY_PER_MONTH } from "../data/plans";
 
 // /earnings-calculator — public conversion tool. Host sets price, monthly volume and
 // monthly product/course/membership sales; sees annual take-home per plan as a bar
-// chart (Starter 9% / 12% · Pro 0–3% / 4%) next to a platform charging 10% +
+// chart (Starter 9% / 12% · Pro 0% / 4%) next to a platform charging 10% +
 // transaction fee, the plan that keeps the most, and how much more than free. All
 // numbers come from lib/earningsCalc.js + lib/morPricing.js (server mirror) — display
 // only, real pricing computed server-side at booking. No invented tiers, no fake figures.
@@ -31,7 +31,7 @@ const POSITION = {
 // Concise, REAL feature highlights — mirrors data/plans.js. Keep in sync if plans change.
 const FEATURES = {
   free: ["9% per appointment, 12% on products, courses & memberships", "Unlimited services, bookings & products", "Booking page + payments", "24-hour and 1-hour reminders", "Email support"],
-  premium: ["0% on appointments (3% above ₹25,000 a month)", "4% on products, courses & memberships", "Client CRM + full history", "Day-21 rebook automation", "Priority support"],
+  premium: ["0% commission on appointments, no limit", "4% on products, courses & memberships", "Client CRM + full history", "Day-21 rebook automation", "Priority support"],
 };
 
 const PLAN_MASCOTS = { free: ["green"], premium: ["orange", "purple"] };
@@ -143,7 +143,7 @@ function StepperInput({ n, title, sublabel, value, min, max, step, prefix, prese
 // is coloured + crowned, others muted. No truncated axis, no exaggeration.
 // The third bar is a typical platform charging 10% + a transaction fee (12% in all)
 // on the same sales — muted, never crowned: it is the yardstick, not an option.
-const FEE_LABEL = { free: "9% · 12% on goods", premium: "0–3% · 4% on goods", other: "10% + transaction fee" };
+const FEE_LABEL = { free: "9% · 12% on goods", premium: "0% · 4% on goods", other: "10% + transaction fee" };
 
 function EarningsBars({ results, winnerKey, otherNet }) {
   const order = ["free", "premium"];
@@ -424,7 +424,7 @@ export default function EarningsCalculator() {
           <div className="earnings-fineprint mt-6 flex gap-2.5">
             <Info size={14} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
             <p>
-              An illustration, not a quote. Figures assume 18% GST, a ~2% gateway charge, a PAN on file and no GST registration (so 0.1% TDS and no TCS). Pro&rsquo;s 3% applies to whole bookings once that month&rsquo;s earlier bookings reach ₹25,000. Product, course and membership sales are shown after commission and the gateway charge. See the{" "}
+              An illustration, not a quote. Figures assume 18% GST, a ~2% gateway charge, a PAN on file and no GST registration (so 0.1% TDS and no TCS). Product, course and membership sales are shown after commission and the gateway charge. See the{" "}
               <Link to="/host-fees">Host Fee &amp; Payment Schedule</Link> for the full breakdown.
             </p>
           </div>

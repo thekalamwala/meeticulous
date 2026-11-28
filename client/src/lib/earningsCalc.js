@@ -108,9 +108,11 @@ export function freeCommissionPerYear(earning, sessionsPerMonth) {
   return round2(rate * (Number(earning) || 0) * annualBookings(sessionsPerMonth));
 }
 
-// Pro's 3% on bookings past the ₹25,000/month band, over a year.
+// Pro's commission on bookings past a monthly band, over a year. Pro has no band
+// since 2026-11-28 (founder ruling), so this is 0; kept for a plan that sets one.
 export function proBandCommissionPerYear(earning, sessionsPerMonth) {
   const pro = CALC_PLANS.find((p) => p.key === 'premium');
+  if (!pro.band) return 0;
   const n = annualBookings(sessionsPerMonth) / 12;
   const price = Math.max(0, Number(earning) || 0);
   const over = n - bookingsBelowBand(price, n, pro.band.inr);
@@ -142,7 +144,7 @@ export function platformFeesPerYear(earning, sessionsPerMonth) {
     { key: 'topmate-own', name: 'Topmate, your own link', fee: topmate(TOPMATE_FEES.ownLink), note: '10% of sales + 18% GST on the fee' },
     { key: 'topmate-marketplace', name: 'Topmate, marketplace sale', fee: topmate(TOPMATE_FEES.marketplace), note: '20% of sales + 18% GST on the fee' },
     { key: 'free', name: 'Meeticulous · Starter', fee: freeCommissionPerYear(earning, sessionsPerMonth), note: '9% per paid appointment' },
-    { key: 'premium', name: 'Meeticulous · Pro', fee: round2(ANNUAL_FEE.premium + proBandCommissionPerYear(earning, sessionsPerMonth)), note: 'Yearly plan · 0% up to ₹25,000 a month, then 3%' },
+    { key: 'premium', name: 'Meeticulous · Pro', fee: round2(ANNUAL_FEE.premium + proBandCommissionPerYear(earning, sessionsPerMonth)), note: 'Flat yearly plan, 0% commission on appointments' },
   ];
 }
 

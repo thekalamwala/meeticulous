@@ -4,7 +4,9 @@
 -- Split from v3.229 so the schema could ship early. Read v3.229's header for
 -- the GST regimes, the back-solved prices and the legacy-row rules.
 --
--- PENDING — apply AT RELEASE MERGE, not before. Live within planService's 60s
+-- APPLIED 2026-11-28 on the Meeticulous DB (spquowzrefozmrzoszkf) right after the
+-- release-to-main deploy (#475) went live, and verified.
+-- Was: PENDING — apply AT RELEASE MERGE, not before. Live within planService's 60s
 -- cache, and before the code ships it would:
 --   - charge ₹199 / ₹1,199 while the site still advertises the old prices
 --   - open Creator Intelligence for Pro (limits.insights)
@@ -17,7 +19,11 @@
 --    jsonb || merges only the keys named, so any other limit key survives.
 --    categories = profile categories, primary included (hostController
 --    updateCategories). Founder ruling 2026-11-27: Starter is 1 (spec said 2).
+-- commission_percentage is the scalar fallback getRate uses when a row has no map;
+-- it is also what the upgrade page / onboarding print as "N% commission", so it
+-- carries the appointments rate (9). Applied on its own 2026-11-28 after the values.
 UPDATE subscription_plans SET
+  commission_percentage = 9,
   limits = COALESCE(limits, '{}'::jsonb)
         || '{"crm":50,"reminder_flows":2,"followup_flows":1,"categories":1,"free_services":2,"digital_products":-1}'::jsonb,
   commission_rates = '{"appointments":9,"products":12,"courses":12,"memberships":12,"appointment_band_inr":null,"appointment_rate_above_band":null}'::jsonb

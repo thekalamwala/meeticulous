@@ -5,7 +5,7 @@ Meeticulous has two plans: **Starter** and **Pro**. See the [pricing](/pricing) 
 ## The plans
 
 - **Starter** — free forever. Unlimited services, bookings and digital products, your booking page, online payments, 24-hour and 1-hour booking reminders, video courses, coupons and GST invoices. We take **9%** of appointments (**12%** of products, courses and memberships) when you actually get paid, and nothing when you don't.
-- **Pro** — **₹199 a month**, or **₹1,199 a year** (about ₹3 a day — pay for six months, get twelve). Appointment commission drops to **0%** (3% once your month's appointment bookings pass ₹25,000) and products, courses and memberships to **4%**. You also get the full Client CRM, guest self-reschedule and reschedule alerts, day-21 rebook automation, Creator Intelligence, booking caps, all 18 page colours and 15 social links, unlimited AI service writing, and priority support.
+- **Pro** — **₹199 a month**, or **₹1,199 a year** (about ₹3 a day — pay for six months, get twelve). Appointment commission drops to **0%**, with no monthly limit, and products, courses and memberships to **4%**. You also get the full Client CRM, guest self-reschedule and reschedule alerts, day-21 rebook automation, Creator Intelligence, booking caps, all 18 page colours and 15 social links, unlimited AI service writing, and priority support.
 
 All prices include GST. Exact figures and the full comparison live on the [pricing](/pricing) page.
 
@@ -27,7 +27,7 @@ Starter caps a few things: **service categories** (1 — your primary profession
 
 ## What does "0% commission" mean?
 
-On Pro we take no percentage of your appointment price up to ₹25,000 of bookings a month (3% beyond that), and 4% of products, courses and memberships — you keep the rest, minus the payment-gateway fee and any statutory taxes. On Starter, 9% applies per appointment and 12% on products, courses and memberships. A separate flat ₹10 booking fee (GST included) is paid by your guest on appointments of ₹300 or more, on both plans; see [pricing and commission](/help/pricing-and-commission).
+On Pro we take no percentage of your appointment price, however much you earn, and 4% of products, courses and memberships — you keep the rest, minus the payment-gateway fee and any statutory taxes. On Starter, 9% applies per appointment and 12% on products, courses and memberships. A separate flat ₹10 booking fee (GST included) is paid by your guest on appointments of ₹300 or more, on both plans; see [pricing and commission](/help/pricing-and-commission).
 
 ## Upgrading
 
