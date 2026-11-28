@@ -38,10 +38,11 @@ const PREMIUM_LIMITS = { services: -1, free_services: -1, bookings_per_year: -1,
 // scalar it replaces — pricingEngine backs the GST out. Only free + Pro rows carry
 // a map; every other row falls back to its commission_percentage scalar.
 const STARTER_RATES = { appointments: 9, products: 12, courses: 12, memberships: 12, appointment_band_inr: null, appointment_rate_above_band: null };
-const PRO_RATES = { appointments: 0, products: 4, courses: 4, memberships: 4, appointment_band_inr: 25000, appointment_rate_above_band: 3 };
+// No appointment band (founder ruling 2026-11-28, v3.232): 0% however much the host earns.
+const PRO_RATES = { appointments: 0, products: 4, courses: 4, memberships: 4, appointment_band_inr: null, appointment_rate_above_band: null };
 
 const FALLBACK_PLANS = {
-  free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, commission_rates: { ...STARTER_RATES }, active: true,
+  free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 9, commission_rates: { ...STARTER_RATES }, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { services: -1, free_services: 2, bookings_per_year: -1, digital_products: -1, calendar_integrations: 1, profile_theme_colors: -1, reminder_flows: 2, followup_flows: 1, categories: 1, crm: 50, ai_generations: 10 },
     features: {}, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'standard', sort_order: 1 },

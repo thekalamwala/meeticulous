@@ -126,7 +126,7 @@ const PICKED = ['Happy Singh', 'Ar. Pranav Kadoo', 'Vishal Chaware', 'Mukesh Tid
 const QUOTES = PICKED.map((n) => ALL_TESTIMONIALS.find((t) => t.name === n)).filter(Boolean);
 
 const FAQ = [
-  { q: 'Is the booking page really free?', a: `Yes. On ${FREE_PLAN.name} the page costs ₹0 a month and we take a 9% commission on paid appointments. On ${PREMIUM_PLAN.name} (₹${PREMIUM_PLAN.monthly} a month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year, GST included) appointment commission is 0% up to ₹25,000 a month.` },
+  { q: 'Is the booking page really free?', a: `Yes. On ${FREE_PLAN.name} the page costs ₹0 a month and we take a 9% commission on paid appointments. On ${PREMIUM_PLAN.name} (₹${PREMIUM_PLAN.monthly} a month or ₹${PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year, GST included) appointment commission is 0%.` },
   { q: 'What will my link look like?', a: 'meeticulous.com/yourname. Usernames use lowercase letters, numbers and single hyphens, between 3 and 30 characters.' },
   { q: 'Can I change my username later?', a: 'Yes, up to two times in any 12 months, with at least six months between changes, once your WhatsApp number is verified. Your old link keeps working and redirects to the new one.' },
   { q: 'Can I use my own domain?', a: 'Not today. Your page lives at meeticulous.com/yourname. If you have a website, link a "Book a session" button to it.' },

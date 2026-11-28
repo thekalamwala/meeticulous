@@ -15,7 +15,7 @@ describe('PlanComparison', () => {
     // The commission row is the whole pitch: 9% free vs 0% Pro (pricing v2).
     const row = screen.getByText('Commission on appointments').closest('tr');
     expect(within(row).getByText('9%')).toBeInTheDocument();
-    expect(within(row).getByText('0% (3% above ₹25,000 a month)')).toBeInTheDocument();
+    expect(within(row).getByText('0%, no monthly limit')).toBeInTheDocument();
   });
 
   it('renders group headers from the matrix', () => {

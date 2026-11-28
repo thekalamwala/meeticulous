@@ -59,7 +59,7 @@ export const PREMIUM_PLAN = {
   persona: { title: "Booked and growing", blurb: "Taking over ₹1,110 a month in bookings? Pro already costs less than the 9%." },
   intro: "Everything in Starter, plus:",
   features: [
-    "0% commission on appointments (3% above ₹25,000 a month)",
+    "0% commission on appointments — no monthly limit",
     "4% on products, courses & memberships",
     "WhatsApp reminders on every booking",
     "Guests reschedule themselves + reschedule alerts",
@@ -154,7 +154,7 @@ export const PLAN_MATRIX = [
     rows: [
       { label: "Monthly price", free: "₹0", premium: "₹199" },
       { label: "Yearly price", free: "₹0", premium: "₹1,199" },
-      { label: "Commission on appointments", free: "9%", premium: "0% (3% above ₹25,000 a month)" },
+      { label: "Commission on appointments", free: "9%", premium: "0%, no monthly limit" },
       { label: "Commission on products, courses & memberships", free: "12%", premium: "4%" },
       { label: "Booking fee your guest pays", free: BOOKING_FEE, premium: BOOKING_FEE },
     ],

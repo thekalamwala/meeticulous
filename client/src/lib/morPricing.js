@@ -95,9 +95,9 @@ export const CALC_PLANS = [
     key: 'premium', name: 'Pro',
     charge: { bookingCharge: 10, commissionRate: 0, pgRate: 0.02, absorbsPg: false },
     goodsRate: 0.04,
-    // 0% on appointments until the month's bookings BEFORE a booking reach ₹25,000,
-    // then 3% on the whole booking (spec §2, planService.appointmentRateFor).
-    band: { inr: 25000, rateAbove: 0.03 },
+    // No monthly band (founder ruling 2026-11-28): 0% on appointments however much
+    // the host earns. The `band` hook stays for a plan that ever sets one.
+    band: null,
     // GST-INCLUSIVE, matching data/plans.js — this is subtracted from monthly
     // income, so it must be the amount actually charged, not the ex-GST base.
     monthly: 199, maxServicePrice: null,

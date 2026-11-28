@@ -31,10 +31,10 @@ Commission is taken from your side and already includes GST — we send you a co
 
 | | Starter | Pro |
 |---|---|---|
-| Appointments | 9% | 0% — 3% once your appointment bookings that month have reached ₹25,000 |
+| Appointments | 9% | 0%, no monthly limit |
 | Digital products, video courses, memberships | 12% | 4% |
 
-On Pro, the 3% is decided per booking: if your bookings for the calendar month (IST) were already ₹25,000 or more **before** a booking, that whole booking is charged 3%. A booking is never split across the line.
+On Pro there is no monthly limit: appointments stay at 0% however much you earn.
 
 Pro pays for itself once you take roughly ₹1,110 a month in appointment bookings — that's where Starter's 9% passes Pro's yearly price.
 
